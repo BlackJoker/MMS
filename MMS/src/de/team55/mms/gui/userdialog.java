@@ -54,7 +54,7 @@ public class userdialog extends JDialog {
 	}
 
 	private void createDialog() {
-		
+
 		JPanel pnl_Dialog = new JPanel();
 		pnl_Dialog.setLayout(new BorderLayout(0, 0));
 
@@ -163,8 +163,8 @@ public class userdialog extends JDialog {
 						hide();
 					} else
 						JOptionPane.showMessageDialog(owner,
-								"Geben Sie eine gültige e-Mail-Adresse ein!", "Fehler",
-								JOptionPane.ERROR_MESSAGE);
+								"Geben Sie eine gültige e-Mail-Adresse ein!",
+								"Fehler", JOptionPane.ERROR_MESSAGE);
 
 				}
 			}

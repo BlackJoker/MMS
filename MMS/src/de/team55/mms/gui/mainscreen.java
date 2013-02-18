@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -28,6 +29,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+
+import org.omg.CORBA.Current;
 
 import de.team55.mms.db.sql;
 import de.team55.mms.function.User;
@@ -40,6 +43,14 @@ public class mainscreen {
 	private final Dimension btnSz = new Dimension(140, 50);
 	public sql database = new sql();
 	private LinkedList<User> worklist = null;
+	private User current = null;
+	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
+	private JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
+	private JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
+	private JButton btnMHB = new JButton(
+			"<html>Modulhandbücher<br>Durchstöbern");
+	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
+	private JButton btnLogin = new JButton("Einloggen");
 
 	public mainscreen() {
 		frame = new JFrame();
@@ -61,25 +72,56 @@ public class mainscreen {
 		leftpan.add(left);
 		left.setLayout(new GridLayout(0, 1, 5, 20));
 
-		JButton btnModulEinreichen = new JButton("Modul Einreichen");
 		left.add(btnModulEinreichen);
 		btnModulEinreichen.setEnabled(false);
 		btnModulEinreichen.setPreferredSize(btnSz);
 		btnModulEinreichen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
 		left.add(btnModulBearbeiten);
 		btnModulBearbeiten.setEnabled(false);
 		btnModulBearbeiten.setPreferredSize(btnSz);
 		btnModulBearbeiten.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JButton btnLogin = new JButton("Einloggen");
 		left.add(btnLogin);
-		btnLogin.setEnabled(false);
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (current == null) {
+					JTextField name = new JTextField();
+					JPasswordField pwd = new JPasswordField();
+					Object[] message = { "Geben Sie ihre Login-Daten ein\n",
+							name, pwd };
+					logindialog log = new logindialog(frame, "Login");
+					int resp = log.showCustomDialog();
+					if (resp == 1) {
+						current = log.getUser();
+						if (current.getCreateModule())
+							btnModulEinreichen.setEnabled(true);
+						if (current.getAcceptModule()) {
+							btnModulVerwaltung.setEnabled(true);
+							btnModulBearbeiten.setEnabled(true);
+						}
+						if (current.getManageUsers())
+							btnUserVerwaltung.setEnabled(true);
+						if (current.getReadModule())
+							btnMHB.setEnabled(true);
+						btnLogin.setText("Ausloggen");
+					}
+				} else {
+					btnLogin.setText("Einloggen");
+					current = null;
+					btnModulEinreichen.setEnabled(false);
+					btnModulVerwaltung.setEnabled(false);
+					btnModulBearbeiten.setEnabled(false);
+					btnUserVerwaltung.setEnabled(false);
+					btnMHB.setEnabled(false);
+				}
+
+			}
+		});
 		btnLogin.setPreferredSize(btnSz);
 		btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JButton btnUserVerwaltung = new JButton("User Verwaltung");
+		btnUserVerwaltung.setEnabled(false);
 		left.add(btnUserVerwaltung);
 		btnUserVerwaltung.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -91,14 +133,12 @@ public class mainscreen {
 		btnUserVerwaltung.setPreferredSize(btnSz);
 		btnUserVerwaltung.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
 		left.add(btnModulVerwaltung);
 		btnModulVerwaltung.setEnabled(false);
 		btnModulVerwaltung.setPreferredSize(btnSz);
 		btnModulVerwaltung.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// Jemand ne bessere idee fÃ¼r einen Button mit Zeilenumbruch?
-		JButton btnMHB = new JButton("<html>ModulhandbÃ¼cher<br>DurchstÃ¶bern");
+		// Jemand ne bessere idee für einen Button mit Zeilenumbruch?
 		left.add(btnMHB);
 		btnMHB.setEnabled(false);
 		btnMHB.setPreferredSize(btnSz);
@@ -147,10 +187,10 @@ public class mainscreen {
 		//
 		// Inhalt der Tabelle
 		//
-		tmodel = new DefaultTableModel(new Object[][] {  },
-				new String[] { "Vorname", "Nachnahme", "e-Mail", "Password",
-						"User bearbeiten", "Module einreichen",
-						"Module Annehmen", "Module lesen" }) {
+		tmodel = new DefaultTableModel(new Object[][] {}, new String[] {
+				"Vorname", "Nachnahme", "e-Mail", "Password",
+				"User bearbeiten", "Module einreichen", "Module Annehmen",
+				"Module lesen" }) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				// all cells false
@@ -168,17 +208,17 @@ public class mainscreen {
 
 		usrtbl.setModel(tmodel);
 		worklist = database.userload();
-		for(int i = 0; i < worklist.size(); i++){
+		for (int i = 0; i < worklist.size(); i++) {
 			addToTable(worklist.get(i));
-			
-		}		
+
+		}
 
 		JButton btnUserAdd = new JButton("User hinzufügen");
 		btnUserAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				userdialog dlg = new userdialog(frame, "User hinzufÃ¼gen");
+				userdialog dlg = new userdialog(frame, "User hinzufügen");
 				int response = dlg.showCustomDialog();
-				// Wenn ok gedÃ¼ckt wird
+				// Wenn ok gedückt wird
 				// neuen User abfragen
 				if (response == 1) {
 					User tmp = dlg.getUser();
@@ -191,7 +231,8 @@ public class mainscreen {
 		usrpan.add(btnUserAdd);
 
 		JButton btnUserEdit = new JButton("User bearbeiten");
-		btnUserEdit.setToolTipText("Zum Bearbeiten Benutzer in der Tabelle markieren");
+		btnUserEdit
+				.setToolTipText("Zum Bearbeiten Benutzer in der Tabelle markieren");
 		btnUserEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
@@ -206,13 +247,13 @@ public class mainscreen {
 					boolean r4 = (boolean) usrtbl.getValueAt(row, 7);
 					User alt = new User(vn, nn, em, pw, r1, r2, r3, r4);
 
-					userdialog dlg = new userdialog(frame, "User hinzufÃ¼gen",
+					userdialog dlg = new userdialog(frame, "User hinzufügen",
 							alt);
 					int response = dlg.showCustomDialog();
-					// Wenn ok gedÃ¼ckt wird
+					// Wenn ok gedückt wird
 					// neuen User abfragen
 					if (response == 1) {
-						User tmp = dlg.getUser();	
+						User tmp = dlg.getUser();
 						removeFromTable(row);
 						addToTable(tmp);
 						database.userupdate(tmp);
@@ -223,22 +264,22 @@ public class mainscreen {
 		});
 		usrpan.add(btnUserEdit);
 
-		JButton btnUserDel = new JButton("User lÃ¶schen");
-		btnUserDel.setToolTipText("Zum LÃ¶schen Benutzer in der Tabelle markieren");
+		JButton btnUserDel = new JButton("User löschen");
+		btnUserDel
+				.setToolTipText("Zum Löschen Benutzer in der Tabelle markieren");
 		btnUserDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
 					database.deluser((String) usrtbl.getValueAt(row, 2));
-					//VorlÃ¤ufig aus Tabelle lÃ¶schen
 					removeFromTable(row);
-					
+
 				}
 			}
 		});
 		usrpan.add(btnUserDel);
 
-		JButton btnHome = new JButton("ZurÃ¼ck");
+		JButton btnHome = new JButton("Zurück");
 		btnHome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				((CardLayout) cards.getLayout()).first(cards);
@@ -262,7 +303,8 @@ public class mainscreen {
 		flowLayout_2.setVgap(20);
 		cards.add(welcome, "welcome page");
 
-		JLabel lblNewLabel = new JLabel("Hier kÃ¶nnte ihre Werbung stehen");
+		JLabel lblNewLabel = new JLabel(
+				"Willkommen beim Modul Management System");
 		welcome.add(lblNewLabel);
 
 	}
