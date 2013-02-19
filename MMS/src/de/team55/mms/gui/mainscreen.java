@@ -2,7 +2,6 @@ package de.team55.mms.gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -13,13 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -29,8 +24,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-
-import org.omg.CORBA.Current;
 
 import de.team55.mms.db.sql;
 import de.team55.mms.function.User;
@@ -43,7 +36,7 @@ public class mainscreen {
 	private final Dimension btnSz = new Dimension(140, 50);
 	public sql database = new sql();
 	private LinkedList<User> worklist = null;
-	private User current = null;
+	private User current = new User("", "", "", "", false, false, false, false);
 	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
 	private JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
 	private JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
@@ -51,6 +44,7 @@ public class mainscreen {
 			"<html>Modulhandbücher<br>Durchstöbern");
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
+	private String selectedCard;
 
 	public mainscreen() {
 		frame = new JFrame();
@@ -84,8 +78,9 @@ public class mainscreen {
 
 		left.add(btnLogin);
 		btnLogin.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (current == null) {
+				if (current.geteMail().isEmpty()) {
 					JTextField name = new JTextField();
 					JPasswordField pwd = new JPasswordField();
 					Object[] message = { "Geben Sie ihre Login-Daten ein\n",
@@ -94,28 +89,16 @@ public class mainscreen {
 					int resp = log.showCustomDialog();
 					if (resp == 1) {
 						current = log.getUser();
-						if (current.getCreateModule())
-							btnModulEinreichen.setEnabled(true);
-						if (current.getAcceptModule()) {
-							btnModulVerwaltung.setEnabled(true);
-							btnModulBearbeiten.setEnabled(true);
-						}
-						if (current.getManageUsers())
-							btnUserVerwaltung.setEnabled(true);
-						if (current.getReadModule())
-							btnMHB.setEnabled(true);
 						btnLogin.setText("Ausloggen");
 					}
 				} else {
+					current = new User("", "", "", "", false, false, false,
+							false);
 					btnLogin.setText("Einloggen");
-					current = null;
-					btnModulEinreichen.setEnabled(false);
-					btnModulVerwaltung.setEnabled(false);
-					btnModulBearbeiten.setEnabled(false);
-					btnUserVerwaltung.setEnabled(false);
-					btnMHB.setEnabled(false);
+					selectedCard = "welcome page";
+					showCard();
 				}
-
+				checkRights();
 			}
 		});
 		btnLogin.setPreferredSize(btnSz);
@@ -124,10 +107,17 @@ public class mainscreen {
 		btnUserVerwaltung.setEnabled(false);
 		left.add(btnUserVerwaltung);
 		btnUserVerwaltung.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
-				((CardLayout) cards.getLayout()).show(cards, "user managment");
-
+				for (int i = tmodel.getRowCount() - 1; i >= 0; i--) {
+					tmodel.removeRow(i);
+				}
+				worklist = database.userload();
+				for (int i = 0; i < worklist.size(); i++) {
+					addToTable(worklist.get(i));
+				}
+				selectedCard = "user managment";
+				showCard();
 			}
 		});
 		btnUserVerwaltung.setPreferredSize(btnSz);
@@ -144,6 +134,39 @@ public class mainscreen {
 		btnMHB.setPreferredSize(btnSz);
 		btnMHB.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+	}
+
+	protected void checkRights() {
+		if (current.getCreateModule())
+			btnModulEinreichen.setEnabled(true);
+		else
+			btnModulEinreichen.setEnabled(false);
+		if (current.getAcceptModule()) {
+			btnModulVerwaltung.setEnabled(true);
+			btnModulBearbeiten.setEnabled(true);
+		} else {
+			btnModulVerwaltung.setEnabled(false);
+			btnModulBearbeiten.setEnabled(false);
+		}
+		if (current.getManageUsers())
+			btnUserVerwaltung.setEnabled(true);
+		else {
+			btnUserVerwaltung.setEnabled(false);
+			if (selectedCard.equals("user managment")) {
+				selectedCard = "welcome page";
+				showCard();
+			}
+
+		}
+		if (current.getReadModule())
+			btnMHB.setEnabled(true);
+		else
+			btnMHB.setEnabled(false);
+
+	}
+
+	private void showCard() {
+		((CardLayout) cards.getLayout()).show(cards, selectedCard);
 	}
 
 	public void topscr() {
@@ -201,20 +224,17 @@ public class mainscreen {
 					String.class, String.class, boolean.class, boolean.class,
 					boolean.class, boolean.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 		};
 
 		usrtbl.setModel(tmodel);
-		worklist = database.userload();
-		for (int i = 0; i < worklist.size(); i++) {
-			addToTable(worklist.get(i));
-
-		}
 
 		JButton btnUserAdd = new JButton("User hinzufügen");
 		btnUserAdd.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				userdialog dlg = new userdialog(frame, "User hinzufügen");
 				int response = dlg.showCustomDialog();
@@ -234,6 +254,7 @@ public class mainscreen {
 		btnUserEdit
 				.setToolTipText("Zum Bearbeiten Benutzer in der Tabelle markieren");
 		btnUserEdit.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
@@ -257,8 +278,13 @@ public class mainscreen {
 						removeFromTable(row);
 						addToTable(tmp);
 						database.userupdate(tmp);
+						if (em.equals(current.geteMail())) {
+							current = tmp;
+							checkRights();
+						}
 
 					}
+
 				}
 			}
 		});
@@ -268,6 +294,7 @@ public class mainscreen {
 		btnUserDel
 				.setToolTipText("Zum Löschen Benutzer in der Tabelle markieren");
 		btnUserDel.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
@@ -281,8 +308,10 @@ public class mainscreen {
 
 		JButton btnHome = new JButton("Zurück");
 		btnHome.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				((CardLayout) cards.getLayout()).first(cards);
+				selectedCard = "welcome page";
+				showCard();
 			}
 		});
 		usrpan.add(btnHome);

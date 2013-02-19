@@ -1,8 +1,6 @@
 package de.team55.mms.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -149,6 +147,7 @@ public class userdialog extends JDialog {
 
 		JButton btnOk = new JButton("OK");
 		btnOk.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (textVorname.getText().isEmpty()
 						|| textNachname.getText().isEmpty()
@@ -170,9 +169,11 @@ public class userdialog extends JDialog {
 			}
 		});
 		pnl_footer.add(btnOk);
+		getRootPane().setDefaultButton(btnOk);
 
 		JButton btnAbbrechen = new JButton("Abbrechen");
 		btnAbbrechen.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				userResponse = CANCEL_OPTION;
 				hide();

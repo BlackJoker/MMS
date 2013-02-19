@@ -24,7 +24,7 @@ public class User {
 		this.acceptModule = acceptModule;
 
 	}
-	
+
 	public String getVorname() {
 		return Vorname;
 	}

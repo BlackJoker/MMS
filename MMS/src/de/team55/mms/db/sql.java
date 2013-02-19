@@ -28,7 +28,7 @@ public class sql {
 	private String dbUser = "root";
 
 	// Datenbankpasswort
-	private String dbPassword = "";
+	private String dbPassword = "qwert";
 
 	public void connect() {
 		try {
@@ -337,7 +337,7 @@ public class sql {
 
 	}
 
-	public User getUser(String email) {
+	public User getUser(String email, String pass) {
 		User zws = null;
 		ResultSet res = null;
 		Statement state = null;
@@ -346,35 +346,36 @@ public class sql {
 		try {
 			state = this.con.createStatement();
 			res = state.executeQuery("SELECT * FROM user WHERE email='" + email
-					+ "';");
+					+ "' and password='" + pass + "';");
 			if (res.first()) {
 				zws = new User(res.getString("vorname"),
 						res.getString("namen"), res.getString("email"),
 						res.getString("password"), false, false, false, false);
 				id = res.getInt("id");
-			} else
-				return null;
-			res.close();
-			state.close();
-		} catch (SQLException e) {
-			// TODO fehler fenster aufrufen
-			e.printStackTrace();
-		}
-		try {
-			state = this.con.createStatement();
-			res = state.executeQuery("SELECT * FROM rights WHERE id='" + id
-					+ "';");
-			if (res.first()) {
-				zws.setManageUsers(res.getBoolean("userchange"));
-				zws.setCreateModule(res.getBoolean("modcreate"));
-				zws.setAcceptModule(res.getBoolean("modacc"));
-				zws.setReadModule(res.getBoolean("modread"));
 			}
 			res.close();
 			state.close();
 		} catch (SQLException e) {
 			// TODO fehler fenster aufrufen
 			e.printStackTrace();
+		}
+		if (zws != null) {
+			try {
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT * FROM rights WHERE id='" + id
+						+ "';");
+				if (res.first()) {
+					zws.setManageUsers(res.getBoolean("userchange"));
+					zws.setCreateModule(res.getBoolean("modcreate"));
+					zws.setAcceptModule(res.getBoolean("modacc"));
+					zws.setReadModule(res.getBoolean("modread"));
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
 		}
 		disconnect();
 
