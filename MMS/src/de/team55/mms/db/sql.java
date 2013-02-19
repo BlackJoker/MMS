@@ -28,7 +28,7 @@ public class sql {
 	private String dbUser = "root";
 
 	// Datenbankpasswort
-	private String dbPassword = "qwert";
+	private String dbPassword = "";
 
 	public void connect() {
 		try {
