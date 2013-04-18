@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -30,7 +31,7 @@ import de.team55.mms.function.User;
 
 public class mainscreen {
 
-	private JFrame frame;
+	private static JFrame frame;
 	private JPanel cards = new JPanel();
 	private DefaultTableModel tmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
@@ -98,7 +99,9 @@ public class mainscreen {
 					selectedCard = "welcome page";
 					showCard();
 				}
-				checkRights();
+				if (database.isConnected()) {
+					checkRights();
+				}
 			}
 		});
 		btnLogin.setPreferredSize(btnSz);
@@ -277,7 +280,7 @@ public class mainscreen {
 						User tmp = dlg.getUser();
 						removeFromTable(row);
 						addToTable(tmp);
-						database.userupdate(tmp);
+						database.userupdate(tmp,em);
 						if (em.equals(current.geteMail())) {
 							current = tmp;
 							checkRights();
@@ -347,6 +350,11 @@ public class mainscreen {
 
 	private void removeFromTable(int rowid) {
 		tmodel.removeRow(rowid);
+	}
+
+	public static void noConnection() {
+		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
+				"Connection error", JOptionPane.ERROR_MESSAGE);
 	}
 
 }

@@ -89,10 +89,11 @@ public class logindialog extends JDialog {
 							"Geben Sie gültige Daten ein!", "Fehler",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
+
 					if (checkLogin()) {
 						userResponse = OK_OPTION;
 						hide();
-					} else {
+					} else if (database.isConnected()) {
 						textPass.setText("");
 						JOptionPane.showMessageDialog(owner,
 								"Login Daten falsch", "Fehler",
@@ -120,9 +121,13 @@ public class logindialog extends JDialog {
 	}
 
 	private boolean checkLogin() {
-		usr = database.getUser(textMail.getText(), textPass.getText());
-		if (usr != null) {
-			return true;
+		try {
+			usr = database.getUser(textMail.getText(), textPass.getText());
+			if (usr != null) {
+				return true;
+			}
+		} catch (NullPointerException e) {
+			return false;
 		}
 		return false;
 	}
