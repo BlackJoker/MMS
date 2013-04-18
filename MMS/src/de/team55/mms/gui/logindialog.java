@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import de.team55.mms.db.sql;
+import de.team55.mms.function.Hash;
 import de.team55.mms.function.User;
 
 public class logindialog extends JDialog {
@@ -122,7 +123,7 @@ public class logindialog extends JDialog {
 
 	private boolean checkLogin() {
 		try {
-			usr = database.getUser(textMail.getText(), textPass.getText());
+			usr = database.getUser(textMail.getText(), Hash.getMD5(textPass.getText()));
 			if (usr != null) {
 				return true;
 			}

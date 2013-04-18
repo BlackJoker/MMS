@@ -15,8 +15,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import de.team55.mms.function.Hash;
 import de.team55.mms.function.User;
 
 public class userdialog extends JDialog {
@@ -118,7 +121,7 @@ public class userdialog extends JDialog {
 		JLabel lblPassword = new JLabel("Password");
 		pnl_Pass.add(lblPassword);
 
-		textPass = new JTextField(usr.getPassword());
+		textPass = new JPasswordField(usr.getPassword());
 		pnl_Pass.add(textPass);
 		textPass.setColumns(10);
 
@@ -187,7 +190,7 @@ public class userdialog extends JDialog {
 	public User getUser() {
 		usr.setVorname(textVorname.getText());
 		usr.setNachname(textNachname.getText());
-		usr.setPassword(textPass.getText());
+		usr.setPassword(Hash.getMD5(textPass.getText()));
 		usr.seteMail(textMail.getText());
 		usr.setReadModule(cb_ModLes.isSelected());
 		usr.setCreateModule(cb_ModErst.isSelected());
