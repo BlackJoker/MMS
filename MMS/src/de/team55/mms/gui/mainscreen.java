@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,6 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
@@ -71,6 +73,16 @@ public class mainscreen {
 		btnModulEinreichen.setEnabled(false);
 		btnModulEinreichen.setPreferredSize(btnSz);
 		btnModulEinreichen.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnModulEinreichen.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				selectedCard = "newmodule";
+				showCard();
+			}
+		
+		});
 
 		left.add(btnModulBearbeiten);
 		btnModulBearbeiten.setEnabled(false);
@@ -112,6 +124,7 @@ public class mainscreen {
 		btnUserVerwaltung.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				if(current.getManageUsers()){
 				for (int i = tmodel.getRowCount() - 1; i >= 0; i--) {
 					tmodel.removeRow(i);
 				}
@@ -121,6 +134,20 @@ public class mainscreen {
 				}
 				selectedCard = "user managment";
 				showCard();
+				} else {
+					userdialog dlg = new userdialog(frame, "User bearbeiten",
+							current);
+					int response = dlg.showCustomDialog();
+					// Wenn ok gedückt wird
+					// neuen User abfragen
+					if (response == 1) {
+						User tmp = dlg.getUser();
+						database.userupdate(tmp,current.geteMail());
+						current = tmp;
+						checkRights();
+
+					}
+				}
 			}
 		});
 		btnUserVerwaltung.setPreferredSize(btnSz);
@@ -154,7 +181,8 @@ public class mainscreen {
 		if (current.getManageUsers())
 			btnUserVerwaltung.setEnabled(true);
 		else {
-			btnUserVerwaltung.setEnabled(false);
+			//btnUserVerwaltung.setEnabled(false);
+			btnUserVerwaltung.setText("Account bearbeiten");
 			if (selectedCard.equals("user managment")) {
 				selectedCard = "welcome page";
 				showCard();
@@ -192,7 +220,120 @@ public class mainscreen {
 
 		homecard();
 		usermgtcard();
+		newmodulecard();
 
+	}
+
+	private void newmodulecard() {
+		JPanel pnl_newmod = new JPanel();
+		pnl_newmod.setLayout(new BorderLayout(0, 0));
+		final JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		
+		final JPanel pnl_labels = new JPanel();
+		panel.add(pnl_labels,BorderLayout.CENTER);
+		pnl_labels.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JLabel lblAbschluss = new JLabel("Abschluss");
+		pnl_labels.add(lblAbschluss);
+		
+		JLabel lblStudiengang = new JLabel("Studiengang");
+		lblStudiengang.setAlignmentY(Component.TOP_ALIGNMENT);
+		pnl_labels.add(lblStudiengang);
+		
+		JLabel lblPrfungsordnung = new JLabel("Pr\u00FCfungsordnung");
+		pnl_labels.add(lblPrfungsordnung);
+		
+		JLabel lblTeilbereich = new JLabel("Teilbereich");
+		pnl_labels.add(lblTeilbereich);
+		
+		JLabel lblVorlesung = new JLabel("Vorlesung");
+		pnl_labels.add(lblVorlesung);
+		
+		final JPanel pnl_text= new JPanel();
+		panel.add(pnl_text);
+		pnl_text.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JTextField txtAbschluss = new JTextField();
+		pnl_text.add(txtAbschluss);
+		
+		Dimension preferredSize = new Dimension(100,20);
+		txtAbschluss.setPreferredSize(preferredSize);
+		
+		JTextField txtStudiengang = new JTextField();
+		pnl_text.add(txtStudiengang);
+		txtStudiengang.setPreferredSize(preferredSize);
+		
+		JTextField txtPrfungsordnung = new JTextField();
+		pnl_text.add(txtPrfungsordnung);
+		txtPrfungsordnung.setPreferredSize(preferredSize);
+		
+		JTextField txtTeilbereich = new JTextField();
+		pnl_text.add(txtTeilbereich);
+		txtTeilbereich.setPreferredSize(preferredSize);
+		
+		JTextField txtVorlesung = new JTextField();
+		pnl_text.add(txtVorlesung);
+		txtVorlesung.setPreferredSize(preferredSize);
+		
+		final Component verticalGlue = Box.createVerticalGlue();
+		pnl_labels.add(verticalGlue);
+		
+		final Component verticalGlue_1 = Box.createVerticalGlue();
+		pnl_text.add(verticalGlue_1);
+		
+		JPanel pnl_bottom = new JPanel();
+		pnl_newmod.add(pnl_bottom, BorderLayout.SOUTH);
+		
+		JButton btnNeuesFeld = new JButton("Neues Feld");
+		btnNeuesFeld.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnl_text.remove(verticalGlue_1);
+				pnl_labels.remove(verticalGlue);
+				String name = JOptionPane.showInputDialog(frame, "Name des Feldes");
+				pnl_labels.add(new JLabel(name));
+				pnl_text.add(new JTextField());
+				
+				pnl_labels.add(verticalGlue);
+				pnl_text.add(verticalGlue_1);
+				
+				panel.revalidate();
+			}
+		});
+		pnl_bottom.add(btnNeuesFeld);
+		
+		JButton btnOk = new JButton("Annehmen");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Eintraege der Reihe nach auslesen
+				for(int i=0;i<pnl_labels.getComponentCount();i++){
+					JLabel tmplbl = (JLabel) pnl_labels.getComponent(i);
+					JTextField tmp = (JTextField) pnl_text.getComponent(i);
+					String value = tmp.getText();
+					String name = tmplbl.getText();
+				}
+			}
+		});
+		pnl_bottom.add(btnOk);
+		
+		JButton btnHome = new JButton("Zurück");
+		btnHome.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectedCard = "welcome page";
+				showCard();
+			}
+		});
+		pnl_bottom.add(btnHome);
+		
+		JScrollPane scrollPane = new JScrollPane (panel, 
+	            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+	            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	    
+	    pnl_newmod.add(scrollPane);
+		cards.add(pnl_newmod, "newmodule");
+		
 	}
 
 	private void usermgtcard() {

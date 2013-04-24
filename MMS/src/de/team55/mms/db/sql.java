@@ -32,7 +32,7 @@ public class sql {
 	private String dbUser = "root";
 
 	// Datenbankpasswort
-	private String dbPassword = "";
+	private String dbPassword = "qwert";
 
 	public boolean connect() {
 		connected = false;
