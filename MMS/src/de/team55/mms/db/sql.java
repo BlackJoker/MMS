@@ -37,11 +37,13 @@ public class sql {
 	public boolean connect() {
 		connected = false;
 		try {
+			//connect to the server
 			Class.forName(url);
 			this.con = DriverManager.getConnection("jdbc:mysql://" + dbHost
 					+ ":" + dbPort + "/" + database + "?" + "user=" + dbUser
 					+ "&" + "password=" + dbPassword);
 			this.con.setAutoCommit(false);
+			//user table
 			Statement stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user" + "("
 					+ "id int NOT NULL AUTO_INCREMENT PRIMARY KEY, "
@@ -52,13 +54,35 @@ public class sql {
 			);
 			this.con.commit();
 			stmt.close();
+			// rights table
 			stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
 					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
 					+ "modcreate BOOLEAN NOT NULL, "
 					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
 					+ ");");
+			this.con.commit();
 			stmt.close();
+			/*//module table
+			stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
+					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
+					+ "modcreate BOOLEAN NOT NULL, "
+					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+					+ ");");
+			this.con.commit();
+			stmt.close();
+			//text table
+			stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
+					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
+					+ "modcreate BOOLEAN NOT NULL, "
+					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+					+ ");");
+			this.con.commit();
+			stmt.close();
+			*/
+			
 			connected = true;
 
 		} catch (SQLException e) {
