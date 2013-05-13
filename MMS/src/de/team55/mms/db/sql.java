@@ -53,9 +53,9 @@ public class sql {
 
 			);
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			// rights table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
 					+ "id int NOT NULL, " 
 					+ "userchange BOOLEAN NOT NULL, "
@@ -64,33 +64,32 @@ public class sql {
 					+ "modread BOOLEAN NOT NULL"
 					+ ");");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//module table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
-					+ "name vchar NOT NULL, " 
-					+ "Modulhandbuchname vchar NOT NULL, "
+					+ "name varchar(255) NOT NULL, " 
+					+ "Modulhandbuchname varchar(255) NOT NULL, "
 					+ "Version int NOT NULL, "
 					+ "Datum date NOT NULL " 
 					+ ");");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//text table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS text" + "("
-					+ "MODHuMOD vchar , " 
+					+ "MODHuMOD varchar(255) , " 
 					+ "version int , "
-					+ "label vchar , "
-					+ "text vchar , " 
-					+ ");");
+					+ "label varchar(255) , "
+					+ "text varchar(255));");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//modulhandbuch table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS modulhandbuch" + "("
-					+ "name vchar , " 
-					+ "studiengang vchar , "
-					+ "jahrgang vchar " 
+					+ "name varchar(255) , " 
+					+ "studiengang varchar(255) , "
+					+ "jahrgang varchar(255) " 
 					+ ");");
 			this.con.commit();
 			stmt.close();
@@ -99,7 +98,7 @@ public class sql {
 
 		} catch (SQLException e) {
 			// TODO fehler fenster aufrufen
-			// e.printStackTrace();
+			 e.printStackTrace();
 			mainscreen.noConnection();
 			connected = false;
 
@@ -446,7 +445,131 @@ public class sql {
 
 	}
 	
+	public void getModul(String name){
+		ResultSet res = null;
+		Statement state = null;
+		int version = 0;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT MAX(Version) FROM module WHERE name = '" + name + "';");
+				if(res.first()){
+					version = res.getInt("Version");
+				}
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				
+			}
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT label, text FROM text WHERE name = '" + name + "' AND version = " + version + ";");
+				/*
+				 * hier musst du noch den part machen wie du halt die daten zurück geben willst 
+				 * */
+				
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	/*
+	 * Hier muss man leider noch mehr machen, da ich nicht weiß wie du dich entschieden hast den dynmaischen text zu speichern
+	 * 
+	 */
+	public void setModul(String name, int version /* LISTE? aka Text zeug*/){
+		//ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				//res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				//res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	/*
+	 * Hier das selbe, man muss noch die Rückgabe bearbeiten
+	 * 
+	 * 
+	 */
+	public void getStudiengang() {
+		ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT studiengang FROM modulhandbuch;");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
 	
+	public void getModulhandbuch(String studiengang) {
+		ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT name, jahrgang FROM modulhandbuch WHERE studiengang = '"+ studiengang +"';");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	public void setModulhandbuch(String name, String studiengang, String jahrgang){
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES (" 
+							+ name
+							+", " 
+							+ studiengang
+							+", " 
+							+ jahrgang
+							+";" 
+						);
+				
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 	public boolean isConnected() {
 		return connected;

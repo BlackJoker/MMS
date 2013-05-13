@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.swing.Box;
@@ -32,7 +33,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import de.team55.mms.db.sql;
-import de.team55.mms.function.Actions;
 import de.team55.mms.function.User;
 
 public class mainscreen {
@@ -53,6 +53,7 @@ public class mainscreen {
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
 	private String selectedCard;
+	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
 
 	public mainscreen() {
 		frame = new JFrame();
@@ -247,6 +248,7 @@ public class mainscreen {
 
 				JPanel pnl_tmp = new JPanel();
 				panel.add(pnl_tmp);
+				int numOfPanels=panel.getComponentCount();
 				pnl_tmp.setLayout(new BoxLayout(pnl_tmp, BoxLayout.X_AXIS));
 
 				String name = JOptionPane.showInputDialog(frame,
@@ -260,7 +262,25 @@ public class mainscreen {
 				pnl_tmp.add(txt_tmp);
 
 				JButton btn_tmp_entf = new JButton("Entfernen");
-				btn_tmp_entf.addActionListener(new Actions());
+				btn_tmp_entf.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						int id = buttonmap.get(e.getSource());
+						//Feld mit ID id von Panel entfernen
+						panel.remove(id);
+						//Platzhalter entfernen
+						panel.remove(id-1);
+						//Aus ButtonMap entfernen
+						buttonmap.remove(e.getSource());
+						
+						panel.revalidate();
+						
+						
+					}
+				});
+				
+				//Button btn_tmp_entf mit ID (numOfPanels-1) zu ButtonMap
+				buttonmap.put(btn_tmp_entf, numOfPanels-1);
+					
 				pnl_tmp.add(btn_tmp_entf);
 
 				panel.revalidate();
@@ -314,7 +334,13 @@ public class mainscreen {
 		pnl_Abschluss.add(txt_Abschluss);
 
 		JButton btn_Abschluss = new JButton("Entfernen");
-		btn_Abschluss.addActionListener(new Actions());
+		btn_Abschluss.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}});
 		pnl_Abschluss.add(btn_Abschluss);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -334,7 +360,13 @@ public class mainscreen {
 		pnl_Studiengang.add(txt_Studiengang);
 
 		JButton btn_Studiengang = new JButton("Entfernen");
-		btn_Studiengang.addActionListener(new Actions());
+		btn_Studiengang.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}});
 		pnl_Studiengang.add(btn_Studiengang);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -354,7 +386,13 @@ public class mainscreen {
 		pnl_Pruefungsordnung.add(txt_Pruefungsordnung);
 
 		JButton btn_Pruefungsordnung = new JButton("Entfernen");
-		btn_Pruefungsordnung.addActionListener(new Actions());
+		btn_Pruefungsordnung.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}});
 		pnl_Pruefungsordnung.add(btn_Pruefungsordnung);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -374,7 +412,13 @@ public class mainscreen {
 		pnl_Teilbereich.add(txt_Teilbereich);
 
 		JButton btn_Teilbereich = new JButton("Entfernen");
-		btn_Teilbereich.addActionListener(new Actions());
+		btn_Teilbereich.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}});
 		pnl_Teilbereich.add(btn_Teilbereich);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -393,7 +437,13 @@ public class mainscreen {
 		pnl_Vorlesung.add(txt_Vorlesung);
 
 		JButton btn_Vorlesung = new JButton("Entfernen");
-		btn_Vorlesung.addActionListener(new Actions());
+		btn_Vorlesung.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}});
 		pnl_Vorlesung.add(btn_Vorlesung);
 
 		pnl_newmod.add(scrollPane);
