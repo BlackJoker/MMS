@@ -57,31 +57,43 @@ public class sql {
 			// rights table
 			stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
-					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
+					+ "id int NOT NULL, " 
+					+ "userchange BOOLEAN NOT NULL, "
 					+ "modcreate BOOLEAN NOT NULL, "
-					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+					+ "modacc BOOLEAN NOT NULL, " 
+					+ "modread BOOLEAN NOT NULL"
 					+ ");");
 			this.con.commit();
 			stmt.close();
-			/*//module table
+			//module table
 			stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
-					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
-					+ "modcreate BOOLEAN NOT NULL, "
-					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+					+ "name vchar NOT NULL, " 
+					+ "Modulhandbuchname vchar NOT NULL, "
+					+ "Version int NOT NULL, "
+					+ "Datum date NOT NULL " 
 					+ ");");
 			this.con.commit();
 			stmt.close();
 			//text table
 			stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
-					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
-					+ "modcreate BOOLEAN NOT NULL, "
-					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS text" + "("
+					+ "MODHuMOD vchar , " 
+					+ "version int , "
+					+ "label vchar , "
+					+ "text vchar , " 
 					+ ");");
 			this.con.commit();
 			stmt.close();
-			*/
+			//modulhandbuch table
+			stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS modulhandbuch" + "("
+					+ "name vchar , " 
+					+ "studiengang vchar , "
+					+ "jahrgang vchar " 
+					+ ");");
+			this.con.commit();
+			stmt.close();
 			
 			connected = true;
 
@@ -433,6 +445,8 @@ public class sql {
 		return zws;
 
 	}
+	
+	
 
 	public boolean isConnected() {
 		return connected;
