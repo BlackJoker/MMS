@@ -53,9 +53,9 @@ public class sql {
 
 			);
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			// rights table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
 					+ "id int NOT NULL, " 
 					+ "userchange BOOLEAN NOT NULL, "
@@ -64,33 +64,32 @@ public class sql {
 					+ "modread BOOLEAN NOT NULL"
 					+ ");");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//module table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
-					+ "name vchar NOT NULL, " 
-					+ "Modulhandbuchname vchar NOT NULL, "
+					+ "name varchar(255) NOT NULL, " 
+					+ "Modulhandbuchname varchar(255) NOT NULL, "
 					+ "Version int NOT NULL, "
 					+ "Datum date NOT NULL " 
 					+ ");");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//text table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS text" + "("
-					+ "MODHuMOD vchar , " 
+					+ "MODHuMOD varchar(255) , " 
 					+ "version int , "
-					+ "label vchar , "
-					+ "text vchar , " 
-					+ ");");
+					+ "label varchar(255) , "
+					+ "text varchar(255));");
 			this.con.commit();
-			stmt.close();
+			//stmt.close();
 			//modulhandbuch table
-			stmt = this.con.createStatement();
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS modulhandbuch" + "("
-					+ "name vchar , " 
-					+ "studiengang vchar , "
-					+ "jahrgang vchar " 
+					+ "name varchar(255) , " 
+					+ "studiengang varchar(255) , "
+					+ "jahrgang varchar(255) " 
 					+ ");");
 			this.con.commit();
 			stmt.close();
@@ -99,7 +98,7 @@ public class sql {
 
 		} catch (SQLException e) {
 			// TODO fehler fenster aufrufen
-			// e.printStackTrace();
+			 e.printStackTrace();
 			mainscreen.noConnection();
 			connected = false;
 
