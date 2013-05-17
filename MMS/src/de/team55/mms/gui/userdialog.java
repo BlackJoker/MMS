@@ -189,8 +189,9 @@ public class userdialog extends JDialog {
 
 	public User getUser() {
 		usr.setVorname(textVorname.getText());
-		usr.setNachname(textNachname.getText());
-		usr.setPassword(Hash.getMD5(textPass.getText()));
+		usr.setNachname(textNachname.getText());	
+		if(!usr.getPassword().equals(textPass.getText()))
+			usr.setPassword(Hash.getMD5(textPass.getText()));
 		usr.seteMail(textMail.getText());
 		usr.setReadModule(cb_ModLes.isSelected());
 		usr.setCreateModule(cb_ModErst.isSelected());

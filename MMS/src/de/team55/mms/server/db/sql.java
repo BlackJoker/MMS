@@ -7,10 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.swing.JOptionPane;
 
 import de.team55.mms.server.function.User;
+import de.team55.mms.gui.mainscreen;
 
 public class sql {
 
@@ -20,28 +20,30 @@ public class sql {
 	private static boolean connected = false;
 
 	// Hostname
-	private static String dbHost = "localhost";
+	private static String dbHost = "sql2.freesqldatabase.com";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";
 
 	// Datenbankname
-	private String database = "mms";
+	private String database = "sql28997";
 
 	// Datenbankuser
-	private String dbUser = "root";
+	private String dbUser = "sql28997";
 
 	// Datenbankpasswort
-	private String dbPassword = "";
+	private String dbPassword = "kQ6!qV9%25";
 
 	public boolean connect() {
 		connected = false;
 		try {
+			//connect to the server
 			Class.forName(url);
 			this.con = DriverManager.getConnection("jdbc:mysql://" + dbHost
 					+ ":" + dbPort + "/" + database + "?" + "user=" + dbUser
 					+ "&" + "password=" + dbPassword);
 			this.con.setAutoCommit(false);
+			//user table
 			Statement stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user" + "("
 					+ "id int NOT NULL AUTO_INCREMENT PRIMARY KEY, "
@@ -51,20 +53,53 @@ public class sql {
 
 			);
 			this.con.commit();
-			stmt.close();
-			stmt = this.con.createStatement();
+			//stmt.close();
+			// rights table
+			//stmt = this.con.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
-					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
+					+ "id int NOT NULL, " 
+					+ "userchange BOOLEAN NOT NULL, "
 					+ "modcreate BOOLEAN NOT NULL, "
-					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
+					+ "modacc BOOLEAN NOT NULL, " 
+					+ "modread BOOLEAN NOT NULL"
 					+ ");");
+			this.con.commit();
+			//stmt.close();
+			//module table
+			//stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
+					+ "name varchar(255) NOT NULL, " 
+					+ "Modulhandbuchname varchar(255) NOT NULL, "
+					+ "Version int NOT NULL, "
+					+ "Datum date NOT NULL " 
+					+ ");");
+			this.con.commit();
+			//stmt.close();
+			//text table
+			//stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS text" + "("
+					+ "MODHuMOD varchar(255) , " 
+					+ "version int , "
+					+ "label varchar(255) , "
+					+ "text varchar(255));");
+			this.con.commit();
+			//stmt.close();
+			//modulhandbuch table
+			//stmt = this.con.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS modulhandbuch" + "("
+					+ "name varchar(255) , " 
+					+ "studiengang varchar(255) , "
+					+ "jahrgang varchar(255) " 
+					+ ");");
+			this.con.commit();
 			stmt.close();
+			
 			connected = true;
 
 		} catch (SQLException e) {
 			// TODO fehler fenster aufrufen
-			// e.printStackTrace();
-			// mainscreen.noConnection();
+			 e.printStackTrace();
+			mainscreen.noConnection();
 			connected = false;
 
 		} catch (ClassNotFoundException e) {
@@ -232,15 +267,13 @@ public class sql {
 		}
 	}
 
-	@XmlElementWrapper(name="UserList")
-	@XmlElement(name="User")
 	public LinkedList<User> userload() {
 		User zws = null;
 		ResultSet res = null;
 		Statement state = null;
 		int i = 0;
 		int j = 0;
-		LinkedList<User> list = new LinkedList<User>();
+		LinkedList<User> list = new LinkedList<>();
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
@@ -410,6 +443,179 @@ public class sql {
 		}
 		return zws;
 
+	}
+	
+	public User getUser(String email) {
+		User zws = null;
+		ResultSet res = null;
+		Statement state = null;
+		int id = -1;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT * FROM user WHERE email='"
+						+ email + "';");
+				if (res.first()) {
+					zws = new User(res.getString("vorname"),
+							res.getString("namen"), res.getString("email"),
+							res.getString("password"), false, false, false,
+							false);
+					id = res.getInt("id");
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			if (zws != null) {
+				try {
+					state = this.con.createStatement();
+					res = state.executeQuery("SELECT * FROM rights WHERE id='"
+							+ id + "';");
+					if (res.first()) {
+						zws.setManageUsers(res.getBoolean("userchange"));
+						zws.setCreateModule(res.getBoolean("modcreate"));
+						zws.setAcceptModule(res.getBoolean("modacc"));
+						zws.setReadModule(res.getBoolean("modread"));
+					}
+					res.close();
+					state.close();
+				} catch (SQLException e) {
+					// TODO fehler fenster aufrufen
+					e.printStackTrace();
+				}
+			}
+			disconnect();
+		}
+		return zws;
+
+	}
+	
+	public void getModul(String name){
+		ResultSet res = null;
+		Statement state = null;
+		int version = 0;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT MAX(Version) FROM module WHERE name = '" + name + "';");
+				if(res.first()){
+					version = res.getInt("Version");
+				}
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				
+			}
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT label, text FROM text WHERE name = '" + name + "' AND version = " + version + ";");
+				/*
+				 * hier musst du noch den part machen wie du halt die daten zurück geben willst 
+				 * */
+				
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	/*
+	 * Hier muss man leider noch mehr machen, da ich nicht weiß wie du dich entschieden hast den dynmaischen text zu speichern
+	 * 
+	 */
+	public void setModul(String name, int version /* LISTE? aka Text zeug*/){
+		//ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				//res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				//res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	/*
+	 * Hier das selbe, man muss noch die Rückgabe bearbeiten
+	 * 
+	 * 
+	 */
+	public void getStudiengang() {
+		ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT studiengang FROM modulhandbuch;");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	public void getModulhandbuch(String studiengang) {
+		ResultSet res = null;
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT name, jahrgang FROM modulhandbuch WHERE studiengang = '"+ studiengang +"';");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	public void setModulhandbuch(String name, String studiengang, String jahrgang){
+		Statement state = null;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES (" 
+							+ name
+							+", " 
+							+ studiengang
+							+", " 
+							+ jahrgang
+							+";" 
+						);
+				
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public boolean isConnected() {

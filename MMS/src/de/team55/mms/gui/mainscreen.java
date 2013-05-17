@@ -11,8 +11,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,6 +35,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import de.team55.mms.db.sql;
+import de.team55.mms.function.Modul;
 import de.team55.mms.function.User;
 
 public class mainscreen {
@@ -43,7 +46,7 @@ public class mainscreen {
 	private DefaultTableModel tmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
 	public sql database = new sql();
-	private LinkedList<User> worklist = null;
+	private ArrayList<User> worklist = null;
 	private User current = new User("", "", "", "", false, false, false, false);
 	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
 	private JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
@@ -231,8 +234,8 @@ public class mainscreen {
 	}
 
 	private void newmodulecard() {
-		JPanel pnl_newmod = new JPanel();
-		//final JPanel panel = new JPanel();
+		final JPanel pnl_newmod = new JPanel();
+		// final JPanel panel = new JPanel();
 
 		final Dimension preferredSize = new Dimension(100, 20);
 		pnl_newmod.setLayout(new BorderLayout(0, 0));
@@ -244,11 +247,11 @@ public class mainscreen {
 		btnNeuesFeld.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Platzhalter
-				panel.add(Box.createRigidArea(new Dimension(0, 5)));
-
 				JPanel pnl_tmp = new JPanel();
 				panel.add(pnl_tmp);
-				int numOfPanels=panel.getComponentCount();
+				panel.add(Box.createRigidArea(new Dimension(0, 5)));
+				
+				int numOfPanels = panel.getComponentCount();
 				pnl_tmp.setLayout(new BoxLayout(pnl_tmp, BoxLayout.X_AXIS));
 
 				String name = JOptionPane.showInputDialog(frame,
@@ -265,22 +268,21 @@ public class mainscreen {
 				btn_tmp_entf.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int id = buttonmap.get(e.getSource());
-						//Feld mit ID id von Panel entfernen
+						// Feld mit ID id von Panel entfernen
 						panel.remove(id);
-						//Platzhalter entfernen
-						panel.remove(id-1);
-						//Aus ButtonMap entfernen
+						// Platzhalter entfernen
+						panel.remove(id -1);
+						// Aus ButtonMap entfernen
 						buttonmap.remove(e.getSource());
-						
+
 						panel.revalidate();
-						
-						
+
 					}
 				});
-				
-				//Button btn_tmp_entf mit ID (numOfPanels-1) zu ButtonMap
-				buttonmap.put(btn_tmp_entf, numOfPanels-1);
-					
+
+				// Button btn_tmp_entf mit ID (numOfPanels-2) zu ButtonMap
+				buttonmap.put(btn_tmp_entf, numOfPanels - 2);
+
 				pnl_tmp.add(btn_tmp_entf);
 
 				panel.revalidate();
@@ -288,27 +290,14 @@ public class mainscreen {
 		});
 		pnl_bottom.add(btnNeuesFeld);
 
-		JButton btnOk = new JButton("Annehmen");
-		btnOk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Eintraege der Reihe nach auslesen
-				for (int i = 0; i < panel.getComponentCount(); i=i+2) {
-					JPanel tmp = (JPanel) panel.getComponent(i);
-					JLabel tmplbl = (JLabel) tmp.getComponent(0);
-					JTextArea tmptxt = (JTextArea) tmp.getComponent(1);
-					String value = tmptxt.getText();
-					String name = tmplbl.getText();
-					System.out.println("Feld: " + name);
-					System.out.println("Inhalt: " + value);
-				}
-			}
-		});
-		pnl_bottom.add(btnOk);
-
 		JButton btnHome = new JButton("Zurück");
 		btnHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				panel.removeAll();
+				panel.revalidate();
+				newmodulecard();
+				
 				selectedCard = "welcome page";
 				showCard();
 			}
@@ -320,28 +309,29 @@ public class mainscreen {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		// Panel fuer Abschluss erstellen
-		JPanel pnl_Abschluss = new JPanel();
-		panel.add(pnl_Abschluss);
-		pnl_Abschluss.setLayout(new BoxLayout(pnl_Abschluss, BoxLayout.X_AXIS));
+		// Panel fuer Name erstellen
+		JPanel pnl_Name = new JPanel();
+		panel.add(pnl_Name);
+		pnl_Name.setLayout(new BoxLayout(pnl_Name, BoxLayout.X_AXIS));
 
-		JLabel lbl_Abschluss = new JLabel("Abschluss");
-		lbl_Abschluss.setPreferredSize(preferredSize);
-		pnl_Abschluss.add(lbl_Abschluss);
+		JLabel lbl_Name = new JLabel("Name");
+		lbl_Name.setPreferredSize(preferredSize);
+		pnl_Name.add(lbl_Name);
 
-		JTextArea txt_Abschluss = new JTextArea();
-		txt_Abschluss.setLineWrap(true);
-		pnl_Abschluss.add(txt_Abschluss);
+		JTextArea txt_Name = new JTextArea();
+		txt_Name.setLineWrap(true);
+		pnl_Name.add(txt_Name);
 
-		JButton btn_Abschluss = new JButton("Entfernen");
-		btn_Abschluss.addActionListener(new ActionListener(){
+		JButton btn_Name = new JButton("Entfernen");
+		btn_Name.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-			}});
-		pnl_Abschluss.add(btn_Abschluss);
+
+			}
+		});
+		pnl_Name.add(btn_Name);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
@@ -360,69 +350,73 @@ public class mainscreen {
 		pnl_Studiengang.add(txt_Studiengang);
 
 		JButton btn_Studiengang = new JButton("Entfernen");
-		btn_Studiengang.addActionListener(new ActionListener(){
+		btn_Studiengang.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-			}});
+
+			}
+		});
 		pnl_Studiengang.add(btn_Studiengang);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		// Panel fuer Pruefungsordnung erstellen
-		JPanel pnl_Pruefungsordnung = new JPanel();
-		panel.add(pnl_Pruefungsordnung);
-		pnl_Pruefungsordnung.setLayout(new BoxLayout(pnl_Pruefungsordnung,
+		// Panel fuer Modulhandbuch erstellen
+		JPanel pnl_Modulhandbuch = new JPanel();
+		panel.add(pnl_Modulhandbuch);
+		pnl_Modulhandbuch.setLayout(new BoxLayout(pnl_Modulhandbuch,
 				BoxLayout.X_AXIS));
 
-		JLabel label_Pruefungsordnung = new JLabel("Abschluss");
-		label_Pruefungsordnung.setPreferredSize(preferredSize);
-		pnl_Pruefungsordnung.add(label_Pruefungsordnung);
+		JLabel label_Modulhandbuch = new JLabel("Modulhandbuch");
+		label_Modulhandbuch.setPreferredSize(preferredSize);
+		pnl_Modulhandbuch.add(label_Modulhandbuch);
 
-		JTextArea txt_Pruefungsordnung = new JTextArea();
-		txt_Pruefungsordnung.setLineWrap(true);
-		pnl_Pruefungsordnung.add(txt_Pruefungsordnung);
+		JTextArea txt_Modulhandbuch = new JTextArea();
+		txt_Modulhandbuch.setLineWrap(true);
+		pnl_Modulhandbuch.add(txt_Modulhandbuch);
 
-		JButton btn_Pruefungsordnung = new JButton("Entfernen");
-		btn_Pruefungsordnung.addActionListener(new ActionListener(){
+		JButton btn_Modulhandbuch = new JButton("Entfernen");
+		btn_Modulhandbuch.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-			}});
-		pnl_Pruefungsordnung.add(btn_Pruefungsordnung);
+
+			}
+		});
+		pnl_Modulhandbuch.add(btn_Modulhandbuch);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		// Panel fuer Teilbereich erstellen
-		JPanel pnl_Teilbereich = new JPanel();
-		panel.add(pnl_Teilbereich);
-		pnl_Teilbereich.setLayout(new BoxLayout(pnl_Teilbereich,
+		// Panel fuer Jahrgang erstellen
+		JPanel pnl_Jahrgang = new JPanel();
+		panel.add(pnl_Jahrgang);
+		pnl_Jahrgang.setLayout(new BoxLayout(pnl_Jahrgang,
 				BoxLayout.X_AXIS));
 
-		JLabel label_Teilbereich = new JLabel("Teilbereich");
-		label_Teilbereich.setPreferredSize(preferredSize);
-		pnl_Teilbereich.add(label_Teilbereich);
+		JLabel label_Jahrgang = new JLabel("Jahrgang");
+		label_Jahrgang.setPreferredSize(preferredSize);
+		pnl_Jahrgang.add(label_Jahrgang);
 
-		JTextArea txt_Teilbereich = new JTextArea();
-		txt_Teilbereich.setLineWrap(true);
-		pnl_Teilbereich.add(txt_Teilbereich);
+		JTextArea txt_Jahrgang = new JTextArea();
+		txt_Jahrgang.setLineWrap(true);
+		pnl_Jahrgang.add(txt_Jahrgang);
 
-		JButton btn_Teilbereich = new JButton("Entfernen");
-		btn_Teilbereich.addActionListener(new ActionListener(){
+		JButton btn_Jahrgang = new JButton("Entfernen");
+		btn_Jahrgang.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-			}});
-		pnl_Teilbereich.add(btn_Teilbereich);
+
+			}
+		});
+		pnl_Jahrgang.add(btn_Jahrgang);
 		// Platzhalter
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
+		/*
 		// Panel fuer Vorlesung erstellen
 		JPanel pnl_Vorlesung = new JPanel();
 		panel.add(pnl_Vorlesung);
@@ -437,14 +431,62 @@ public class mainscreen {
 		pnl_Vorlesung.add(txt_Vorlesung);
 
 		JButton btn_Vorlesung = new JButton("Entfernen");
-		btn_Vorlesung.addActionListener(new ActionListener(){
+		btn_Vorlesung.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
+
+			}
+		});
+		pnl_Vorlesung.add(btn_Vorlesung);*/
+		
+		JButton btnOk = new JButton("Annehmen");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String Name="";
+				String Studiengang="";
+				String Modulhandbuch="";
+				String Jahrgang="";
+				ArrayList<String> labels = new ArrayList<String>();
+				ArrayList<String> values = new ArrayList<String>();
 				
-			}});
-		pnl_Vorlesung.add(btn_Vorlesung);
+				// Eintraege der Reihe nach auslesen
+				for (int i = 0; i < panel.getComponentCount(); i = i + 2) {
+					JPanel tmp = (JPanel) panel.getComponent(i);
+					JLabel tmplbl = (JLabel) tmp.getComponent(0);
+					JTextArea tmptxt = (JTextArea) tmp.getComponent(1);
+					String value = tmptxt.getText();
+					String label = tmplbl.getText();
+					switch(i){
+					case 0:
+						Name = value;
+						break;
+					case 2:
+						Studiengang = value;
+						break;
+					case 4:
+						Modulhandbuch = value;
+						break;
+					case 6:
+						Jahrgang=value;
+						break;
+					default:
+						labels.add(label);
+						values.add(value);
+					}
+				}
+				int version = database.getModulVersion(Name)+1;
+				Modul neu = new Modul(Name, Studiengang, Modulhandbuch, Jahrgang, labels, values, version );
+				database.setModul(neu);
+				
+				panel.removeAll();
+				panel.revalidate();
+				newmodulecard();
+				showCard();
+			}
+		});
+		pnl_bottom.add(btnOk);
 
 		pnl_newmod.add(scrollPane);
 		cards.add(pnl_newmod, "newmodule");
@@ -527,7 +569,7 @@ public class mainscreen {
 					boolean r4 = (boolean) usrtbl.getValueAt(row, 7);
 					User alt = new User(vn, nn, em, pw, r1, r2, r3, r4);
 
-					userdialog dlg = new userdialog(frame, "User hinzufügen",
+					userdialog dlg = new userdialog(frame, "User bearbeiten",
 							alt);
 					int response = dlg.showCustomDialog();
 					// Wenn ok gedückt wird
@@ -612,10 +654,10 @@ public class mainscreen {
 		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
 				"Connection error", JOptionPane.ERROR_MESSAGE);
 	}
-	
-	public static void removeFromModul(Container container){
-		//Panel mit Inhalt entfernen
-		
+
+	public static void removeFromModul(Container container) {
+		// Panel mit Inhalt entfernen
+
 	}
 
 }
