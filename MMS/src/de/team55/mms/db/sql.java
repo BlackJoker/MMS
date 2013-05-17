@@ -20,19 +20,19 @@ public class sql {
 	private static boolean connected = false;
 
 	// Hostname
-	private static String dbHost = "localhost";
+	private static String dbHost = "sql2.freesqldatabase.com";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";
 
 	// Datenbankname
-	private String database = "mms";
+	private String database = "sql28997";
 
 	// Datenbankuser
-	private String dbUser = "root";
+	private String dbUser = "sql28997";
 
 	// Datenbankpasswort
-	private String dbPassword = "";
+	private String dbPassword = "kQ6!qV9%25";
 
 	public boolean connect() {
 		connected = false;

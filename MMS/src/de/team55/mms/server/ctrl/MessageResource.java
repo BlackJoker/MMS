@@ -15,7 +15,7 @@ import de.team55.mms.server.function.User;
 public class MessageResource {
 
 	/**
-	 * returns a User
+	 * returns a User 
 	 * 
 	 * @param user
 	 *            e-Mail of the User
