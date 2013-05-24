@@ -1,8 +1,10 @@
 package de.team55.mms.server.ctrl;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -27,7 +29,7 @@ public class MessageResource {
 	 */
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	@Path("user/{user}")
+	@Path("user/get/{user}")
 	public User getUser(@PathParam("user") String user) {
 		User tmp = new sql().getUser(user);
 		if (tmp == null)
@@ -71,18 +73,21 @@ public class MessageResource {
 		return new sql().userload();
 	}
 
-	@PUT
-	@Path("test/{user}")
-	@Consumes(MediaType.TEXT_XML)
-	@Produces(MediaType.TEXT_XML)
-	public String postMessage(@PathParam("user") User user) {
-		return String.format(user.getNachname());
+	@POST
+	@Path("user/post/")
+	@Consumes(MediaType.APPLICATION_XML)
+	public String userPost(User user) {
+		boolean tmp = new sql().usersave(user);
+		return tmp+"";
 	}
 
 	@POST
-	@Path("test/post/")
-	@Consumes(MediaType.TEXT_XML)
-	public String userOut(User user) {
-		return user.getNachname();
+	@Path("user/update/")
+	@Consumes(MediaType.APPLICATION_XML)
+	public String userUpdate(List<User> list) {
+		User user = list.get(1);
+		String email = list.get(0).geteMail();
+		boolean tmp = new sql().userupdate(user, email);
+		return tmp+"";
 	}
 }

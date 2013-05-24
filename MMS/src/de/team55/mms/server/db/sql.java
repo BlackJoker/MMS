@@ -122,7 +122,7 @@ public class sql {
 
 	}
 
-	public void usersave(User user) {
+	public boolean usersave(User user) {
 
 		if (connect() == true) {
 			Statement state = null;
@@ -192,12 +192,17 @@ public class sql {
 				}
 			} else {
 				System.out.print("Failed to write rights!");
+				disconnect();
+				return false;
 			}
 			disconnect();
+			return true;
 		}
+		return false;
 	}
 
-	public void userupdate(User user, String email) {
+	public boolean userupdate(User user, String email) {
+		boolean ok = false;
 		if (connect() == true) {
 			Statement state = null;
 			ResultSet res = null;
@@ -245,6 +250,7 @@ public class sql {
 							+ user.getCreateModule() + ", modacc = "
 							+ user.getAcceptModule() + ", modread = "
 							+ user.getReadModule() + " WHERE id = " + id + " ;");
+					ok=true;
 				} catch (SQLException e) {
 					// TODO fehler fenster aufrufen
 					System.out.print(e.getMessage());
@@ -265,6 +271,7 @@ public class sql {
 			}
 			disconnect();
 		}
+		return ok;
 	}
 
 	public LinkedList<User> userload() {
