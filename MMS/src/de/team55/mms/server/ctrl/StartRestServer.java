@@ -19,6 +19,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.net.httpserver.*;
 
 import de.team55.mms.server.function.User;
+import de.team55.mms.server.function.UserUpdateContainer;
 
 public class StartRestServer {
 
@@ -33,47 +34,58 @@ public class StartRestServer {
 
 			server.start();
 			Client client = Client.create();
-			User admin = new User("", "", "admin@mms.de", "a384b6463fc216a5f8ecb6670f86456a", false,
-					false, false, false);
-			
-			//login test
-			System.out.println("Login test");
+			User admin = new User("", "", "admin@mms.de",
+					"a384b6463fc216a5f8ecb6670f86456a", false, false, false,
+					false);
+
+			// login test
+			System.out.println("-----Login test-----");
 			WebResource webResource = client.resource("http://localhost:8080/");
-			admin=webResource.path("login").path(admin.geteMail()).path(admin.getPassword()).accept(MediaType.TEXT_XML).get(User.class);
+			admin = webResource.path("login").path(admin.geteMail())
+					.path(admin.getPassword()).accept(MediaType.TEXT_XML)
+					.get(User.class);
 			System.out.println(admin);
 			System.out.println();
-			
-			//send user test
-			System.out.println("Send User test");
+
+			// send user test
+			System.out.println("-----Send User test-----");
 			User test = new User("Neuer", "TestUser", "neu@m.mm", "abc", false,
 					false, false, false);
-			//String succes = webResource.path("user/post").type(MediaType.APPLICATION_XML).post(String.class,test);
-			//System.out.println(succes);
-			
-			//get userlist test
-			System.out.println("Get userlist test");
-			LinkedList<User> list = webResource.path("users").accept(MediaType.TEXT_XML).get(new GenericType<LinkedList<User>>() {});
-			for(int i=0;i<list.size();i++)
-				System.out.println(list.get(i));
-			
-			//userupdate test
-			System.out.println("User update test");
-			User old = test;
-			test.setVorname("Neuer Name");
-			test.seteMail("home@gmx.com");
+			ClientResponse response = webResource.path("user/post")
+					.type(MediaType.APPLICATION_XML).post(ClientResponse.class, test);
+			System.out.println(response.getStatus());
+			System.out.println();
 
-			List<User> list1 = new ArrayList<User>();
-			list1.add(old);
-			list1.add(test);
-			
-			String succes = webResource.path("user/update").type(MediaType.TEXT_XML).post(String.class, list1);
-			System.out.println(succes);
-			
-			//get userlist test
-			list = webResource.path("users").accept(MediaType.TEXT_XML).get(new GenericType<LinkedList<User>>() {});
-			for(int i=0;i<list.size();i++)
+			// get userlist test
+			System.out.println("-----Get userlist test-----");
+			LinkedList<User> list = webResource.path("users")
+					.accept(MediaType.TEXT_XML)
+					.get(new GenericType<LinkedList<User>>() {
+					});
+			for (int i = 0; i < list.size(); i++)
 				System.out.println(list.get(i));
+			System.out.println();
 
+			// userupdate test
+			System.out.println("-----User update test-----");
+			String email = test.geteMail();
+			test.setVorname("UPDATED");
+			test.seteMail("update@hotmail.de");
+
+			UserUpdateContainer uuc = new UserUpdateContainer(test, email);
+			response  = webResource.path("user/update")
+					.type(MediaType.APPLICATION_XML).post(ClientResponse.class, uuc);
+			if (response.getStatus()!=201) {
+
+				// get userlist test
+				list = webResource.path("users").accept(MediaType.TEXT_XML)
+						.get(new GenericType<LinkedList<User>>() {
+						});
+				for (int i = 0; i < list.size(); i++)
+					System.out.println(list.get(i));
+			} else System.out.println(response.getStatus());
+			
+			
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
