@@ -86,6 +86,7 @@ public class StartRestServer {
 			} else System.out.println(response.getStatus());
 			
 			
+			
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
