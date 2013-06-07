@@ -117,6 +117,7 @@ public class mainscreen {
 					current = new User("", "", "", "", false, false, false,
 							false);
 					btnLogin.setText("Einloggen");
+					btnUserVerwaltung.setEnabled(false);
 					selectedCard = "welcome page";
 					showCard();
 				}
@@ -190,7 +191,7 @@ public class mainscreen {
 		if (current.getManageUsers())
 			btnUserVerwaltung.setEnabled(true);
 		else {
-			// btnUserVerwaltung.setEnabled(false);
+			//btnUserVerwaltung.setEnabled(false);
 			btnUserVerwaltung.setText("Account bearbeiten");
 			if (selectedCard.equals("user managment")) {
 				selectedCard = "welcome page";
