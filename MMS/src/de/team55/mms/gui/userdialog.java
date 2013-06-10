@@ -33,13 +33,14 @@ public class userdialog extends JDialog {
 	private JTextField textNachname;
 	private JTextField textMail;
 	private JTextField textPass;
+	private JTextField textTitel;
 	private JCheckBox cb_ModAnn;
 	private JCheckBox cb_ModErst;
 	private JCheckBox cb_ModLes;
 	private JCheckBox cb_BV;
 
 	private boolean adminedit=true;
-	private User usr = new User("", "", "", "", false, false, false, false);
+	private User usr = new User("", "","", "", "", false, false, false, false);
 
 	public userdialog(JFrame owner, String title, User usr, boolean adminedit) {
 		super(owner, title, true);
@@ -80,10 +81,22 @@ public class userdialog extends JDialog {
 		JPanel pbl_Daten = new JPanel();
 		pnl_fields.add(pbl_Daten, BorderLayout.CENTER);
 		pbl_Daten.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JPanel pnl_T = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) pnl_T.getLayout();
+		flowLayout.setAlignment(FlowLayout.TRAILING);
+		pbl_Daten.add(pnl_T);
+
+		JLabel lblT = new JLabel("Titel");
+		pnl_T.add(lblT);
+
+		textTitel = new JTextField(usr.getTitel());
+		pnl_T.add(textTitel);
+		textTitel.setColumns(10);
 
 		JPanel pnl_VN = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) pnl_VN.getLayout();
-		flowLayout.setAlignment(FlowLayout.TRAILING);
+		FlowLayout flowLayout1 = (FlowLayout) pnl_VN.getLayout();
+		flowLayout1.setAlignment(FlowLayout.TRAILING);
 		pbl_Daten.add(pnl_VN);
 
 		JLabel lblVorname = new JLabel("Vorname");
@@ -164,7 +177,7 @@ public class userdialog extends JDialog {
 				if (textVorname.getText().isEmpty()
 						|| textNachname.getText().isEmpty()
 						|| textMail.getText().isEmpty()
-						|| textPass.getText().isEmpty()) {
+						|| (textPass.getText().isEmpty()&&usr.getPassword()!=null)) {
 					JOptionPane.showMessageDialog(owner,
 							"Geben Sie gültige Daten ein!", "Fehler",
 							JOptionPane.ERROR_MESSAGE);
@@ -197,10 +210,12 @@ public class userdialog extends JDialog {
 	}
 
 	public User getUser() {
+		usr.setTitel(textTitel.getText());
 		usr.setVorname(textVorname.getText());
-		usr.setNachname(textNachname.getText());	
-		if(!usr.getPassword().equals(textPass.getText()))
-			usr.setPassword(Hash.getMD5(textPass.getText()));
+		usr.setNachname(textNachname.getText());
+		if(usr.getPassword()!=null)
+			if(!usr.getPassword().equals(textPass.getText()))
+				usr.setPassword(Hash.getMD5(textPass.getText()));
 		usr.seteMail(textMail.getText());
 		usr.setReadModule(cb_ModLes.isSelected());
 		usr.setCreateModule(cb_ModErst.isSelected());

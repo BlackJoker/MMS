@@ -174,13 +174,24 @@ public class sql {
 			ResultSet res = null;
 			int id = -1;
 			try {
-				state = con
-						.prepareStatement("UPDATE user SET vorname = ?, namen = ?, password = ?, email = ? WHERE email = ? ;");
-				state.setString(1, user.getVorname());
-				state.setString(2, user.getNachname());
-				state.setString(3, user.getPassword());
-				state.setString(4, user.geteMail());
-				state.setString(5, email);
+				if (user.getPassword() != null) {
+					state = con
+							.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, password = ?, email = ? WHERE email = ? ;");
+					state.setString(1, user.getTitel());
+					state.setString(2, user.getVorname());
+					state.setString(3, user.getNachname());
+					state.setString(4, user.getPassword());
+					state.setString(5, user.geteMail());
+					state.setString(6, email);
+				} else {
+					state = con
+							.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, email = ? WHERE email = ? ;");
+					state.setString(1, user.getTitel());
+					state.setString(2, user.getVorname());
+					state.setString(3, user.getNachname());
+					state.setString(4, user.geteMail());
+					state.setString(5, email);
+				}
 				state.executeUpdate();
 				con.commit();
 			} catch (SQLException e) {
@@ -237,8 +248,8 @@ public class sql {
 						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id;");
 				while (res.next()) {
 					zws = new User(res.getString("vorname"),
-							res.getString("namen"), res.getString("email"),
-							res.getString("password"),
+							res.getString("namen"), res.getString("titel"),
+							res.getString("email"), res.getString("password"),
 							res.getBoolean("userchange"),
 							res.getBoolean("modcreate"),
 							res.getBoolean("modacc"), res.getBoolean("modread"));
@@ -276,8 +287,10 @@ public class sql {
 			if (id != -1) {
 				try {
 					state = this.con.createStatement();
-					state.executeUpdate("DELETE FROM user WHERE id = " + id + ";");
-					state.executeUpdate("DELETE FROM rights WHERE id = " + id + ";");
+					state.executeUpdate("DELETE FROM user WHERE id = " + id
+							+ ";");
+					state.executeUpdate("DELETE FROM rights WHERE id = " + id
+							+ ";");
 				} catch (SQLException e) {
 					// TODO fehler fenster aufrufen
 					System.out.print(e.getMessage());
@@ -308,12 +321,13 @@ public class sql {
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
-				res = state.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id WHERE email='"
-						+ email + "' and password='" + pass + "';");
+				res = state
+						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id WHERE email='"
+								+ email + "' and password='" + pass + "';");
 				if (res.first()) {
 					zws = new User(res.getString("vorname"),
-							res.getString("namen"), res.getString("email"),
-							res.getString("password"),
+							res.getString("namen"), res.getString("titel"),
+							res.getString("email"), res.getString("password"),
 							res.getBoolean("userchange"),
 							res.getBoolean("modcreate"),
 							res.getBoolean("modacc"), res.getBoolean("modread"));
@@ -506,20 +520,23 @@ public class sql {
 			ArrayList<String> values = neu.getValues();
 			try {
 
-				state = con.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum) VALUES(?,?,?,?)");
+				state = con
+						.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum) VALUES(?,?,?,?)");
 				state.setString(1, name);
 				state.setString(2, neu.getModulhandbuch());
 				state.setInt(3, version);
 				state.setDate(4, convertToSQLDate(neu.getDatum()));
 				state.executeUpdate();
-				
-				state = con.prepareStatement("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)");
+
+				state = con
+						.prepareStatement("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)");
 				state.setString(1, neu.getModulhandbuch());
 				state.setString(2, neu.getStudiengang());
 				state.setString(3, neu.getJahrgang());
 				state.executeUpdate();
-				
-				state = con.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text) VALUES(?,?,?,?)");
+
+				state = con
+						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text) VALUES(?,?,?,?)");
 				for (int i = 0; i < labels.size(); i++) {
 					state.setString(1, name);
 					state.setInt(2, version);

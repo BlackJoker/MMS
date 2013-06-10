@@ -49,7 +49,8 @@ public class mainscreen {
 	private final Dimension btnSz = new Dimension(140, 50);
 	public sql database = new sql();
 	private ArrayList<User> worklist = null;
-	private User current = new User("", "", "", "", false, false, false, false);
+	private User current = new User("", "", "", "", "", false, false, false,
+			false);
 	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
 	private JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
 	private JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
@@ -57,7 +58,7 @@ public class mainscreen {
 			"<html>Modulhandbücher<br>Durchstöbern");
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
-	//private String selectedCard;
+	// private String selectedCard;
 	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
 
 	public mainscreen() {
@@ -118,7 +119,7 @@ public class mainscreen {
 						checkRights();
 					}
 				} else {
-					current = new User("", "", "", "", false, false, false,
+					current = new User("", "", "", "", "", false, false, false,
 							false);
 					if (database.isConnected()) {
 						checkRights();
@@ -128,7 +129,7 @@ public class mainscreen {
 					btnUserVerwaltung.setEnabled(false);
 					showCard("welcome page");
 				}
-				
+
 			}
 		});
 		btnLogin.setPreferredSize(btnSz);
@@ -140,9 +141,10 @@ public class mainscreen {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (current.getManageUsers()) {
-					for (int i = tmodel.getRowCount() - 1; i >= 0; i--) {
-						tmodel.removeRow(i);
-					}
+					// Tabelle leeren
+					tmodel.setRowCount(0);
+
+					// Tabelle mit neuen daten füllen
 					worklist = database.userload();
 					for (int i = 0; i < worklist.size(); i++) {
 						addToTable(worklist.get(i));
@@ -193,10 +195,9 @@ public class mainscreen {
 			btnModulBearbeiten.setEnabled(false);
 		}
 		btnUserVerwaltung.setEnabled(true);
-		if (current.getManageUsers()){
+		if (current.getManageUsers()) {
 			btnUserVerwaltung.setText("User Verwaltung");
-		}
-		else {
+		} else {
 			btnUserVerwaltung.setText("Account bearbeiten");
 			showCard("welcome page");
 		}
@@ -481,9 +482,8 @@ public class mainscreen {
 		// Inhalt der Tabelle
 		//
 		tmodel = new DefaultTableModel(new Object[][] {}, new String[] {
-				"Vorname", "Nachnahme", "e-Mail", "Password",
-				"User bearbeiten", "Module einreichen", "Module Annehmen",
-				"Module lesen" }) {
+				"Titel", "Vorname", "Nachnahme", "e-Mail", "User bearbeiten",
+				"Module einreichen", "Module Annehmen", "Module lesen" }) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				// all cells false
@@ -528,15 +528,15 @@ public class mainscreen {
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
-					String vn = (String) usrtbl.getValueAt(row, 0);
-					String nn = (String) usrtbl.getValueAt(row, 1);
-					String em = (String) usrtbl.getValueAt(row, 2);
-					String pw = (String) usrtbl.getValueAt(row, 3);
+					String t = (String) usrtbl.getValueAt(row, 0);
+					String vn = (String) usrtbl.getValueAt(row, 1);
+					String nn = (String) usrtbl.getValueAt(row, 2);
+					String em = (String) usrtbl.getValueAt(row, 3);
 					boolean r1 = (boolean) usrtbl.getValueAt(row, 4);
 					boolean r2 = (boolean) usrtbl.getValueAt(row, 5);
 					boolean r3 = (boolean) usrtbl.getValueAt(row, 6);
 					boolean r4 = (boolean) usrtbl.getValueAt(row, 7);
-					User alt = new User(vn, nn, em, pw, r1, r2, r3, r4);
+					User alt = new User(vn, nn, t, em, null, r1, r2, r3, r4);
 
 					userdialog dlg = new userdialog(frame, "User bearbeiten",
 							alt, true);
@@ -608,8 +608,8 @@ public class mainscreen {
 	}
 
 	private void addToTable(User usr) {
-		tmodel.addRow(new Object[] { usr.getVorname(), usr.getNachname(),
-				usr.geteMail(), usr.getPassword(), usr.getManageUsers(),
+		tmodel.addRow(new Object[] { usr.getTitel(), usr.getVorname(),
+				usr.getNachname(), usr.geteMail(), usr.getManageUsers(),
 				usr.getCreateModule(), usr.getAcceptModule(),
 				usr.getReadModule() });
 	}

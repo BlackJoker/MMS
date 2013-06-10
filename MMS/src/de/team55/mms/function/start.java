@@ -18,9 +18,7 @@ public class start {
 			//Anwendungsfächer
 
 			//registrierung?
-			
-			//user bearbeiten, rechte wegmachen
-			//Titel für Dozenten
+
 			//Dozenten für Institut
 			//Autoren durfen nur ihre zugeordneten Module bearbeiten/löschen/erstellen
 			
