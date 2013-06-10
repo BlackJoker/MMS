@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "User") 
-@XmlType(propOrder = { "eMail", "vorname", "nachname","password", "manageUsers", "acceptModule", "createModule", "readModule" })
+@XmlType(propOrder = { "eMail", "vorname", "nachname", "manageUsers", "acceptModule", "createModule", "readModule" })
 public class User {
 	private String Vorname;
 	private String Nachname;
@@ -55,7 +55,7 @@ public class User {
 		return eMail;
 	}
 
-	//@XmlTransient
+	@XmlTransient
 	public String getPassword() {
 		return Password;
 	}

@@ -24,19 +24,19 @@ public class sql {
 	private static boolean connected = false;
 
 	// Hostname
-	private static String dbHost = "db4free.net";
+	private static String dbHost = "sql2.freesqldatabase.com";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";
 
 	// Datenbankname
-	private String database = "mmsdb4sopra";
+	private String database = "sql28997";
 
 	// Datenbankuser
-	private String dbUser = "team55";
+	private String dbUser = "sql28997";
 
 	// Datenbankpasswort
-	private String dbPassword = "qwert710";
+	private String dbPassword = "kQ6!qV9%25";
 
 	public boolean connect() {
 		connected = false;

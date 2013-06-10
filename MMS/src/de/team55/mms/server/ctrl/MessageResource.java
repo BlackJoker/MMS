@@ -1,11 +1,8 @@
 package de.team55.mms.server.ctrl;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -13,15 +10,30 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import de.team55.mms.server.db.sql;
-import de.team55.mms.server.function.Modul;
 import de.team55.mms.server.function.User;
-import de.team55.mms.server.function.UserUpdateContainer;
 
 @Path("")
 public class MessageResource {
+
+	/**
+	 * returns a User
+	 * 
+	 * @param user
+	 *            e-Mail of the User
+	 * 
+	 * @return Data of User
+	 */
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("user/{user}")
+	public User getUser(@PathParam("user") String user) {
+		User tmp = new sql().getUser(user);
+		if (tmp == null)
+			tmp = new User();
+		return tmp;
+	}
 
 	/**
 	 * returns a User
@@ -37,11 +49,13 @@ public class MessageResource {
 	@Path("login/{user}/{pass}")
 	public User userLogin(@PathParam("user") String user,
 			@PathParam("pass") String pass) {
-		User tmp = new sql().getUser(user,pass);
+		User tmp = new sql().getUser(user);
 		if (tmp == null)
 			return new User();
-		else
+		if (tmp.getPassword().equals(pass))
 			return tmp;
+		else
+			return new User();
 	}
 
 	/**
@@ -53,37 +67,22 @@ public class MessageResource {
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	@Path("users")
-	public ArrayList<User> getAllUsers() {
+	public LinkedList<User> getAllUsers() {
 		return new sql().userload();
 	}
 
-	@POST
-	@Path("user/post/")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response userPost(User user) {
-		int status = new sql().usersave(user);
-		if(status==1)
-			return Response.status(201).build();
-		else return Response.status(500).build();
+	@PUT
+	@Path("test/{user}")
+	@Consumes(MediaType.TEXT_XML)
+	@Produces(MediaType.TEXT_XML)
+	public String postMessage(@PathParam("user") User user) {
+		return String.format(user.getNachname());
 	}
 
 	@POST
-	@Path("user/update/")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response userUpdate(UserUpdateContainer uuc) {
-		int status = new sql().userupdate(uuc.getUser(), uuc.getEmail());
-		if(status==1)
-			return Response.status(201).build();
-		else return Response.status(500).build();
-	}
-	
-	@POST
-	@Path("modul/post/")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response modulPost(Modul m) {
-		int status = new sql().setModul(m);
-		if(status==1)
-			return Response.status(201).build();
-		else return Response.status(500).build();
+	@Path("test/post/")
+	@Consumes(MediaType.TEXT_XML)
+	public String userOut(User user) {
+		return user.getNachname();
 	}
 }
