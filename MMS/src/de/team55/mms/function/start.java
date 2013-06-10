@@ -16,9 +16,7 @@ public class start {
 			
 			//Studiengang vordefinieren (mehrere)
 			//Anwendungsfächer
-			
-			//Modul+Modulhandbuch veröffentlicht boolean
-			
+
 			//registrierung?
 			
 			//user bearbeiten, rechte wegmachen

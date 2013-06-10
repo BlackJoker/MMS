@@ -57,7 +57,7 @@ public class mainscreen {
 			"<html>Modulhandbücher<br>Durchstöbern");
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
-	private String selectedCard;
+	//private String selectedCard;
 	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
 
 	public mainscreen() {
@@ -89,8 +89,7 @@ public class mainscreen {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				selectedCard = "newmodule";
-				showCard();
+				showCard("newmodule");
 			}
 
 		});
@@ -115,17 +114,21 @@ public class mainscreen {
 						current = log.getUser();
 						btnLogin.setText("Ausloggen");
 					}
+					if (database.isConnected()) {
+						checkRights();
+					}
 				} else {
 					current = new User("", "", "", "", false, false, false,
 							false);
+					if (database.isConnected()) {
+						checkRights();
+					}
 					btnLogin.setText("Einloggen");
+					btnUserVerwaltung.setText("User Verwaltung");
 					btnUserVerwaltung.setEnabled(false);
-					selectedCard = "welcome page";
-					showCard();
+					showCard("welcome page");
 				}
-				if (database.isConnected()) {
-					checkRights();
-				}
+				
 			}
 		});
 		btnLogin.setPreferredSize(btnSz);
@@ -144,11 +147,10 @@ public class mainscreen {
 					for (int i = 0; i < worklist.size(); i++) {
 						addToTable(worklist.get(i));
 					}
-					selectedCard = "user managment";
-					showCard();
+					showCard("user managment");
 				} else {
 					userdialog dlg = new userdialog(frame, "User bearbeiten",
-							current);
+							current, false);
 					int response = dlg.showCustomDialog();
 					// Wenn ok gedückt wird
 					// neuen User abfragen
@@ -190,16 +192,13 @@ public class mainscreen {
 			btnModulVerwaltung.setEnabled(false);
 			btnModulBearbeiten.setEnabled(false);
 		}
-		if (current.getManageUsers())
-			btnUserVerwaltung.setEnabled(true);
+		btnUserVerwaltung.setEnabled(true);
+		if (current.getManageUsers()){
+			btnUserVerwaltung.setText("User Verwaltung");
+		}
 		else {
-			// btnUserVerwaltung.setEnabled(false);
 			btnUserVerwaltung.setText("Account bearbeiten");
-			if (selectedCard.equals("user managment")) {
-				selectedCard = "welcome page";
-				showCard();
-			}
-
+			showCard("welcome page");
 		}
 		if (current.getReadModule())
 			btnMHB.setEnabled(true);
@@ -208,8 +207,8 @@ public class mainscreen {
 
 	}
 
-	private void showCard() {
-		((CardLayout) cards.getLayout()).show(cards, selectedCard);
+	private void showCard(String card) {
+		((CardLayout) cards.getLayout()).show(cards, card);
 	}
 
 	public void topscr() {
@@ -314,9 +313,7 @@ public class mainscreen {
 				panel.removeAll();
 				panel.revalidate();
 				newmodulecard();
-
-				selectedCard = "welcome page";
-				showCard();
+				showCard("welcome page");
 			}
 		});
 		pnl_bottom.add(btnHome);
@@ -437,7 +434,7 @@ public class mainscreen {
 				panel.removeAll();
 				panel.revalidate();
 				newmodulecard();
-				showCard();
+				showCard("newmodule");
 			}
 		});
 		pnl_bottom.add(btnOk);
@@ -542,7 +539,7 @@ public class mainscreen {
 					User alt = new User(vn, nn, em, pw, r1, r2, r3, r4);
 
 					userdialog dlg = new userdialog(frame, "User bearbeiten",
-							alt);
+							alt, true);
 					int response = dlg.showCustomDialog();
 					// Wenn ok gedückt wird
 					// neuen User abfragen
@@ -583,8 +580,7 @@ public class mainscreen {
 		btnHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedCard = "welcome page";
-				showCard();
+				showCard("welcome page");
 			}
 		});
 		usrpan.add(btnHome);

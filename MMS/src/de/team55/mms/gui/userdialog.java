@@ -38,13 +38,15 @@ public class userdialog extends JDialog {
 	private JCheckBox cb_ModLes;
 	private JCheckBox cb_BV;
 
+	private boolean adminedit=true;
 	private User usr = new User("", "", "", "", false, false, false, false);
 
-	public userdialog(JFrame owner, String title, User usr) {
+	public userdialog(JFrame owner, String title, User usr, boolean adminedit) {
 		super(owner, title, true);
 		this.owner = owner;
 		this.setResizable(false);
 		this.usr = usr;
+		this.adminedit=adminedit;
 		createDialog();
 	}
 
@@ -144,6 +146,13 @@ public class userdialog extends JDialog {
 
 		cb_ModLes = new JCheckBox("Module lesen", usr.getReadModule());
 		pnl_checkboxes.add(cb_ModLes);
+		
+		if(!adminedit){
+			cb_BV.setEnabled(false);
+			cb_ModErst.setEnabled(false);
+			cb_ModAnn.setEnabled(false);
+			cb_ModLes.setEnabled(false);
+		}
 
 		JPanel pnl_footer = new JPanel();
 		pnl_Dialog.add(pnl_footer, BorderLayout.SOUTH);
