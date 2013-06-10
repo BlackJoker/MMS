@@ -568,7 +568,7 @@ public class mainscreen {
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
-					database.deluser((String) usrtbl.getValueAt(row, 2));
+					database.deluser((String) usrtbl.getValueAt(row, 3));
 					removeFromTable(row);
 
 				}
