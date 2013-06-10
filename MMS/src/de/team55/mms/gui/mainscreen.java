@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -255,9 +256,13 @@ public class mainscreen {
 
 				int numOfPanels = panel.getComponentCount();
 				pnl_tmp.setLayout(new BoxLayout(pnl_tmp, BoxLayout.X_AXIS));
-
-				String name = JOptionPane.showInputDialog(frame,
-						"Name des Feldes");
+				
+			    JCheckBox checkbox = new JCheckBox("Dezernat 2 Feld");  
+			    String text = "Name des Feldes";  
+			    Object[] params = {checkbox, text};  
+			    String name = JOptionPane.showInputDialog(frame, params);  
+			    boolean dezernat2 = checkbox.isSelected();  
+			
 				JLabel label_tmp = new JLabel(name);
 				label_tmp.setPreferredSize(preferredSize);
 				pnl_tmp.add(label_tmp);
@@ -265,6 +270,9 @@ public class mainscreen {
 				JTextArea txt_tmp = new JTextArea();
 				txt_tmp.setLineWrap(true);
 				pnl_tmp.add(txt_tmp);
+				
+				JCheckBox dez = new JCheckBox("Dezernat 2", dezernat2);
+				pnl_tmp.add(dez);
 
 				JButton btn_tmp_entf = new JButton("Entfernen");
 				btn_tmp_entf.addActionListener(new ActionListener() {
@@ -328,7 +336,11 @@ public class mainscreen {
 		panel.add(defaultmodulPanel("Modulhandbuch"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		// Panel Modulhandbuch + Platzhalter
+		// Panel Studiengang + Platzhalter
+		panel.add(defaultmodulPanel("Studiengang"));
+		panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// Panel Jahrgang + Platzhalter
 		panel.add(defaultmodulPanel("Jahrgang"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
@@ -364,10 +376,6 @@ public class mainscreen {
 		panel.add(defaultmodulPanel("Dozenten"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		// Panel Studiengang + Platzhalter
-		panel.add(defaultmodulPanel("Studiengang"));
-		panel.add(Box.createRigidArea(new Dimension(0, 5)));
-
 		// Panel Inhalt + Platzhalter
 		panel.add(defaultmodulPanel("Inhalt"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -395,41 +403,33 @@ public class mainscreen {
 		JButton btnOk = new JButton("Annehmen");
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String Name = "";
-				String Studiengang = "";
-				String Modulhandbuch = "";
-				String Jahrgang = "";
+				String Modulhandbuch = ((JTextArea)((JPanel) panel.getComponent(0)).getComponent(1)).getText();
+				String Studiengang = ((JTextArea)((JPanel) panel.getComponent(2)).getComponent(1)).getText();
+				String Jahrgang = ((JTextArea)((JPanel) panel.getComponent(4)).getComponent(1)).getText();
+				String Name = ((JTextArea)((JPanel) panel.getComponent(6)).getComponent(1)).getText();
+			
 				ArrayList<String> labels = new ArrayList<String>();
 				ArrayList<String> values = new ArrayList<String>();
+				ArrayList<Boolean> dez = new ArrayList<Boolean>();
 
 				// Eintraege der Reihe nach auslesen
-				for (int i = 0; i < panel.getComponentCount(); i = i + 2) {
+				for (int i = 8; i < panel.getComponentCount(); i = i + 2) {
 					JPanel tmp = (JPanel) panel.getComponent(i);
 					JLabel tmplbl = (JLabel) tmp.getComponent(0);
 					JTextArea tmptxt = (JTextArea) tmp.getComponent(1);
+					boolean dezernat2 = false;
+					if(tmp.getComponentCount()>3){
+						dezernat2 = ((JCheckBox) tmp.getComponent(2)).isSelected();
+					}
 					String value = tmptxt.getText();
 					String label = tmplbl.getText();
-					switch (i) {
-					case 0:
-						Name = value;
-						break;
-					case 2:
-						Studiengang = value;
-						break;
-					case 4:
-						Modulhandbuch = value;
-						break;
-					case 6:
-						Jahrgang = value;
-						break;
-					default:
-						labels.add(label);
-						values.add(value);
-					}
+					labels.add(label);
+					values.add(value);
+					dez.add(dezernat2);
 				}
 				int version = database.getModulVersion(Name) + 1;
 				Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
-						Jahrgang, labels, values, version);
+						Jahrgang, labels, values, version, dez);
 				database.setModul(neu);
 
 				panel.removeAll();
@@ -621,11 +621,6 @@ public class mainscreen {
 	public static void noConnection() {
 		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
 				"Connection error", JOptionPane.ERROR_MESSAGE);
-	}
-
-	public static void removeFromModul(Container container) {
-		// Panel mit Inhalt entfernen
-
 	}
 
 }

@@ -352,6 +352,7 @@ public class sql {
 		Date datum = new Date();
 		ArrayList<String> labels = new ArrayList<String>();
 		ArrayList<String> values = new ArrayList<String>();
+		ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
@@ -387,7 +388,7 @@ public class sql {
 			}
 			disconnect();
 		}
-		return new Modul(name, Modulhandbuch, version, datum, labels, values);
+		return new Modul(name, Modulhandbuch, version, datum, labels, values,dezernat);
 
 	}
 
@@ -518,6 +519,7 @@ public class sql {
 			int version = neu.getVersion();
 			ArrayList<String> labels = neu.getLabels();
 			ArrayList<String> values = neu.getValues();
+			ArrayList<Boolean> dezernat = neu.getDezernat();
 			try {
 
 				state = con
@@ -536,12 +538,13 @@ public class sql {
 				state.executeUpdate();
 
 				state = con
-						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text) VALUES(?,?,?,?)");
+						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text, dezernat2) VALUES(?,?,?,?,?)");
 				for (int i = 0; i < labels.size(); i++) {
 					state.setString(1, name);
 					state.setInt(2, version);
 					state.setString(3, labels.get(i));
 					state.setString(4, values.get(i));
+					state.setBoolean(5, dezernat.get(i));
 					state.executeUpdate();
 				}
 				state.close();

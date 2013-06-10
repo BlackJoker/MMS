@@ -14,9 +14,15 @@ public class Modul {
 	private String jahrgang;
 	private ArrayList<String> labels = new ArrayList<String>();
 	private ArrayList<String> values = new ArrayList<String>();
+	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
+
+
+	public ArrayList<Boolean> getDezernat() {
+		return dezernat;
+	}
 
 	public Modul(String name, String studiengang, String modulhandbuch,
-			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version) {
+			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version, ArrayList<Boolean> dez) {
 		this.name = name;
 		this.studiengang = studiengang;
 		this.modulhandbuch = modulhandbuch;
@@ -25,17 +31,18 @@ public class Modul {
 		this.values = values;
 		this.version =version;
 		this.datum=new Date();
+		this.dezernat= dez;
 	}
 
 	public Modul(String name, String modulhandbuch, int version,
-			Date datum, ArrayList<String> labels, ArrayList<String> values) {
-		// TODO Auto-generated constructor stub
+			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez) {
 		this.name = name;
 		this.modulhandbuch=modulhandbuch;
 		this.version=version;
 		this.datum=datum;
 		this.labels = labels;
 		this.values = values;
+		this.dezernat= dez;
 	}
 
 	public String getName() {
