@@ -26,7 +26,7 @@ public class sql {
 	private int SUCCES = 1;
 
 	// Hostname
-	private static String dbHost = "sql2.freesqldatabase.com";
+	private static String dbHost = "db4free.net";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";

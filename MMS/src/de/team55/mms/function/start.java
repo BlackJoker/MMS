@@ -13,7 +13,6 @@ public class start {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-			//Kürzel, titel, dauer, lp, tonus, inhalt, lernziele, literatur, sprache, prüfungsform, notenbildung, dozent
 			
 			//Studiengang vordefinieren (mehrere)
 			//Anwendungsfächer
