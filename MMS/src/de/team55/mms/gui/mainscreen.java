@@ -20,10 +20,14 @@ import java.util.Map.Entry;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -337,7 +341,44 @@ public class mainscreen {
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Studiengang + Platzhalter
-		panel.add(defaultmodulPanel("Studiengang"));
+		JPanel pnl_Sg = new JPanel();
+		JLabel label = new JLabel("Studiengang");
+		label.setPreferredSize(preferredSize);
+		pnl_Sg.add(label);
+		
+		final DefaultListModel<String> lm = new DefaultListModel<String>();
+		JList st = new JList(lm);
+		
+		st.setCellRenderer(new DefaultListCellRenderer() {
+		    public Component getListCellRendererComponent(JList list, Object value, int index,
+		            boolean isSelected, boolean cellHasFocus) {
+		        super.getListCellRendererComponent(list, value, index, false, false);
+		 
+		        return this;
+		    }
+		});
+		pnl_Sg.add(st);
+		
+		final JComboBox sgbox = new JComboBox(database.getStudiengaenge());
+		sgbox.setMaximumSize(new Dimension(sgbox.getMaximumSize().width, 20));
+		
+		pnl_Sg.add(sgbox);
+		
+		JButton sg = new JButton("Studiengang hinzufügen");
+		sg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!lm.contains(sgbox.getSelectedItem().toString()))
+					lm.addElement(sgbox.getSelectedItem().toString());
+			}
+		});
+		pnl_Sg.add(sg);
+		
+		pnl_Sg.setLayout(new BoxLayout(pnl_Sg, BoxLayout.X_AXIS));
+		panel.add(pnl_Sg);
+		
+
+		//panel.add(defaultmodulPanel("Studiengang"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Jahrgang + Platzhalter
@@ -404,7 +445,7 @@ public class mainscreen {
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String Modulhandbuch = ((JTextArea)((JPanel) panel.getComponent(0)).getComponent(1)).getText();
-				String Studiengang = ((JTextArea)((JPanel) panel.getComponent(2)).getComponent(1)).getText();
+				JList<String> l = ((JList<String>)((JPanel) panel.getComponent(2)).getComponent(1));
 				String Jahrgang = ((JTextArea)((JPanel) panel.getComponent(4)).getComponent(1)).getText();
 				String Name = ((JTextArea)((JPanel) panel.getComponent(6)).getComponent(1)).getText();
 			
@@ -428,10 +469,15 @@ public class mainscreen {
 					dez.add(dezernat2);
 				}
 				int version = database.getModulVersion(Name) + 1;
-				Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
+				
+				
+				//Für jeden Studiengang, neues Modul anlegen
+				for(int i = 0; i<l.getModel().getSize();i++ ){
+					String Studiengang = l.getModel().getElementAt(i).toString();
+					Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
 						Jahrgang, labels, values, version, dez);
-				database.setModul(neu);
-
+					database.setModul(neu);
+				}
 				panel.removeAll();
 				panel.revalidate();
 				newmodulecard();
@@ -449,7 +495,7 @@ public class mainscreen {
 		final Dimension preferredSize = new Dimension(120, 20);
 
 		JPanel pnl = new JPanel();
-		panel.add(pnl);
+		//panel.add(pnl);
 		pnl.setLayout(new BoxLayout(pnl, BoxLayout.X_AXIS));
 
 		JLabel label = new JLabel(name);

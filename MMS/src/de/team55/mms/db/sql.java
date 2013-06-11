@@ -424,17 +424,23 @@ public class sql {
 	}
 
 	/*
-	 * Hier das selbe, man muss noch die Rückgabe bearbeiten
+	 * Tabelle mussen auf die mit den Studiengängen angepasst werden
 	 */
-	public void getStudiengang() {
+	public String[] getStudiengaenge() {
 		ResultSet res = null;
 		Statement state = null;
+		String[] sg= new String[getAnzahlStudiengaenge()];
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT studiengang FROM modulhandbuch;");
+						.executeQuery("SELECT Distinct studiengang FROM modulhandbuch;");
 				// verarbeitung der resultset
+				int cnt = 0;
+				while((cnt<sg.length)&&(res.next())){
+					sg[cnt]=res.getString("studiengang");
+					cnt++;
+				}
 				res.close();
 				state.close();
 			} catch (SQLException e) {
@@ -443,6 +449,34 @@ public class sql {
 			}
 			disconnect();
 		}
+		return sg;
+
+	}
+	
+	/*
+	 * Das selbe hier
+	 */
+	public int getAnzahlStudiengaenge() {
+		ResultSet res = null;
+		Statement state = null;
+		int cnt = 0;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT COUNT(DISTINCT Studiengang) AS cnt FROM modulhandbuch;");
+				while(res.next()){
+					cnt = res.getInt("cnt");
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return cnt;
 
 	}
 
