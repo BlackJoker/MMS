@@ -594,4 +594,10 @@ public class sql {
 	private java.sql.Date convertToSQLDate(java.util.Date utilDate) {
 		return new java.sql.Date(utilDate.getTime());
 	}
+
+	//Neuen Studiengang anlegen
+	public void setStudiengang(String name) {
+		// TODO Auto-generated method stub
+		
+	}
 }

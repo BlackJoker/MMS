@@ -11,27 +11,26 @@ public class start {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		try {
-			//User, der Modul geändert hat, anzeigen
-			
-			//Studiengang - Jahr - Modulhandbuch - Anwendungsfach/Vertiefungsfach  - Fach
-			
-			//Studiengang vordefinieren (mehrere)
-			//Anwendungsfächer
+		//User, der Modul geändert hat, anzeigen
+		
+		//Studiengang - Jahr - Modulhandbuch - Anwendungsfach/Vertiefungsfach  - Fach
+		
+		//Studiengang vordefinieren (mehrere)
+		//Anwendungsfächer
 
-			//registrierung?
-			
-			//User kann seine stellvertreter auswählen
-			//Autoren durfen nur ihre zugeordneten Module bearbeiten/löschen/erstellen
-			
-			//PDF Ausgabe
-			//Module bearbeiten, anzeigen
-			
-			//Server - Client - Schnittstelle
-			
-			//Tests
-			
+		//registrierung?
+		
+		//User kann seine stellvertreter auswählen
+		//Autoren durfen nur ihre zugeordneten Module bearbeiten/löschen/erstellen
+		
+		//PDF Ausgabe
+		//Module bearbeiten, anzeigen
+		
+		//Server - Client - Schnittstelle
+		
+		//Tests
+		
+		try {			
 			// Set System L&F
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (UnsupportedLookAndFeelException e) {
