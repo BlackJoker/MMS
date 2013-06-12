@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -14,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 
 import javax.swing.Box;
@@ -31,11 +28,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -49,6 +44,12 @@ import de.team55.mms.function.User;
 public class mainscreen {
 
 	private static JFrame frame;
+
+	public static void noConnection() {
+		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
+				"Connection error", JOptionPane.ERROR_MESSAGE);
+	}
+
 	private JPanel cards = new JPanel();
 	private static JPanel panel = new JPanel();
 	private DefaultTableModel tmodel;
@@ -64,6 +65,7 @@ public class mainscreen {
 			"<html>Modulhandbücher<br>Durchstöbern");
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
+
 	// private String selectedCard;
 	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
 
@@ -77,6 +79,67 @@ public class mainscreen {
 		leftscr();
 
 		frame.setVisible(true);
+	}
+
+	private void centerscr() {
+
+		frame.getContentPane().add(cards, BorderLayout.CENTER);
+		cards.setLayout(new CardLayout(0, 0));
+
+		homecard();
+		usermgtcard();
+		newmodulecard();
+
+	}
+
+	private void topscr() {
+		JPanel top = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) top.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		frame.getContentPane().add(top, BorderLayout.NORTH);
+
+		JLabel lblMMS = new JLabel("Modul Management System");
+		lblMMS.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblMMS.setHorizontalAlignment(SwingConstants.LEFT);
+		lblMMS.setLabelFor(frame);
+		top.add(lblMMS);
+	}
+
+	private void addToTable(User usr) {
+		tmodel.addRow(new Object[] { usr.getTitel(), usr.getVorname(),
+				usr.getNachname(), usr.geteMail(), usr.getManageUsers(),
+				usr.getCreateModule(), usr.getAcceptModule(),
+				usr.getReadModule() });
+	}
+
+	private JPanel defaultmodulPanel(String name) {
+		final Dimension preferredSize = new Dimension(120, 20);
+
+		JPanel pnl = new JPanel();
+		// panel.add(pnl);
+		pnl.setLayout(new BoxLayout(pnl, BoxLayout.X_AXIS));
+
+		JLabel label = new JLabel(name);
+		label.setPreferredSize(preferredSize);
+		pnl.add(label);
+
+		JTextArea txt = new JTextArea();
+		txt.setLineWrap(true);
+		pnl.add(txt);
+
+		return pnl;
+	}
+
+	private void homecard() {
+		JPanel welcome = new JPanel();
+		FlowLayout flowLayout_2 = (FlowLayout) welcome.getLayout();
+		flowLayout_2.setVgap(20);
+		cards.add(welcome, "welcome page");
+
+		JLabel lblNewLabel = new JLabel(
+				"Willkommen beim Modul Management System");
+		welcome.add(lblNewLabel);
+
 	}
 
 	private void leftscr() {
@@ -95,7 +158,6 @@ public class mainscreen {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				showCard("newmodule");
 			}
 
@@ -111,10 +173,6 @@ public class mainscreen {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (current.geteMail().isEmpty()) {
-					JTextField name = new JTextField();
-					JPasswordField pwd = new JPasswordField();
-					Object[] message = { "Geben Sie ihre Login-Daten ein\n",
-							name, pwd };
 					logindialog log = new logindialog(frame, "Login");
 					int resp = log.showCustomDialog();
 					if (resp == 1) {
@@ -188,60 +246,7 @@ public class mainscreen {
 
 	}
 
-	protected void checkRights() {
-		if (current.getCreateModule())
-			btnModulEinreichen.setEnabled(true);
-		else
-			btnModulEinreichen.setEnabled(false);
-		if (current.getAcceptModule()) {
-			btnModulVerwaltung.setEnabled(true);
-			btnModulBearbeiten.setEnabled(true);
-		} else {
-			btnModulVerwaltung.setEnabled(false);
-			btnModulBearbeiten.setEnabled(false);
-		}
-		btnUserVerwaltung.setEnabled(true);
-		if (current.getManageUsers()) {
-			btnUserVerwaltung.setText("User Verwaltung");
-		} else {
-			btnUserVerwaltung.setText("Account bearbeiten");
-			showCard("welcome page");
-		}
-		if (current.getReadModule())
-			btnMHB.setEnabled(true);
-		else
-			btnMHB.setEnabled(false);
-
-	}
-
-	private void showCard(String card) {
-		((CardLayout) cards.getLayout()).show(cards, card);
-	}
-
-	public void topscr() {
-		JPanel top = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) top.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		frame.getContentPane().add(top, BorderLayout.NORTH);
-
-		JLabel lblMMS = new JLabel("Modul Management System");
-		lblMMS.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblMMS.setHorizontalAlignment(SwingConstants.LEFT);
-		lblMMS.setLabelFor(frame);
-		top.add(lblMMS);
-	}
-
-	public void centerscr() {
-
-		frame.getContentPane().add(cards, BorderLayout.CENTER);
-		cards.setLayout(new CardLayout(0, 0));
-
-		homecard();
-		usermgtcard();
-		newmodulecard();
-
-	}
-
+	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 	private void newmodulecard() {
 		final JPanel pnl_newmod = new JPanel();
 
@@ -253,6 +258,7 @@ public class mainscreen {
 
 		JButton btnNeuesFeld = new JButton("Neues Feld");
 		btnNeuesFeld.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// Platzhalter
 				JPanel pnl_tmp = new JPanel();
@@ -281,6 +287,7 @@ public class mainscreen {
 
 				JButton btn_tmp_entf = new JButton("Entfernen");
 				btn_tmp_entf.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						int id = buttonmap.get(e.getSource());
 						// Feld mit ID id von Panel entfernen
@@ -348,9 +355,10 @@ public class mainscreen {
 		pnl_Sg.add(label);
 
 		final DefaultListModel<String> lm = new DefaultListModel<String>();
-		JList st = new JList(lm);
+		JList<String> st = new JList<String>(lm);
 
 		st.setCellRenderer(new DefaultListCellRenderer() {
+			@Override
 			public Component getListCellRendererComponent(JList list,
 					Object value, int index, boolean isSelected,
 					boolean cellHasFocus) {
@@ -383,25 +391,39 @@ public class mainscreen {
 		nsg.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String name = (String) JOptionPane.showInputDialog(frame,
-						"Name des neuen Studiengangs:", "neuer Studiengang",
-						JOptionPane.PLAIN_MESSAGE);
 
-				String[] sgs = database.getStudiengaenge();
-				boolean neu = true;
-				for (int i = 0; i < sgs.length; i++) {
-					if (sgs[i].equals(name)) {
-						neu = false;
-						break;
+				try {
+					String name = JOptionPane.showInputDialog(frame,
+							"Name des neuen Studiengangs:",
+							"neuer Studiengang", JOptionPane.PLAIN_MESSAGE);
+
+					while (name.isEmpty()) {
+						name = JOptionPane
+								.showInputDialog(
+										frame,
+										"Bitte gültigen Namen des neuen Studiengangs eingeben:",
+										"neuer Studiengang",
+										JOptionPane.PLAIN_MESSAGE);
 					}
-				}
-				if (neu) {
-					database.setStudiengang(name);
-					cbmodel.addElement(name);
-				} else {
-					JOptionPane.showMessageDialog(frame,
-							"Studiengang ist schon vorhanden", "Fehler",
-							JOptionPane.ERROR_MESSAGE);
+
+					String[] sgs = database.getStudiengaenge();
+					boolean neu = true;
+					for (int i = 0; i < sgs.length; i++) {
+						if (sgs[i].equals(name)) {
+							neu = false;
+							break;
+						}
+					}
+					if (neu) {
+						database.setStudiengang(name);
+						cbmodel.addElement(name);
+					} else {
+						JOptionPane.showMessageDialog(frame,
+								"Studiengang ist schon vorhanden", "Fehler",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (NullPointerException np) {
+
 				}
 			}
 
@@ -476,6 +498,7 @@ public class mainscreen {
 
 		JButton btnOk = new JButton("Annehmen");
 		btnOk.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String Modulhandbuch = ((JTextArea) ((JPanel) panel
 						.getComponent(0)).getComponent(1)).getText();
@@ -529,24 +552,15 @@ public class mainscreen {
 
 	}
 
-	private JPanel defaultmodulPanel(String name) {
-		final Dimension preferredSize = new Dimension(120, 20);
-
-		JPanel pnl = new JPanel();
-		// panel.add(pnl);
-		pnl.setLayout(new BoxLayout(pnl, BoxLayout.X_AXIS));
-
-		JLabel label = new JLabel(name);
-		label.setPreferredSize(preferredSize);
-		pnl.add(label);
-
-		JTextArea txt = new JTextArea();
-		txt.setLineWrap(true);
-		pnl.add(txt);
-
-		return pnl;
+	private void removeFromTable(int rowid) {
+		tmodel.removeRow(rowid);
 	}
 
+	private void showCard(String card) {
+		((CardLayout) cards.getLayout()).show(cards, card);
+	}
+
+	@SuppressWarnings("serial")
 	private void usermgtcard() {
 		JPanel usrmg = new JPanel();
 		cards.add(usrmg, "user managment");
@@ -568,19 +582,21 @@ public class mainscreen {
 		tmodel = new DefaultTableModel(new Object[][] {}, new String[] {
 				"Titel", "Vorname", "Nachnahme", "e-Mail", "User bearbeiten",
 				"Module einreichen", "Module Annehmen", "Module lesen" }) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				// all cells false
-				return false;
-			}
-
+			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] { String.class, String.class,
 					String.class, String.class, boolean.class, boolean.class,
 					boolean.class, boolean.class };
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// all cells false
+				return false;
 			}
 		};
 
@@ -679,32 +695,30 @@ public class mainscreen {
 
 	}
 
-	private void homecard() {
-		JPanel welcome = new JPanel();
-		FlowLayout flowLayout_2 = (FlowLayout) welcome.getLayout();
-		flowLayout_2.setVgap(20);
-		cards.add(welcome, "welcome page");
+	protected void checkRights() {
+		if (current.getCreateModule())
+			btnModulEinreichen.setEnabled(true);
+		else
+			btnModulEinreichen.setEnabled(false);
+		if (current.getAcceptModule()) {
+			btnModulVerwaltung.setEnabled(true);
+			btnModulBearbeiten.setEnabled(true);
+		} else {
+			btnModulVerwaltung.setEnabled(false);
+			btnModulBearbeiten.setEnabled(false);
+		}
+		btnUserVerwaltung.setEnabled(true);
+		if (current.getManageUsers()) {
+			btnUserVerwaltung.setText("User Verwaltung");
+		} else {
+			btnUserVerwaltung.setText("Account bearbeiten");
+			showCard("welcome page");
+		}
+		if (current.getReadModule())
+			btnMHB.setEnabled(true);
+		else
+			btnMHB.setEnabled(false);
 
-		JLabel lblNewLabel = new JLabel(
-				"Willkommen beim Modul Management System");
-		welcome.add(lblNewLabel);
-
-	}
-
-	private void addToTable(User usr) {
-		tmodel.addRow(new Object[] { usr.getTitel(), usr.getVorname(),
-				usr.getNachname(), usr.geteMail(), usr.getManageUsers(),
-				usr.getCreateModule(), usr.getAcceptModule(),
-				usr.getReadModule() });
-	}
-
-	private void removeFromTable(int rowid) {
-		tmodel.removeRow(rowid);
-	}
-
-	public static void noConnection() {
-		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
-				"Connection error", JOptionPane.ERROR_MESSAGE);
 	}
 
 }

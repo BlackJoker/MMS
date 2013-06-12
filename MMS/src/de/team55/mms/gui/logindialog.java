@@ -41,6 +41,29 @@ public class logindialog extends JDialog {
 		createDialog();
 	}
 
+	public User getUser() {
+		return usr;
+	}
+
+	public int showCustomDialog() {
+		this.setLocationRelativeTo(owner);
+		this.show();
+		return userResponse;
+
+	}
+
+	private boolean checkLogin() {
+		try {
+			usr = database.getUser(textMail.getText(), Hash.getMD5(textPass.getText()));
+			if (usr != null) {
+				return true;
+			}
+		} catch (NullPointerException e) {
+			return false;
+		}
+		return false;
+	}
+
 	private void createDialog() {
 
 		JPanel pnl_Dialog = new JPanel();
@@ -121,34 +144,11 @@ public class logindialog extends JDialog {
 		this.pack();
 	}
 
-	private boolean checkLogin() {
-		try {
-			usr = database.getUser(textMail.getText(), Hash.getMD5(textPass.getText()));
-			if (usr != null) {
-				return true;
-			}
-		} catch (NullPointerException e) {
-			return false;
-		}
-		return false;
-	}
-
-	public User getUser() {
-		return usr;
-	}
-
 	private boolean validateMail(String eMail) {
 		String pat = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 		Pattern pattern = Pattern.compile(pat);
 		Matcher matcher = pattern.matcher(eMail);
 		return matcher.matches();
-	}
-
-	public int showCustomDialog() {
-		this.setLocationRelativeTo(owner);
-		this.show();
-		return userResponse;
-
 	}
 }

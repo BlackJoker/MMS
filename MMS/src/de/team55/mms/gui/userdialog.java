@@ -42,6 +42,12 @@ public class userdialog extends JDialog {
 	private boolean adminedit=true;
 	private User usr = new User("", "","", "", "", false, false, false, false);
 
+	public userdialog(JFrame owner, String title) {
+		super(owner, title, true);
+		this.setResizable(false);
+		createDialog();
+	}
+
 	public userdialog(JFrame owner, String title, User usr, boolean adminedit) {
 		super(owner, title, true);
 		this.owner = owner;
@@ -51,10 +57,26 @@ public class userdialog extends JDialog {
 		createDialog();
 	}
 
-	public userdialog(JFrame owner, String title) {
-		super(owner, title, true);
-		this.setResizable(false);
-		createDialog();
+	public User getUser() {
+		usr.setTitel(textTitel.getText());
+		usr.setVorname(textVorname.getText());
+		usr.setNachname(textNachname.getText());
+		if(usr.getPassword()!=null)
+			if(!usr.getPassword().equals(textPass.getText()))
+				usr.setPassword(Hash.getMD5(textPass.getText()));
+		usr.seteMail(textMail.getText());
+		usr.setReadModule(cb_ModLes.isSelected());
+		usr.setCreateModule(cb_ModErst.isSelected());
+		usr.setAcceptModule(cb_ModAnn.isSelected());
+		usr.setManageUsers(cb_BV.isSelected());
+		return usr;
+	}
+
+	public int showCustomDialog() {
+		this.setLocationRelativeTo(owner);
+		this.show();
+		return userResponse;
+
 	}
 
 	private void createDialog() {
@@ -209,33 +231,11 @@ public class userdialog extends JDialog {
 		this.pack();
 	}
 
-	public User getUser() {
-		usr.setTitel(textTitel.getText());
-		usr.setVorname(textVorname.getText());
-		usr.setNachname(textNachname.getText());
-		if(usr.getPassword()!=null)
-			if(!usr.getPassword().equals(textPass.getText()))
-				usr.setPassword(Hash.getMD5(textPass.getText()));
-		usr.seteMail(textMail.getText());
-		usr.setReadModule(cb_ModLes.isSelected());
-		usr.setCreateModule(cb_ModErst.isSelected());
-		usr.setAcceptModule(cb_ModAnn.isSelected());
-		usr.setManageUsers(cb_BV.isSelected());
-		return usr;
-	}
-
 	private boolean validateMail(String eMail) {
 		String pat = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 		Pattern pattern = Pattern.compile(pat);
 		Matcher matcher = pattern.matcher(eMail);
 		return matcher.matches();
-	}
-
-	public int showCustomDialog() {
-		this.setLocationRelativeTo(owner);
-		this.show();
-		return userResponse;
-
 	}
 }

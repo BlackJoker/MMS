@@ -17,8 +17,15 @@ public class Modul {
 	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
 
 
-	public ArrayList<Boolean> getDezernat() {
-		return dezernat;
+	public Modul(String name, String modulhandbuch, int version,
+			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez) {
+		this.name = name;
+		this.modulhandbuch=modulhandbuch;
+		this.version=version;
+		this.datum=datum;
+		this.labels = labels;
+		this.values = values;
+		this.dezernat= dez;
 	}
 
 	public Modul(String name, String studiengang, String modulhandbuch,
@@ -34,35 +41,12 @@ public class Modul {
 		this.dezernat= dez;
 	}
 
-	public Modul(String name, String modulhandbuch, int version,
-			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez) {
-		this.name = name;
-		this.modulhandbuch=modulhandbuch;
-		this.version=version;
-		this.datum=datum;
-		this.labels = labels;
-		this.values = values;
-		this.dezernat= dez;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getStudiengang() {
-		return studiengang;
-	}
-
-	public String getModulhandbuch() {
-		return modulhandbuch;
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
 	public Date getDatum() {
 		return datum;
+	}
+
+	public ArrayList<Boolean> getDezernat() {
+		return dezernat;
 	}
 
 	public String getJahrgang() {
@@ -73,8 +57,24 @@ public class Modul {
 		return labels;
 	}
 
+	public String getModulhandbuch() {
+		return modulhandbuch;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getStudiengang() {
+		return studiengang;
+	}
+
 	public ArrayList<String> getValues() {
 		return values;
+	}
+
+	public int getVersion() {
+		return version;
 	}
 
 }

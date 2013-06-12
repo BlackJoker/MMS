@@ -9,9 +9,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
-import de.team55.mms.server.function.User;
-import de.team55.mms.server.function.Modul;
 import de.team55.mms.gui.mainscreen;
+import de.team55.mms.server.function.Modul;
+import de.team55.mms.server.function.User;
 
 public class sql {
 
@@ -108,6 +108,52 @@ public class sql {
 		return connected;
 	}
 
+	public void deluser(String email) {
+		if (connect() == true) {
+			Statement state = null;
+			ResultSet res = null;
+			int id = -1;
+			try {
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT id FROM user WHERE email='"
+						+ email + "';");
+				if (res.first())
+					id = res.getInt("id");
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			if (id != -1) {
+				try {
+					state = this.con.createStatement();
+					state.executeUpdate("DELETE FROM user WHERE id = " + id
+							+ ";");
+					state.executeUpdate("DELETE FROM rights WHERE id = " + id
+							+ ";");
+				} catch (SQLException e) {
+					// TODO fehler fenster aufrufen
+					System.out.print(e.getMessage());
+				} finally {
+					try {
+						this.con.commit();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						state.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				System.out.print("Failed to write rights!");
+			}
+			disconnect();
+		}
+	}
+
 	public void disconnect() {
 		try {
 			this.con.commit();
@@ -117,6 +163,283 @@ public class sql {
 			// TODO fehler fenster aufrufen
 			System.out.print(e.getMessage());
 		}
+
+	}
+
+	public Modul getModul(String name) {
+		ResultSet res = null;
+		Statement state = null;
+		int version = 0;
+		String Modulhandbuch = "";
+		Date datum = new Date();
+		ArrayList<String> labels = new ArrayList<String>();
+		ArrayList<String> values = new ArrayList<String>();
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT *,MAX(Version) FROM module WHERE name = '"
+								+ name + "';");
+				if (res.first()) {
+					version = res.getInt("Version");
+					Modulhandbuch = res.getString("Modulhandbuchname");
+					datum = res.getDate("Datum");
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+
+			}
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT label, text FROM text WHERE name = '"
+								+ name + "' AND version = " + version + ";");
+
+				while (res.next()) {
+					labels.add(res.getString("label"));
+					values.add(res.getString("text"));
+				}
+
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return new Modul(name, Modulhandbuch, version, datum, labels, values);
+
+	}
+
+	public void getModulhandbuch(String studiengang) {
+		ResultSet res = null;
+		Statement state = null;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT name, jahrgang FROM modulhandbuch WHERE studiengang = '"
+								+ studiengang + "';");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+
+	}
+
+	public int getModulVersion(String name) {
+		ResultSet res = null;
+		Statement state = null;
+		int version = 0;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT MAX(Version) AS Version FROM module WHERE name = '"
+								+ name + "';");
+				if (res.first()) {
+					version = res.getInt("Version");
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return version;
+	}
+
+	/*
+	 * Hier das selbe, man muss noch die Rückgabe bearbeiten
+	 */
+	public void getStudiengang() {
+		ResultSet res = null;
+		Statement state = null;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT studiengang FROM modulhandbuch;");
+				// verarbeitung der resultset
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+
+	}
+
+	public User getUser(String email, String pass) {
+		User zws = null;
+		ResultSet res = null;
+		Statement state = null;
+		int id = -1;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id WHERE email='"
+								+ email + "' and password='" + pass + "';");
+				if (res.first()) {
+					zws = new User(res.getString("vorname"),
+							res.getString("namen"), res.getString("email"),
+							res.getString("password"),
+							res.getBoolean("userchange"),
+							res.getBoolean("modcreate"),
+							res.getBoolean("modacc"), res.getBoolean("modread"));
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return zws;
+
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public int setModul(Modul neu) {
+		int ok = FAILED;
+		PreparedStatement state = null;
+		if (connect() == true) {
+			String name = neu.getName();
+			int version = neu.getVersion();
+			ArrayList<String> labels = neu.getLabels();
+			ArrayList<String> values = neu.getValues();
+			try {
+
+				state = con
+						.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum) VALUES(?,?,?,?)");
+				state.setString(1, name);
+				state.setString(2, neu.getModulhandbuch());
+				state.setInt(3, version);
+				state.setDate(4, convertToSQLDate(neu.getDatum()));
+				state.executeUpdate();
+
+				state = con
+						.prepareStatement("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)");
+				state.setString(1, neu.getModulhandbuch());
+				state.setString(2, neu.getStudiengang());
+				state.setString(3, neu.getJahrgang());
+				state.executeUpdate();
+
+				state = con
+						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text) VALUES(?,?,?,?)");
+				for (int i = 0; i < labels.size(); i++) {
+					state.setString(1, name);
+					state.setInt(2, version);
+					state.setString(3, labels.get(i));
+					state.setString(4, values.get(i));
+					state.executeUpdate();
+				}
+				state.close();
+				ok = SUCCES;
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return ok;
+
+	}
+
+	/*
+	 * Hier muss man leider noch mehr machen, da ich nicht weiß wie du dich
+	 * entschieden hast den dynmaischen text zu speichern
+	 */
+	public void setModul(String name, int version /* LISTE? aka Text zeug */) {
+		// ResultSet res = null;
+		Statement state = null;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				// res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			try {
+				state = this.con.createStatement();
+				state.executeUpdate("");
+				// res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+
+	}
+
+	public void setModulhandbuch(String name, String studiengang,
+			String jahrgang) {
+		Statement state = null;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ("
+						+ name + ", " + studiengang + ", " + jahrgang + ");");
+
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+
+	}
+
+	public ArrayList<User> userload() {
+		User zws = null;
+		ResultSet res = null;
+		Statement state = null;
+		int i = 0;
+		int j = 0;
+		ArrayList<User> list = new ArrayList<User>();
+		if (connect() == true) {
+			try {
+				state = con.createStatement();
+				res = state
+						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id;");
+				while (res.next()) {
+					zws = new User(res.getString("vorname"),
+							res.getString("namen"), res.getString("email"),
+							res.getString("password"),
+							res.getBoolean("userchange"),
+							res.getBoolean("modcreate"),
+							res.getBoolean("modacc"), res.getBoolean("modread"));
+					list.add(zws);
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return list;
 
 	}
 
@@ -220,329 +543,6 @@ public class sql {
 			disconnect();
 		}
 		return ok;
-	}
-
-	public ArrayList<User> userload() {
-		User zws = null;
-		ResultSet res = null;
-		Statement state = null;
-		int i = 0;
-		int j = 0;
-		ArrayList<User> list = new ArrayList<User>();
-		if (connect() == true) {
-			try {
-				state = con.createStatement();
-				res = state
-						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id;");
-				while (res.next()) {
-					zws = new User(res.getString("vorname"),
-							res.getString("namen"), res.getString("email"),
-							res.getString("password"),
-							res.getBoolean("userchange"),
-							res.getBoolean("modcreate"),
-							res.getBoolean("modacc"), res.getBoolean("modread"));
-					list.add(zws);
-				}
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return list;
-
-	}
-
-	public void deluser(String email) {
-		if (connect() == true) {
-			Statement state = null;
-			ResultSet res = null;
-			int id = -1;
-			try {
-				state = this.con.createStatement();
-				res = state.executeQuery("SELECT id FROM user WHERE email='"
-						+ email + "';");
-				if (res.first())
-					id = res.getInt("id");
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			if (id != -1) {
-				try {
-					state = this.con.createStatement();
-					state.executeUpdate("DELETE FROM user WHERE id = " + id
-							+ ";");
-					state.executeUpdate("DELETE FROM rights WHERE id = " + id
-							+ ";");
-				} catch (SQLException e) {
-					// TODO fehler fenster aufrufen
-					System.out.print(e.getMessage());
-				} finally {
-					try {
-						this.con.commit();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					try {
-						state.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				System.out.print("Failed to write rights!");
-			}
-			disconnect();
-		}
-	}
-
-	public User getUser(String email, String pass) {
-		User zws = null;
-		ResultSet res = null;
-		Statement state = null;
-		int id = -1;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT u.*,userchange,modcreate,modacc,modread FROM user AS u JOIN rights AS r ON u.id=r.id WHERE email='"
-								+ email + "' and password='" + pass + "';");
-				if (res.first()) {
-					zws = new User(res.getString("vorname"),
-							res.getString("namen"), res.getString("email"),
-							res.getString("password"),
-							res.getBoolean("userchange"),
-							res.getBoolean("modcreate"),
-							res.getBoolean("modacc"), res.getBoolean("modread"));
-				}
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return zws;
-
-	}
-
-	public Modul getModul(String name) {
-		ResultSet res = null;
-		Statement state = null;
-		int version = 0;
-		String Modulhandbuch = "";
-		Date datum = new Date();
-		ArrayList<String> labels = new ArrayList<String>();
-		ArrayList<String> values = new ArrayList<String>();
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT *,MAX(Version) FROM module WHERE name = '"
-								+ name + "';");
-				if (res.first()) {
-					version = res.getInt("Version");
-					Modulhandbuch = res.getString("Modulhandbuchname");
-					datum = res.getDate("Datum");
-				}
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-
-			}
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT label, text FROM text WHERE name = '"
-								+ name + "' AND version = " + version + ";");
-
-				while (res.next()) {
-					labels.add(res.getString("label"));
-					values.add(res.getString("text"));
-				}
-
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return new Modul(name, Modulhandbuch, version, datum, labels, values);
-
-	}
-
-	/*
-	 * Hier muss man leider noch mehr machen, da ich nicht weiß wie du dich
-	 * entschieden hast den dynmaischen text zu speichern
-	 */
-	public void setModul(String name, int version /* LISTE? aka Text zeug */) {
-		// ResultSet res = null;
-		Statement state = null;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				state.executeUpdate("");
-				// res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			try {
-				state = this.con.createStatement();
-				state.executeUpdate("");
-				// res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-
-	}
-
-	/*
-	 * Hier das selbe, man muss noch die Rückgabe bearbeiten
-	 */
-	public void getStudiengang() {
-		ResultSet res = null;
-		Statement state = null;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT studiengang FROM modulhandbuch;");
-				// verarbeitung der resultset
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-
-	}
-
-	public void getModulhandbuch(String studiengang) {
-		ResultSet res = null;
-		Statement state = null;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT name, jahrgang FROM modulhandbuch WHERE studiengang = '"
-								+ studiengang + "';");
-				// verarbeitung der resultset
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-
-	}
-
-	public void setModulhandbuch(String name, String studiengang,
-			String jahrgang) {
-		Statement state = null;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ("
-						+ name + ", " + studiengang + ", " + jahrgang + ");");
-
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-
-	}
-
-	public boolean isConnected() {
-		return connected;
-	}
-
-	public int getModulVersion(String name) {
-		ResultSet res = null;
-		Statement state = null;
-		int version = 0;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT MAX(Version) AS Version FROM module WHERE name = '"
-								+ name + "';");
-				if (res.first()) {
-					version = res.getInt("Version");
-				}
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return version;
-	}
-
-	public int setModul(Modul neu) {
-		int ok = FAILED;
-		PreparedStatement state = null;
-		if (connect() == true) {
-			String name = neu.getName();
-			int version = neu.getVersion();
-			ArrayList<String> labels = neu.getLabels();
-			ArrayList<String> values = neu.getValues();
-			try {
-
-				state = con
-						.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum) VALUES(?,?,?,?)");
-				state.setString(1, name);
-				state.setString(2, neu.getModulhandbuch());
-				state.setInt(3, version);
-				state.setDate(4, convertToSQLDate(neu.getDatum()));
-				state.executeUpdate();
-
-				state = con
-						.prepareStatement("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)");
-				state.setString(1, neu.getModulhandbuch());
-				state.setString(2, neu.getStudiengang());
-				state.setString(3, neu.getJahrgang());
-				state.executeUpdate();
-
-				state = con
-						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text) VALUES(?,?,?,?)");
-				for (int i = 0; i < labels.size(); i++) {
-					state.setString(1, name);
-					state.setInt(2, version);
-					state.setString(3, labels.get(i));
-					state.setString(4, values.get(i));
-					state.executeUpdate();
-				}
-				state.close();
-				ok = SUCCES;
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return ok;
-
 	}
 
 	private java.sql.Date convertToSQLDate(java.util.Date utilDate) {

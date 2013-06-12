@@ -15,18 +15,6 @@ public class Modul {
 	private ArrayList<String> labels = new ArrayList<String>();
 	private ArrayList<String> values = new ArrayList<String>();
 
-	public Modul(String name, String studiengang, String modulhandbuch,
-			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version) {
-		this.name = name;
-		this.studiengang = studiengang;
-		this.modulhandbuch = modulhandbuch;
-		this.jahrgang = jahrgang;
-		this.labels = labels;
-		this.values = values;
-		this.version =version;
-		this.datum=new Date();
-	}
-
 	public Modul(String name, String modulhandbuch, int version,
 			Date datum, ArrayList<String> labels, ArrayList<String> values) {
 		// TODO Auto-generated constructor stub
@@ -38,20 +26,16 @@ public class Modul {
 		this.values = values;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getStudiengang() {
-		return studiengang;
-	}
-
-	public String getModulhandbuch() {
-		return modulhandbuch;
-	}
-
-	public int getVersion() {
-		return version;
+	public Modul(String name, String studiengang, String modulhandbuch,
+			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version) {
+		this.name = name;
+		this.studiengang = studiengang;
+		this.modulhandbuch = modulhandbuch;
+		this.jahrgang = jahrgang;
+		this.labels = labels;
+		this.values = values;
+		this.version =version;
+		this.datum=new Date();
 	}
 
 	public Date getDatum() {
@@ -66,8 +50,24 @@ public class Modul {
 		return labels;
 	}
 
+	public String getModulhandbuch() {
+		return modulhandbuch;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getStudiengang() {
+		return studiengang;
+	}
+
 	public ArrayList<String> getValues() {
 		return values;
+	}
+
+	public int getVersion() {
+		return version;
 	}
 
 }

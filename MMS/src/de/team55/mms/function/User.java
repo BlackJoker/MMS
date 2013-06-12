@@ -27,105 +27,6 @@ public class User {
 
 	}
 
-	public String getTitel() {
-		return Titel;
-	}
-
-	public void setTitel(String titel) {
-		Titel = titel;
-	}
-
-	public String getVorname() {
-		return Vorname;
-	}
-
-	public String getNachname() {
-		return Nachname;
-	}
-
-	public String geteMail() {
-		return eMail;
-	}
-
-	public String getPassword() {
-		return Password;
-	}
-
-	public boolean getManageUsers() {
-		return manageUsers;
-	}
-
-	public boolean getReadModule() {
-		return readModule;
-	}
-
-	@Override
-	public String toString() {
-		return "User [Vorname=" + Vorname + ", Nachname=" + Nachname
-				+ ", eMail=" + eMail + ", Password=" + Password + ", Titel="
-				+ Titel + ", manageUsers=" + manageUsers + ", readModule="
-				+ readModule + ", createModule=" + createModule
-				+ ", acceptModule=" + acceptModule + "]";
-	}
-
-	public boolean getCreateModule() {
-		return createModule;
-	}
-
-	public boolean getAcceptModule() {
-		return acceptModule;
-	}
-
-	public void setVorname(String vorname) {
-		Vorname = vorname;
-	}
-
-	public void setNachname(String nachname) {
-		Nachname = nachname;
-	}
-
-	public void seteMail(String eMail) {
-		this.eMail = eMail;
-	}
-
-	public void setPassword(String password) {
-		Password = password;
-	}
-
-	public void setManageUsers(boolean manageUsers) {
-		this.manageUsers = manageUsers;
-	}
-
-	public void setReadModule(boolean readModule) {
-		this.readModule = readModule;
-	}
-
-	public void setCreateModule(boolean createModule) {
-		this.createModule = createModule;
-	}
-
-	public void setAcceptModule(boolean acceptModule) {
-		this.acceptModule = acceptModule;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((Nachname == null) ? 0 : Nachname.hashCode());
-		result = prime * result
-				+ ((Password == null) ? 0 : Password.hashCode());
-		result = prime * result + ((Titel == null) ? 0 : Titel.hashCode());
-		result = prime * result + ((Vorname == null) ? 0 : Vorname.hashCode());
-		result = prime * result + (acceptModule ? 1231 : 1237);
-		result = prime * result + (createModule ? 1231 : 1237);
-		result = prime * result + ((eMail == null) ? 0 : eMail.hashCode());
-		result = prime * result + (manageUsers ? 1231 : 1237);
-		result = prime * result + (readModule ? 1231 : 1237);
-		return result;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -169,6 +70,105 @@ public class User {
 		if (readModule != other.readModule)
 			return false;
 		return true;
+	}
+
+	public boolean getAcceptModule() {
+		return acceptModule;
+	}
+
+	public boolean getCreateModule() {
+		return createModule;
+	}
+
+	public String geteMail() {
+		return eMail;
+	}
+
+	public boolean getManageUsers() {
+		return manageUsers;
+	}
+
+	public String getNachname() {
+		return Nachname;
+	}
+
+	public String getPassword() {
+		return Password;
+	}
+
+	public boolean getReadModule() {
+		return readModule;
+	}
+
+	public String getTitel() {
+		return Titel;
+	}
+
+	public String getVorname() {
+		return Vorname;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((Nachname == null) ? 0 : Nachname.hashCode());
+		result = prime * result
+				+ ((Password == null) ? 0 : Password.hashCode());
+		result = prime * result + ((Titel == null) ? 0 : Titel.hashCode());
+		result = prime * result + ((Vorname == null) ? 0 : Vorname.hashCode());
+		result = prime * result + (acceptModule ? 1231 : 1237);
+		result = prime * result + (createModule ? 1231 : 1237);
+		result = prime * result + ((eMail == null) ? 0 : eMail.hashCode());
+		result = prime * result + (manageUsers ? 1231 : 1237);
+		result = prime * result + (readModule ? 1231 : 1237);
+		return result;
+	}
+
+	public void setAcceptModule(boolean acceptModule) {
+		this.acceptModule = acceptModule;
+	}
+
+	public void setCreateModule(boolean createModule) {
+		this.createModule = createModule;
+	}
+
+	public void seteMail(String eMail) {
+		this.eMail = eMail;
+	}
+
+	public void setManageUsers(boolean manageUsers) {
+		this.manageUsers = manageUsers;
+	}
+
+	public void setNachname(String nachname) {
+		Nachname = nachname;
+	}
+
+	public void setPassword(String password) {
+		Password = password;
+	}
+
+	public void setReadModule(boolean readModule) {
+		this.readModule = readModule;
+	}
+
+	public void setTitel(String titel) {
+		Titel = titel;
+	}
+
+	public void setVorname(String vorname) {
+		Vorname = vorname;
+	}
+
+	@Override
+	public String toString() {
+		return "User [Vorname=" + Vorname + ", Nachname=" + Nachname
+				+ ", eMail=" + eMail + ", Password=" + Password + ", Titel="
+				+ Titel + ", manageUsers=" + manageUsers + ", readModule="
+				+ readModule + ", createModule=" + createModule
+				+ ", acceptModule=" + acceptModule + "]";
 	}
 
 }

@@ -1,22 +1,16 @@
 package de.team55.mms.server.ctrl;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpServer;
 
 import de.team55.mms.server.function.User;
 import de.team55.mms.server.function.UserUpdateContainer;

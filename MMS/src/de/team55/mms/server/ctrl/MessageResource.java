@@ -1,14 +1,10 @@
 package de.team55.mms.server.ctrl;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -22,6 +18,29 @@ import de.team55.mms.server.function.UserUpdateContainer;
 
 @Path("")
 public class MessageResource {
+
+	/**
+	 * returns all Users
+	 * 
+	 * @return List with Data of all Users
+	 */
+
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("users")
+	public ArrayList<User> getAllUsers() {
+		return new sql().userload();
+	}
+
+	@POST
+	@Path("modul/post/")
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response modulPost(Modul m) {
+		int status = new sql().setModul(m);
+		if(status==1)
+			return Response.status(201).build();
+		else return Response.status(500).build();
+	}
 
 	/**
 	 * returns a User
@@ -44,19 +63,6 @@ public class MessageResource {
 			return tmp;
 	}
 
-	/**
-	 * returns all Users
-	 * 
-	 * @return List with Data of all Users
-	 */
-
-	@GET
-	@Produces(MediaType.TEXT_XML)
-	@Path("users")
-	public ArrayList<User> getAllUsers() {
-		return new sql().userload();
-	}
-
 	@POST
 	@Path("user/post/")
 	@Consumes(MediaType.APPLICATION_XML)
@@ -66,22 +72,12 @@ public class MessageResource {
 			return Response.status(201).build();
 		else return Response.status(500).build();
 	}
-
+	
 	@POST
 	@Path("user/update/")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response userUpdate(UserUpdateContainer uuc) {
 		int status = new sql().userupdate(uuc.getUser(), uuc.getEmail());
-		if(status==1)
-			return Response.status(201).build();
-		else return Response.status(500).build();
-	}
-	
-	@POST
-	@Path("modul/post/")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response modulPost(Modul m) {
-		int status = new sql().setModul(m);
 		if(status==1)
 			return Response.status(201).build();
 		else return Response.status(500).build();
