@@ -172,7 +172,7 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT COUNT(DISTINCT Studiengang) AS cnt FROM modulhandbuch;");
+						.executeQuery("SELECT COUNT(id) AS cnt FROM studiengang;");
 				while(res.next()){
 					cnt = res.getInt("cnt");
 				}
@@ -194,6 +194,8 @@ public class sql {
 		int version = 0;
 		String Modulhandbuch = "";
 		Date datum = new Date();
+		boolean akzeptiert = false;
+		boolean inbearbeitung = false;
 		ArrayList<String> labels = new ArrayList<String>();
 		ArrayList<String> values = new ArrayList<String>();
 		ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
@@ -207,6 +209,8 @@ public class sql {
 					version = res.getInt("Version");
 					Modulhandbuch = res.getString("Modulhandbuchname");
 					datum = res.getDate("Datum");
+					akzeptiert = res.getBoolean("akzeptiert");
+					inbearbeitung = res.getBoolean("inbearbeitung");
 				}
 				res.close();
 				state.close();
@@ -216,12 +220,13 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT label, text FROM text WHERE name = '"
+						.executeQuery("SELECT label, text, dezernat FROM text WHERE name = '"
 								+ name + "' AND version = " + version + ";");
 
 				while (res.next()) {
 					labels.add(res.getString("label"));
 					values.add(res.getString("text"));
+					dezernat.add(res.getBoolean("dezernat"));
 				}
 
 				res.close();
@@ -232,7 +237,7 @@ public class sql {
 			}
 			disconnect();
 		}
-		return new Modul(name, Modulhandbuch, version, datum, labels, values,dezernat);
+		return new Modul(name, Modulhandbuch, version, datum, labels, values,dezernat, akzeptiert, inbearbeitung);
 
 	}
 
@@ -280,9 +285,6 @@ public class sql {
 		return version;
 	}
 
-	/*
-	 * Tabelle mussen auf die mit den Studiengängen angepasst werden
-	 */
 	public String[] getStudiengaenge() {
 		ResultSet res = null;
 		Statement state = null;
@@ -291,11 +293,11 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT Distinct studiengang FROM modulhandbuch;");
+						.executeQuery("SELECT name FROM studiengang;");
 				// verarbeitung der resultset
 				int cnt = 0;
 				while((cnt<sg.length)&&(res.next())){
-					sg[cnt]=res.getString("studiengang");
+					sg[cnt]=res.getString("name");
 					cnt++;
 				}
 				res.close();
@@ -441,7 +443,19 @@ public class sql {
 
 	//Neuen Studiengang anlegen
 	public void setStudiengang(String name) {
-		// TODO Auto-generated method stub
+			Statement state = null;
+			if (connect() == true) {
+				try {
+					state = this.con.createStatement();
+					state.executeUpdate("INSERT INTO studiengang (name) VALUES ("
+							+ name + ");");
+
+				} catch (SQLException e) {
+					// TODO fehler fenster aufrufen
+					e.printStackTrace();
+				}
+				disconnect();
+			}
 		
 	}
 

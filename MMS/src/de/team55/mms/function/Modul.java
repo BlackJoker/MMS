@@ -10,6 +10,8 @@ public class Modul {
 	private String modulhandbuch;
 	private int version;
 	private Date datum;
+	private boolean akzeptiert;
+	private boolean inbearbeitung;
 
 	private String jahrgang;
 	private ArrayList<String> labels = new ArrayList<String>();
@@ -18,7 +20,7 @@ public class Modul {
 
 
 	public Modul(String name, String modulhandbuch, int version,
-			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez) {
+			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez, boolean akzeptiert, boolean inbearbeitung) {
 		this.name = name;
 		this.modulhandbuch=modulhandbuch;
 		this.version=version;
@@ -26,6 +28,16 @@ public class Modul {
 		this.labels = labels;
 		this.values = values;
 		this.dezernat= dez;
+		this.akzeptiert=akzeptiert;
+		this.inbearbeitung=inbearbeitung;
+	}
+
+	public boolean isAkzeptiert() {
+		return akzeptiert;
+	}
+
+	public boolean isInbearbeitung() {
+		return inbearbeitung;
 	}
 
 	public Modul(String name, String studiengang, String modulhandbuch,
