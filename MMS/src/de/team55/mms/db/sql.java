@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.team55.mms.function.Modul;
+import de.team55.mms.function.Modulhandbuch;
 import de.team55.mms.function.Studiengang;
 import de.team55.mms.function.User;
-import de.team55.mms.gui.Modulhandbuch;
 import de.team55.mms.gui.mainscreen;
 
 public class sql {
@@ -64,7 +64,7 @@ public class sql {
 					+ "  `jahrgang` varchar(255) NOT NULL,"
 					+ "  `akzeptiert` BOOLEAN NOT NULL DEFAULT '0'" + ") ");
 			this.con.commit();
-			
+
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `rights` ("
 					+ "  `id` int(11) NOT NULL,"
 					+ "  `userchange` BOOLEAN NOT NULL,"
@@ -88,7 +88,7 @@ public class sql {
 					+ "  `text` varchar(255) NOT NULL,"
 					+ "  `dezernat2` BOOLEAN NOT NULL DEFAULT '0'" + ")");
 			this.con.commit();
-			
+
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `user` ("
 					+ "  `id` int(11) NOT NULL AUTO_INCREMENT,"
 					+ "  `email` varchar(255) NOT NULL,"
@@ -99,7 +99,7 @@ public class sql {
 					+ "  PRIMARY KEY (`id`),"
 					+ "  UNIQUE KEY `email` (`email`)" + ")");
 			this.con.commit();
-			
+
 			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
 					+ "	(1, 'admin@mms.de', NULL, 'Admin', 'Admin', 'a384b6463fc216a5f8ecb6670f86456a');");
 			this.con.commit();
@@ -301,7 +301,7 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT MAX(Version) AS Version FROM module WHERE name = '"
+						.executeQuery("SELECT IFNULL(MAX(Version),0) AS Version FROM module WHERE name = '"
 								+ name + "';");
 				if (res.first()) {
 					version = res.getInt("Version");
@@ -701,5 +701,74 @@ public class sql {
 			disconnect();
 		}
 		return MHs;
+	}
+
+	public ArrayList<Modul> getModule(boolean b) {
+		ArrayList<Modul> module = new ArrayList<Modul>();
+		ResultSet res = null;
+		Statement state = null;
+		boolean ack;
+		if( b == false){
+			 ack = true;}
+		else{
+			ack = false;}
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				
+
+				res = state.executeQuery("SELECT DISTINCT name FROM module ORDER BY name ASC;");
+
+				while(res.next()){
+					String name = res.getString("name");
+					int version = getModulVersion(name);
+					ArrayList<Studiengang> sgs = new ArrayList<Studiengang>();
+					ResultSet res2 = state.executeQuery("SELECT m.*, s.name AS sname FROM module AS m JOIN studiengang AS s ON sid=id WHERE m.name = '"+name+"' AND version="+version+";");
+					String mh = "";
+					Date datum = null;
+					boolean inedit = false;
+					if(res.first()){
+						ack = res2.getBoolean("akzeptiert");
+						mh = res2.getString("modulhandbuchname");
+						datum  = res2.getDate("datum");
+						inedit = res.getBoolean("inbearbeitung");
+						int sid = res2.getInt("sid");
+						String sname = res2.getString("sname");
+						sgs.add(new Studiengang(sid, sname));
+					}
+					if(b==ack){
+						while(res2.next()){
+							int sid = res2.getInt("sid");
+							String sname = res2.getString("sname");
+							sgs.add(new Studiengang(sid, sname));
+						}
+						
+						ArrayList<String> labels = new ArrayList<String>();
+						ArrayList<String> values = new ArrayList<String>();
+						ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
+						
+						res2 = state
+								.executeQuery("SELECT label, text, dezernat FROM text WHERE name = '"
+										+ name + "' AND version = " + version + ";");
+
+						while (res.next()) {
+							labels.add(res.getString("label"));
+							values.add(res.getString("text"));
+							dezernat.add(res.getBoolean("dezernat"));
+						}
+						module.add(new Modul(name, sgs, mh, version, datum,
+				labels, values, dezernat, ack, inedit));
+					}
+					
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return module;
 	}
 }

@@ -1,4 +1,4 @@
-package de.team55.mms.gui;
+package de.team55.mms.function;
 
 public class Modulhandbuch {
 

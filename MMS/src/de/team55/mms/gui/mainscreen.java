@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import javax.swing.AbstractListModel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -29,6 +30,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -40,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
 
 import de.team55.mms.db.sql;
 import de.team55.mms.function.Modul;
+import de.team55.mms.function.Modulhandbuch;
 import de.team55.mms.function.Studiengang;
 import de.team55.mms.function.User;
 
@@ -89,6 +92,7 @@ public class mainscreen {
 		homecard();
 		usermgtcard();
 		newmodulecard();
+		modulbearbeitenCard();
 
 	}
 
@@ -162,11 +166,22 @@ public class mainscreen {
 			}
 
 		});
+		
 
 		left.add(btnModulBearbeiten);
 		btnModulBearbeiten.setEnabled(false);
 		btnModulBearbeiten.setPreferredSize(btnSz);
 		btnModulBearbeiten.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		btnModulBearbeiten.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showCard("modulbearbeiten");
+			}
+
+		});
+		
 
 		left.add(btnLogin);
 		btnLogin.addActionListener(new ActionListener() {
@@ -807,6 +822,95 @@ np.printStackTrace();
 			btnMHB.setEnabled(true);
 		else
 			btnMHB.setEnabled(false);
+
+	}
+	
+public void modulbearbeitenCard() {
+	
+		JPanel panel = new JPanel();		
+		JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+		panel.add(tabs, BorderLayout.CENTER);
+		
+		JPanel nichtakzeptiert = new JPanel();
+		tabs.addTab("Noch nicht akzeptierte Module", null, nichtakzeptiert, null);
+		nichtakzeptiert.setLayout(new BorderLayout(0, 0));
+		final DefaultListModel<Modul> lm = new DefaultListModel<Modul>();		
+		final JList<Modul> list_notack = new JList<Modul>(lm);
+		list_notack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_notack.setLayoutOrientation(JList.VERTICAL_WRAP);
+		
+		ArrayList<Modul> m1 = database.getModule(false);
+		for(int i = 0; i<m1.size();i++){
+			lm.addElement(m1.get(i));
+		}
+		
+		nichtakzeptiert.add(list_notack);
+		
+		JPanel buttonpnl = new JPanel();
+		nichtakzeptiert.add(buttonpnl, BorderLayout.SOUTH);
+		
+		JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
+		btnModulBearbeiten.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.print(list_notack.getSelectedValue());
+			}
+		});
+		buttonpnl.add(btnModulBearbeiten);
+		
+		JButton btnModulAkzeptieren = new JButton("Modul akzeptieren");
+		btnModulAkzeptieren.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonpnl.add(btnModulAkzeptieren);
+		
+		JButton btnModulVerwerfen = new JButton("Modul verwerfen");
+		btnModulVerwerfen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonpnl.add(btnModulVerwerfen);
+		
+		JButton btnZurck = new JButton("Zur\u00FCck");
+		buttonpnl.add(btnZurck);
+		
+		JPanel akzeptiert = new JPanel();
+		tabs.addTab("akzeptierte Module", null, akzeptiert, null);
+		tabs.setEnabledAt(1, true);
+		akzeptiert.setLayout(new BorderLayout(0, 0));
+		
+		JList list_ack = new JList();
+		list_ack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_ack.setLayoutOrientation(JList.VERTICAL_WRAP);
+		akzeptiert.add(list_ack);
+		
+		JPanel buttonpnl2 = new JPanel();
+		akzeptiert.add(buttonpnl2, BorderLayout.SOUTH);
+		
+		JButton btnModulBearbeiten2 = new JButton("Modul bearbeiten");
+		btnModulBearbeiten2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonpnl2.add(btnModulBearbeiten2);
+		
+		JButton btnModulAkzeptieren2 = new JButton("Modul akzeptieren");
+		btnModulAkzeptieren2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonpnl2.add(btnModulAkzeptieren2);
+		
+		JButton btnZurck2 = new JButton("Zur\u00FCck");
+		btnZurck2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		buttonpnl2.add(btnZurck2);
+		cards.add(panel, "modulbearbeiten");
+		
+		
+		
 
 	}
 
