@@ -364,7 +364,6 @@ public class mainscreen {
 				try {
 
 					JTextField neu_Name = new JTextField();
-				//	JTextField neu_Studiengang = new JTextField();
 					JTextField neu_Jahrgang = new JTextField();
 					DefaultComboBoxModel cbm= new DefaultComboBoxModel(database
 							.getStudiengaenge().toArray());
@@ -377,7 +376,8 @@ public class mainscreen {
 							"Neues Modulhandbuch anlegen",
 							JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
-						while ((neu_Name.getText().isEmpty()
+						
+						while ((neu_Name.getText().isEmpty()||(neu_sgbox.getSelectedItem()==null)
 								||neu_Jahrgang.getText().isEmpty())
 								&& (option == JOptionPane.OK_OPTION)) {
 							Object[] messageEmpty = {
@@ -419,7 +419,7 @@ public class mainscreen {
 					}
 
 				} catch (NullPointerException np) {
-
+np.printStackTrace();
 				}
 			}
 
@@ -585,8 +585,9 @@ public class mainscreen {
 		btnOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String Modulhandbuch = ((JTextArea) ((JPanel) panel
-						.getComponent(0)).getComponent(1)).getText();
+				Modulhandbuch mb = (Modulhandbuch) ((JComboBox ) ((JPanel) panel
+						.getComponent(0)).getComponent(1)).getSelectedItem();
+				String Modulhandbuch = mb.getName();
 				JList<String> l = ((JList<String>) ((JPanel) panel
 						.getComponent(2)).getComponent(1));
 				String Jahrgang = ((JTextArea) ((JPanel) panel.getComponent(4))
