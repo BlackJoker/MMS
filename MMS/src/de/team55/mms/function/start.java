@@ -15,7 +15,6 @@ public class start {
 		
 		//Studiengang - Jahr - Modulhandbuch - Anwendungsfach/Vertiefungsfach  - Fach
 		
-		//Studiengang vordefinieren (mehrere)
 		//Anwendungsfächer
 
 		//registrierung?

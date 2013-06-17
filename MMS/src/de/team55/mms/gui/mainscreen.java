@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -39,6 +40,7 @@ import javax.swing.table.DefaultTableModel;
 
 import de.team55.mms.db.sql;
 import de.team55.mms.function.Modul;
+import de.team55.mms.function.Studiengang;
 import de.team55.mms.function.User;
 
 public class mainscreen {
@@ -65,8 +67,6 @@ public class mainscreen {
 			"<html>Modulhandbücher<br>Durchstöbern");
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
-
-	// private String selectedCard;
 	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
 
 	public mainscreen() {
@@ -345,7 +345,89 @@ public class mainscreen {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		// Panel Modulhandbuch + Platzhalter
-		panel.add(defaultmodulPanel("Modulhandbuch"));
+		JPanel pnl_MH = new JPanel();
+		JLabel label_MH = new JLabel("Modulhandbuch");
+		label_MH.setPreferredSize(preferredSize);
+		pnl_MH.add(label_MH);
+
+		final DefaultComboBoxModel cbmodel_MH = new DefaultComboBoxModel(
+				database.getModulhandbuecher().toArray());
+		final JComboBox cb_MH = new JComboBox(cbmodel_MH);
+		cb_MH.setMaximumSize(new Dimension(cb_MH.getMaximumSize().width, 20));
+
+		pnl_MH.add(cb_MH);
+
+		JButton nMH_btn = new JButton("Neues Modulhandbuch");
+		nMH_btn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+
+					JTextField neu_Name = new JTextField();
+				//	JTextField neu_Studiengang = new JTextField();
+					JTextField neu_Jahrgang = new JTextField();
+					DefaultComboBoxModel cbm= new DefaultComboBoxModel(database
+							.getStudiengaenge().toArray());
+					JComboBox neu_sgbox = new JComboBox(cbm);
+					Object[] message = { "Name des Modulhandbuches:", neu_Name,
+							"Studiengang:", neu_sgbox, "Jahrgang:",
+							neu_Jahrgang };
+
+					int option = JOptionPane.showConfirmDialog(frame, message,
+							"Neues Modulhandbuch anlegen",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+						while ((neu_Name.getText().isEmpty()
+								||neu_Jahrgang.getText().isEmpty())
+								&& (option == JOptionPane.OK_OPTION)) {
+							Object[] messageEmpty = {
+									"Bitte alle Felder ausfüllen!",
+									"Name des Modulhandbuches:", neu_Name,
+									"Studiengang:", neu_sgbox,
+									"Jahrgang:", neu_Jahrgang };
+							option = JOptionPane.showConfirmDialog(frame,
+									messageEmpty,
+									"Neues Modulhandbuch anlegen",
+									JOptionPane.OK_CANCEL_OPTION);
+						}
+						if (option == JOptionPane.OK_OPTION) {
+							Modulhandbuch neu_mh = new Modulhandbuch(neu_Name
+									.getText(), neu_sgbox.getSelectedItem().toString(),
+									neu_Jahrgang.getText());
+							ArrayList<Modulhandbuch> MHs = database
+									.getModulhandbuecher();
+							boolean neu = true;
+							for (int i = 0; i < MHs.size(); i++) {
+								Modulhandbuch alt = MHs.get(i);
+								if (alt.equals(neu_mh)) {
+									neu = false;
+									break;
+								}
+							}
+							if (neu) {
+								database.setModulhandbuch(neu_mh);
+								cbmodel_MH.removeAllElements();
+								MHs = database.getModulhandbuecher();
+								for (int i = 0; i < MHs.size(); i++)
+									cbmodel_MH.addElement(MHs.get(i));
+							} else {
+								JOptionPane.showMessageDialog(frame,
+										"Modulhandbuch ist schon vorhanden",
+										"Fehler", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+
+				} catch (NullPointerException np) {
+
+				}
+			}
+
+		});
+		pnl_MH.add(nMH_btn);
+
+		pnl_MH.setLayout(new BoxLayout(pnl_MH, BoxLayout.X_AXIS));
+		panel.add(pnl_MH);
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Studiengang + Platzhalter
@@ -370,14 +452,14 @@ public class mainscreen {
 		});
 		pnl_Sg.add(st);
 
-		final DefaultComboBoxModel cbmodel = new DefaultComboBoxModel(
-				database.getStudiengaenge());
+		final DefaultComboBoxModel cbmodel = new DefaultComboBoxModel(database
+				.getStudiengaenge().toArray());
 		final JComboBox sgbox = new JComboBox(cbmodel);
 		sgbox.setMaximumSize(new Dimension(sgbox.getMaximumSize().width, 20));
 
 		pnl_Sg.add(sgbox);
 
-		JButton sg = new JButton("Studiengang hinzufügen");
+		JButton sg = new JButton("Studiengang auswählen");
 		sg.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -406,17 +488,22 @@ public class mainscreen {
 										JOptionPane.PLAIN_MESSAGE);
 					}
 
-					String[] sgs = database.getStudiengaenge();
+					ArrayList<Studiengang> sgs = database.getStudiengaenge();
 					boolean neu = true;
-					for (int i = 0; i < sgs.length; i++) {
-						if (sgs[i].equals(name)) {
+					for (int i = 0; i < sgs.size(); i++) {
+						if (sgs.get(i).equals(name)) {
 							neu = false;
 							break;
 						}
 					}
 					if (neu) {
 						database.setStudiengang(name);
-						cbmodel.addElement(name);
+						cbmodel.removeAllElements();
+						sgs = database.getStudiengaenge();
+						for (int i = 0; i < sgs.size(); i++)
+							cbmodel.addElement(sgs.get(i));
+
+						// cbmodel.addElement(name);
 					} else {
 						JOptionPane.showMessageDialog(frame,
 								"Studiengang ist schon vorhanden", "Fehler",
@@ -432,8 +519,6 @@ public class mainscreen {
 
 		pnl_Sg.setLayout(new BoxLayout(pnl_Sg, BoxLayout.X_AXIS));
 		panel.add(pnl_Sg);
-
-		// panel.add(defaultmodulPanel("Studiengang"));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Jahrgang + Platzhalter
@@ -531,14 +616,17 @@ public class mainscreen {
 				}
 				int version = database.getModulVersion(Name) + 1;
 
-				// Für jeden Studiengang, neues Modul anlegen
+				ArrayList<Studiengang> Studiengang = new ArrayList<Studiengang>();
+
 				for (int i = 0; i < l.getModel().getSize(); i++) {
-					String Studiengang = l.getModel().getElementAt(i)
-							.toString();
-					Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
-							Jahrgang, labels, values, version, dez);
-					database.setModul(neu);
+					String name = l.getModel().getElementAt(i).toString();
+					int id = database.getStudiengangID(name);
+
+					Studiengang.add(new Studiengang(id, name));
 				}
+				Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
+						Jahrgang, labels, values, version, dez);
+				database.setModul(neu);
 				panel.removeAll();
 				panel.revalidate();
 				newmodulecard();

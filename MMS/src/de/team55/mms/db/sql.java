@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.team55.mms.function.Modul;
+import de.team55.mms.function.Studiengang;
 import de.team55.mms.function.User;
+import de.team55.mms.gui.Modulhandbuch;
 import de.team55.mms.gui.mainscreen;
 
 public class sql {
@@ -46,44 +48,60 @@ public class sql {
 			this.con.setAutoCommit(false);
 			// user table
 			Statement stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user" + "("
-					+ "id int NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-					+ "email varchar(255) NOT NULL, "
-					+ "vorname varchar(255) , " + "namen varchar(255) , "
-					+ "password varchar(255)" + ");"
 
-			);
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `module` ("
+					+ "  `name` varchar(255) NOT NULL,"
+					+ "  `Modulhandbuchname` varchar(255) NOT NULL,"
+					+ "  `Version` int(11) NOT NULL,"
+					+ "  `Datum` date NOT NULL,"
+					+ "  `akzeptiert` BOOLEAN NOT NULL DEFAULT '0',"
+					+ "  `inbearbeitung` BOOLEAN NOT NULL DEFAULT '0',"
+					+ "  `sid` int(10) NOT NULL" + ") ");
 			this.con.commit();
-			// stmt.close();
-			// rights table
-			// stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS rights" + "("
-					+ "id int NOT NULL, " + "userchange BOOLEAN NOT NULL, "
-					+ "modcreate BOOLEAN NOT NULL, "
-					+ "modacc BOOLEAN NOT NULL, " + "modread BOOLEAN NOT NULL"
-					+ ");");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `modulhandbuch` ("
+					+ "  `name` varchar(255) NOT NULL,"
+					+ "  `studiengang` varchar(255) DEFAULT NULL,"
+					+ "  `jahrgang` varchar(255) NOT NULL,"
+					+ "  `akzeptiert` BOOLEAN NOT NULL DEFAULT '0'" + ") ");
 			this.con.commit();
-			// stmt.close();
-			// module table
-			// stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS module" + "("
-					+ "name varchar(255) NOT NULL, "
-					+ "Modulhandbuchname varchar(255) NOT NULL, "
-					+ "Version int NOT NULL, " + "Datum date NOT NULL " + ");");
+			
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `rights` ("
+					+ "  `id` int(11) NOT NULL,"
+					+ "  `userchange` BOOLEAN NOT NULL,"
+					+ "  `modcreate` BOOLEAN NOT NULL,"
+					+ "  `modacc` BOOLEAN NOT NULL,"
+					+ "  `modread` BOOLEAN NOT NULL,"
+					+ "  `adminwork` BOOLEAN NOT NULL" + ")");
 			this.con.commit();
-			// stmt.close();
-			// text table
-			// stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS text" + "("
-					+ "MODHuMOD varchar(255) , " + "version int , "
-					+ "label varchar(255) , " + "text varchar(255));");
+
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `studiengang` ("
+					+ "  `id` int(10) NOT NULL AUTO_INCREMENT,"
+					+ "  `name` varchar(255) NOT NULL,"
+					+ "  PRIMARY KEY (`id`),"
+					+ "  UNIQUE KEY `Studiengang` (`name`)" + ")");
 			this.con.commit();
-			// stmt.close();
-			// modulhandbuch table
-			// stmt = this.con.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS modulhandbuch" + "("
-					+ "name varchar(255) , " + "studiengang varchar(255) , "
-					+ "jahrgang varchar(255) " + ");");
+
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `text` ("
+					+ "  `name` varchar(255) NOT NULL,"
+					+ "  `version` int(11) NOT NULL,"
+					+ "  `label` varchar(255) NOT NULL,"
+					+ "  `text` varchar(255) NOT NULL,"
+					+ "  `dezernat2` BOOLEAN NOT NULL DEFAULT '0'" + ")");
+			this.con.commit();
+			
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `user` ("
+					+ "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+					+ "  `email` varchar(255) NOT NULL,"
+					+ "  `titel` varchar(255) DEFAULT NULL,"
+					+ "  `vorname` varchar(255) DEFAULT NULL,"
+					+ "  `namen` varchar(255) DEFAULT NULL,"
+					+ "  `password` varchar(255) NOT NULL,"
+					+ "  PRIMARY KEY (`id`),"
+					+ "  UNIQUE KEY `email` (`email`)" + ")");
+			this.con.commit();
+			
+			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
+					+ "	(1, 'admin@mms.de', NULL, 'Admin', 'Admin', 'a384b6463fc216a5f8ecb6670f86456a');");
 			this.con.commit();
 			stmt.close();
 			connected = true;
@@ -161,9 +179,6 @@ public class sql {
 
 	}
 
-	/*
-	 * Das selbe hier
-	 */
 	public int getAnzahlStudiengaenge() {
 		ResultSet res = null;
 		Statement state = null;
@@ -173,7 +188,7 @@ public class sql {
 				state = this.con.createStatement();
 				res = state
 						.executeQuery("SELECT COUNT(id) AS cnt FROM studiengang;");
-				while(res.next()){
+				while (res.next()) {
 					cnt = res.getInt("cnt");
 				}
 				res.close();
@@ -193,6 +208,7 @@ public class sql {
 		Statement state = null;
 		int version = 0;
 		String Modulhandbuch = "";
+		ArrayList<Studiengang> Studiengang = new ArrayList<Studiengang>();
 		Date datum = new Date();
 		boolean akzeptiert = false;
 		boolean inbearbeitung = false;
@@ -203,14 +219,28 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT *,MAX(Version) FROM module WHERE name = '"
+						.executeQuery("SELECT IFNULL(MAX(Version),0) as version FROM module WHERE = '"
 								+ name + "';");
 				if (res.first()) {
-					version = res.getInt("Version");
-					Modulhandbuch = res.getString("Modulhandbuchname");
-					datum = res.getDate("Datum");
-					akzeptiert = res.getBoolean("akzeptiert");
-					inbearbeitung = res.getBoolean("inbearbeitung");
+					version = res.getInt("version");
+				}
+
+				if (version != 0) {
+					res = state
+							.executeQuery("SELECT *, s.name AS sname FROM module AS m JOIN studiengang as s ON s.id=m.sid WHERE name = '"
+									+ name + "'AND version =" + version + ";");
+					if (res.first()) {
+						Modulhandbuch = res.getString("Modulhandbuchname");
+						datum = res.getDate("Datum");
+						akzeptiert = res.getBoolean("akzeptiert");
+						inbearbeitung = res.getBoolean("inbearbeitung");
+						Studiengang.add(new Studiengang(res.getInt("sid"), res
+								.getString("sname")));
+					}
+					while (res.next()) {
+						Studiengang.add(new Studiengang(res.getInt("sid"), res
+								.getString("sname")));
+					}
 				}
 				res.close();
 				state.close();
@@ -237,7 +267,8 @@ public class sql {
 			}
 			disconnect();
 		}
-		return new Modul(name, Modulhandbuch, version, datum, labels, values,dezernat, akzeptiert, inbearbeitung);
+		return new Modul(name, Studiengang, Modulhandbuch, version, datum,
+				labels, values, dezernat, akzeptiert, inbearbeitung);
 
 	}
 
@@ -285,20 +316,19 @@ public class sql {
 		return version;
 	}
 
-	public String[] getStudiengaenge() {
+	public ArrayList<Studiengang> getStudiengaenge() {
 		ResultSet res = null;
 		Statement state = null;
-		String[] sg= new String[getAnzahlStudiengaenge()];
+		ArrayList<Studiengang> sgs = new ArrayList<Studiengang>();
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT name FROM studiengang;");
+				res = state.executeQuery("SELECT * FROM studiengang;");
 				// verarbeitung der resultset
-				int cnt = 0;
-				while((cnt<sg.length)&&(res.next())){
-					sg[cnt]=res.getString("name");
-					cnt++;
+				while (res.next()) {
+					int id = res.getInt("id");
+					String name = res.getString("name");
+					sgs.add(new Studiengang(id, name));
 				}
 				res.close();
 				state.close();
@@ -308,7 +338,7 @@ public class sql {
 			}
 			disconnect();
 		}
-		return sg;
+		return sgs;
 
 	}
 
@@ -346,34 +376,36 @@ public class sql {
 	public boolean isConnected() {
 		return connected;
 	}
-	
+
 	public void setModul(Modul neu) {
 		PreparedStatement state = null;
 		if (connect() == true) {
+			ArrayList<Studiengang> studiengang = neu.getStudiengang();
 			String name = neu.getName();
 			int version = neu.getVersion();
 			ArrayList<String> labels = neu.getLabels();
 			ArrayList<String> values = neu.getValues();
 			ArrayList<Boolean> dezernat = neu.getDezernat();
 			try {
-
+				for (int i = 0; i < studiengang.size(); i++) {
+					state = con
+							.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum, sid) VALUES(?,?,?,?,?)");
+					state.setString(1, name);
+					state.setString(2, neu.getModulhandbuch());
+					state.setInt(3, version);
+					state.setDate(4, convertToSQLDate(neu.getDatum()));
+					state.setInt(5, studiengang.get(i).getId());
+					state.executeUpdate();
+				}
+				/*
+				 * state = con .prepareStatement(
+				 * "INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)"
+				 * ); state.setString(1, neu.getModulhandbuch());
+				 * state.setString(2, neu.getStudiengang()); state.setString(3,
+				 * neu.getJahrgang()); state.executeUpdate();
+				 */
 				state = con
-						.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum) VALUES(?,?,?,?)");
-				state.setString(1, name);
-				state.setString(2, neu.getModulhandbuch());
-				state.setInt(3, version);
-				state.setDate(4, convertToSQLDate(neu.getDatum()));
-				state.executeUpdate();
-
-				state = con
-						.prepareStatement("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES(?,?,?)");
-				state.setString(1, neu.getModulhandbuch());
-				state.setString(2, neu.getStudiengang());
-				state.setString(3, neu.getJahrgang());
-				state.executeUpdate();
-
-				state = con
-						.prepareStatement("INSERT INTO text (MODHuMOD,version, label, text, dezernat2) VALUES(?,?,?,?,?)");
+						.prepareStatement("INSERT INTO text (name,version, label, text, dezernat2) VALUES(?,?,?,?,?)");
 				for (int i = 0; i < labels.size(); i++) {
 					state.setString(1, name);
 					state.setInt(2, version);
@@ -423,14 +455,21 @@ public class sql {
 
 	}
 
-	public void setModulhandbuch(String name, String studiengang,
-			String jahrgang) {
+	public void setModulhandbuch(Modulhandbuch mh) {
+		String name = mh.getName();
+		String studiengang = mh.getStudiengang();
+		String jahrgang = mh.getJahrgang();
 		Statement state = null;
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
-				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ("
-						+ name + ", " + studiengang + ", " + jahrgang + ");");
+				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ('"
+						+ name
+						+ "', '"
+						+ studiengang
+						+ "', '"
+						+ jahrgang
+						+ "');");
 
 			} catch (SQLException e) {
 				// TODO fehler fenster aufrufen
@@ -441,22 +480,22 @@ public class sql {
 
 	}
 
-	//Neuen Studiengang anlegen
+	// Neuen Studiengang anlegen
 	public void setStudiengang(String name) {
-			Statement state = null;
-			if (connect() == true) {
-				try {
-					state = this.con.createStatement();
-					state.executeUpdate("INSERT INTO studiengang (name) VALUES ("
-							+ name + ");");
+		Statement state = null;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				state.executeUpdate("INSERT INTO studiengang (name) VALUES ('"
+						+ name + "');");
 
-				} catch (SQLException e) {
-					// TODO fehler fenster aufrufen
-					e.printStackTrace();
-				}
-				disconnect();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
 			}
-		
+			disconnect();
+		}
+
 	}
 
 	public ArrayList<User> userload() {
@@ -610,5 +649,57 @@ public class sql {
 
 	private java.sql.Date convertToSQLDate(java.util.Date utilDate) {
 		return new java.sql.Date(utilDate.getTime());
+	}
+
+	public int getStudiengangID(String name) {
+		ResultSet res = null;
+		Statement state = null;
+		int id = 0;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT id FROM studiengang WHERE name ='"
+								+ name + "';");
+				// verarbeitung der resultset
+				if (res.next()) {
+					id = res.getInt("id");
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return id;
+	}
+
+	public ArrayList<Modulhandbuch> getModulhandbuecher() {
+		ResultSet res = null;
+		Statement state = null;
+		ArrayList<Modulhandbuch> MHs = new ArrayList<Modulhandbuch>();
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state.executeQuery("SELECT * FROM modulhandbuch;");
+				// verarbeitung der resultset
+				while (res.next()) {
+					String name = res.getString("name");
+					String sg = res.getString("studiengang");
+					String jg = res.getString("jahrgang");
+					boolean ack = res.getBoolean("akzeptiert");
+					MHs.add(new Modulhandbuch(name, sg, jg, ack));
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return MHs;
 	}
 }

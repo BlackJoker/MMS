@@ -6,7 +6,7 @@ import java.util.Date;
 public class Modul {
 
 	private String name;
-	private String studiengang;
+	private ArrayList<Studiengang> studiengang;
 	private String modulhandbuch;
 	private int version;
 	private Date datum;
@@ -19,9 +19,10 @@ public class Modul {
 	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
 
 
-	public Modul(String name, String modulhandbuch, int version,
+	public Modul(String name, ArrayList<Studiengang> studiengang2, String modulhandbuch, int version,
 			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez, boolean akzeptiert, boolean inbearbeitung) {
 		this.name = name;
+		this.studiengang = studiengang2;
 		this.modulhandbuch=modulhandbuch;
 		this.version=version;
 		this.datum=datum;
@@ -40,7 +41,7 @@ public class Modul {
 		return inbearbeitung;
 	}
 
-	public Modul(String name, String studiengang, String modulhandbuch,
+	public Modul(String name, ArrayList<Studiengang> studiengang, String modulhandbuch,
 			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version, ArrayList<Boolean> dez) {
 		this.name = name;
 		this.studiengang = studiengang;
@@ -51,6 +52,8 @@ public class Modul {
 		this.version =version;
 		this.datum=new Date();
 		this.dezernat= dez;
+		this.akzeptiert=false;
+		this.inbearbeitung=false;
 	}
 
 	public Date getDatum() {
@@ -77,7 +80,7 @@ public class Modul {
 		return name;
 	}
 
-	public String getStudiengang() {
+	public ArrayList<Studiengang> getStudiengang() {
 		return studiengang;
 	}
 
