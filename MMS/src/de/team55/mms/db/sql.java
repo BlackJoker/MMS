@@ -29,15 +29,16 @@ public class sql {
 	private String dbPort = "3306";
 
 	// Datenbankname
-	private String database = "mmsdb4sopra";
+	private String database = "mms4sopra2";
 
 	// Datenbankuser
-	private String dbUser = "team55";
+	private String dbUser = "team5526";
 
 	// Datenbankpasswort
 	private String dbPassword = "qwert710";
 
 	public boolean connect() {
+
 		connected = false;
 		try {
 			// connect to the server
@@ -102,6 +103,9 @@ public class sql {
 
 			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
 					+ "	(1, 'admin@mms.de', NULL, 'Admin', 'Admin', 'a384b6463fc216a5f8ecb6670f86456a');");
+			this.con.commit();
+			stmt.executeUpdate("INSERT IGNORE INTO `rights` (`id`, `userchange`, `modcreate`, `modacc`, `modread`, `adminwork`) VALUES"
+					+ "	(1, 1, 1, 1, 1, 1);");
 			this.con.commit();
 			stmt.close();
 			connected = true;
@@ -297,12 +301,16 @@ public class sql {
 		ResultSet res = null;
 		Statement state = null;
 		int version = 0;
+		System.out.println("connecte jetzt");
 		if (connect() == true) {
+			System.out.println("connected?");
 			try {
+				System.out.println("try");
 				state = this.con.createStatement();
-				res = state
-						.executeQuery("SELECT IFNULL(MAX(Version),0) AS Version FROM module WHERE name = '"
-								+ name + "';");
+				String q = "SELECT IFNULL(MAX(Version),0) AS Version FROM module WHERE name = '"
+						+ name + "';";
+				System.out.println(q);
+				res = state.executeQuery(q);
 				if (res.first()) {
 					version = res.getInt("Version");
 				}
@@ -707,62 +715,79 @@ public class sql {
 		ArrayList<Modul> module = new ArrayList<Modul>();
 		ResultSet res = null;
 		Statement state = null;
+		Statement state2 = null;
 		boolean ack;
-		if( b == false){
-			 ack = true;}
-		else{
-			ack = false;}
+		if (b == false) {
+			ack = true;
+		} else {
+			ack = false;
+		}
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
-				
+				state2 = this.con.createStatement();
+				res = state2
+						.executeQuery("SELECT DISTINCT name FROM module ORDER BY name ASC;");
 
-				res = state.executeQuery("SELECT DISTINCT name FROM module ORDER BY name ASC;");
-
-				while(res.next()){
+				while (res.next()) {
 					String name = res.getString("name");
-					int version = getModulVersion(name);
+					String q = "SELECT IFNULL(MAX(Version),0) AS Version FROM module WHERE name = '"
+							+ name + "';";
+					ResultSet res2 = state.executeQuery(q);
+					int version = 0;
+					if (res2.first()) {
+						version = res2.getInt("Version");
+					}
+
 					ArrayList<Studiengang> sgs = new ArrayList<Studiengang>();
-					ResultSet res2 = state.executeQuery("SELECT m.*, s.name AS sname FROM module AS m JOIN studiengang AS s ON sid=id WHERE m.name = '"+name+"' AND version="+version+";");
+					res2 = state
+							.executeQuery("SELECT m.*, s.name AS sname FROM module AS m JOIN studiengang AS s ON sid=id WHERE m.name = '"
+									+ name + "' AND version=" + version + ";");
 					String mh = "";
 					Date datum = null;
 					boolean inedit = false;
-					if(res.first()){
+					if (res2.first()) {
 						ack = res2.getBoolean("akzeptiert");
 						mh = res2.getString("modulhandbuchname");
-						datum  = res2.getDate("datum");
-						inedit = res.getBoolean("inbearbeitung");
+						datum = res2.getDate("datum");
+						inedit = res2.getBoolean("inbearbeitung");
 						int sid = res2.getInt("sid");
 						String sname = res2.getString("sname");
 						sgs.add(new Studiengang(sid, sname));
 					}
-					if(b==ack){
-						while(res2.next()){
+					if (b == ack) {
+						while (res2.next()) {
 							int sid = res2.getInt("sid");
 							String sname = res2.getString("sname");
 							sgs.add(new Studiengang(sid, sname));
 						}
-						
+
 						ArrayList<String> labels = new ArrayList<String>();
 						ArrayList<String> values = new ArrayList<String>();
 						ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
-						
-						res2 = state
-								.executeQuery("SELECT label, text, dezernat FROM text WHERE name = '"
-										+ name + "' AND version = " + version + ";");
 
-						while (res.next()) {
-							labels.add(res.getString("label"));
-							values.add(res.getString("text"));
-							dezernat.add(res.getBoolean("dezernat"));
+						res2 = state
+								.executeQuery("SELECT label, text, dezernat2 FROM text WHERE name = '"
+										+ name
+										+ "' AND version = "
+										+ version
+										+ ";");
+
+						while (res2.next()) {
+							labels.add(res2.getString("label"));
+							values.add(res2.getString("text"));
+							dezernat.add(res2.getBoolean("dezernat2"));
 						}
+						res2.close();
+
 						module.add(new Modul(name, sgs, mh, version, datum,
-				labels, values, dezernat, ack, inedit));
+								labels, values, dezernat, ack, inedit));
 					}
-					
+
 				}
 				res.close();
 				state.close();
+				state2.close();
 			} catch (SQLException e) {
 				// TODO fehler fenster aufrufen
 				e.printStackTrace();

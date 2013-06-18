@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class Modul {
 
+	
+
 	private String name;
 	private ArrayList<Studiengang> studiengang;
 	private String modulhandbuch;
@@ -90,6 +92,11 @@ public class Modul {
 
 	public int getVersion() {
 		return version;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }
