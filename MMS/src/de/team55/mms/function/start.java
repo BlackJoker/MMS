@@ -12,7 +12,7 @@ public class start {
 	 */
 	public static void main(String[] args) {
 		
-		//Userbearbeiten GUI Tabelle?
+		//Userbear passwort bearbeiten
 		//User, der Modul geändert hat, anzeigen/eintragen
 		//User Relationstabelle
 		
