@@ -11,7 +11,10 @@ public class start {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//User, der Modul geändert hat, anzeigen
+		
+		//Userbearbeiten GUI Tabelle?
+		//User, der Modul geändert hat, anzeigen/eintragen
+		//User Relationstabelle
 		
 		//Studiengang - Jahr - Modulhandbuch - Anwendungsfach/Vertiefungsfach  - Fach
 		
