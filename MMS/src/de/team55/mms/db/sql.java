@@ -104,8 +104,8 @@ public class sql {
 			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
 					+ "	(1, 'admin@mms.de', NULL, 'Admin', 'Admin', 'a384b6463fc216a5f8ecb6670f86456a');");
 			this.con.commit();
-			stmt.executeUpdate("INSERT IGNORE INTO `rights` (`id`, `userchange`, `modcreate`, `modacc`, `modread`, `adminwork`) VALUES"
-					+ "	(1, 1, 1, 1, 1, 1);");
+			stmt.executeUpdate("INSERT IGNORE INTO `rights` (`id`, `userchange`, `modcreate`, `modacc`, `modread`) VALUES"
+					+ "	(1, 1, 1, 1, 1);");
 			this.con.commit();
 			stmt.close();
 			connected = true;
