@@ -3,22 +3,24 @@ package de.team55.mms.server.function;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "User") 
-@XmlType(propOrder = { "eMail", "vorname", "nachname","password", "manageUsers", "acceptModule", "createModule", "readModule" })
+@XmlRootElement(name = "User")
+@XmlType(propOrder = { "eMail", "titel", "vorname", "nachname", "password",
+		"manageUsers", "acceptModule", "createModule", "readModule" })
 public class User {
 	private String Vorname;
 	private String Nachname;
 	private String eMail;
 	private String Password;
+	private String Titel;
 	private boolean manageUsers;
 	private boolean readModule;
 	private boolean createModule;
 	private boolean acceptModule;
 
-	
-	public User(){
-		this.Vorname="null";
-		this.Nachname="null";
+	public User() {
+		this.Vorname = "null";
+		this.Nachname = "null";
+		this.Titel = "null";
 		this.eMail = "null";
 		this.Password = "null";
 		this.manageUsers = false;
@@ -26,13 +28,14 @@ public class User {
 		this.createModule = false;
 		this.acceptModule = false;
 	}
-	
-	public User(String Vorname, String Nachname, String eMail, String Password,
-			boolean manageUsers, boolean createModule, boolean acceptModule,
-			boolean readModule) {
+
+	public User(String Vorname, String Nachname, String Titel, String eMail,
+			String Password, boolean manageUsers, boolean createModule,
+			boolean acceptModule, boolean readModule) {
 
 		this.Vorname = Vorname;
 		this.Nachname = Nachname;
+		this.Titel = Titel;
 		this.eMail = eMail;
 		this.Password = Password;
 		this.manageUsers = manageUsers;
@@ -41,8 +44,15 @@ public class User {
 		this.acceptModule = acceptModule;
 
 	}
-	
-	  
+
+	public String getTitel() {
+		return Titel;
+	}
+
+	public void setTitel(String titel) {
+		Titel = titel;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -61,6 +71,11 @@ public class User {
 			if (other.Password != null)
 				return false;
 		} else if (!Password.equals(other.Password))
+			return false;
+		if (Titel == null) {
+			if (other.Titel != null)
+				return false;
+		} else if (!Titel.equals(other.Titel))
 			return false;
 		if (Vorname == null) {
 			if (other.Vorname != null)
@@ -82,6 +97,7 @@ public class User {
 			return false;
 		return true;
 	}
+
 	public boolean getAcceptModule() {
 		return acceptModule;
 	}
@@ -102,7 +118,7 @@ public class User {
 		return Nachname;
 	}
 
-	//@XmlTransient
+	// @XmlTransient
 	public String getPassword() {
 		return Password;
 	}
@@ -123,6 +139,7 @@ public class User {
 				+ ((Nachname == null) ? 0 : Nachname.hashCode());
 		result = prime * result
 				+ ((Password == null) ? 0 : Password.hashCode());
+		result = prime * result + ((Titel == null) ? 0 : Titel.hashCode());
 		result = prime * result + ((Vorname == null) ? 0 : Vorname.hashCode());
 		result = prime * result + (acceptModule ? 1231 : 1237);
 		result = prime * result + (createModule ? 1231 : 1237);
@@ -167,10 +184,10 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [Vorname=" + Vorname + ", Nachname=" + Nachname
-				+ ", eMail=" + eMail + ", Password=" + Password
-				+ ", manageUsers=" + manageUsers + ", readModule=" + readModule
-				+ ", createModule=" + createModule + ", acceptModule="
-				+ acceptModule + "]";
+				+ ", eMail=" + eMail + ", Password=" + Password + ", Titel="
+				+ Titel + ", manageUsers=" + manageUsers + ", readModule="
+				+ readModule + ", createModule=" + createModule
+				+ ", acceptModule=" + acceptModule + "]";
 	}
 
 }

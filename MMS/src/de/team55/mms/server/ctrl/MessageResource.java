@@ -27,13 +27,13 @@ public class MessageResource {
 
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	@Path("users")
+	@Path("/users")
 	public ArrayList<User> getAllUsers() {
 		return new sql().userload();
 	}
 
 	@POST
-	@Path("modul/post/")
+	@Path("/modul/post/")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response modulPost(Modul m) {
 		int status = new sql().setModul(m);
@@ -53,7 +53,7 @@ public class MessageResource {
 	 */
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	@Path("login/{user}/{pass}")
+	@Path("/login/{user}/{pass}")
 	public User userLogin(@PathParam("user") String user,
 			@PathParam("pass") String pass) {
 		User tmp = new sql().getUser(user,pass);
@@ -64,7 +64,7 @@ public class MessageResource {
 	}
 
 	@POST
-	@Path("user/post/")
+	@Path("/user/post/")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response userPost(User user) {
 		int status = new sql().usersave(user);
@@ -74,7 +74,7 @@ public class MessageResource {
 	}
 	
 	@POST
-	@Path("user/update/")
+	@Path("/user/update/")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response userUpdate(UserUpdateContainer uuc) {
 		int status = new sql().userupdate(uuc.getUser(), uuc.getEmail());

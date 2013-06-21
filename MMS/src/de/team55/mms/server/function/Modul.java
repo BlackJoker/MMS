@@ -5,29 +5,46 @@ import java.util.Date;
 
 public class Modul {
 
+	
+
 	private String name;
-	private String studiengang;
+	private ArrayList<Studiengang> studiengang;
 	private String modulhandbuch;
 	private int version;
 	private Date datum;
+	private boolean akzeptiert;
+	private boolean inbearbeitung;
 
 	private String jahrgang;
 	private ArrayList<String> labels = new ArrayList<String>();
 	private ArrayList<String> values = new ArrayList<String>();
+	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
 
-	public Modul(String name, String modulhandbuch, int version,
-			Date datum, ArrayList<String> labels, ArrayList<String> values) {
-		// TODO Auto-generated constructor stub
+
+	public Modul(String name, ArrayList<Studiengang> studiengang2, String modulhandbuch, int version,
+			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez, boolean akzeptiert, boolean inbearbeitung) {
 		this.name = name;
+		this.studiengang = studiengang2;
 		this.modulhandbuch=modulhandbuch;
 		this.version=version;
 		this.datum=datum;
 		this.labels = labels;
 		this.values = values;
+		this.dezernat= dez;
+		this.akzeptiert=akzeptiert;
+		this.inbearbeitung=inbearbeitung;
 	}
 
-	public Modul(String name, String studiengang, String modulhandbuch,
-			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version) {
+	public boolean isAkzeptiert() {
+		return akzeptiert;
+	}
+
+	public boolean isInbearbeitung() {
+		return inbearbeitung;
+	}
+
+	public Modul(String name, ArrayList<Studiengang> studiengang, String modulhandbuch,
+			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version, ArrayList<Boolean> dez) {
 		this.name = name;
 		this.studiengang = studiengang;
 		this.modulhandbuch = modulhandbuch;
@@ -36,10 +53,17 @@ public class Modul {
 		this.values = values;
 		this.version =version;
 		this.datum=new Date();
+		this.dezernat= dez;
+		this.akzeptiert=false;
+		this.inbearbeitung=false;
 	}
 
 	public Date getDatum() {
 		return datum;
+	}
+
+	public ArrayList<Boolean> getDezernat() {
+		return dezernat;
 	}
 
 	public String getJahrgang() {
@@ -58,7 +82,7 @@ public class Modul {
 		return name;
 	}
 
-	public String getStudiengang() {
+	public ArrayList<Studiengang> getStudiengang() {
 		return studiengang;
 	}
 
@@ -68,6 +92,11 @@ public class Modul {
 
 	public int getVersion() {
 		return version;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }
