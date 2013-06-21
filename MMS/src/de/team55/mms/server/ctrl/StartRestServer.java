@@ -103,9 +103,7 @@ client.addFilter(new HTTPBasicAuthFilter(admin.geteMail(), admin.getPassword()))
 				for (int i = 0; i < list.size(); i++)
 					System.out.println(list.get(i));
 			} else System.out.println(response.toString());
-			System.out.println(response.getClientResponseStatus().getReasonPhrase());
-			
-			
+			System.out.println(response.getClientResponseStatus().getReasonPhrase());			
 			
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
