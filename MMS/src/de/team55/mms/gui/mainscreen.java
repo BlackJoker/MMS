@@ -57,6 +57,7 @@ public class mainscreen {
 	private JPanel cards = new JPanel();
 	private static JPanel panel = new JPanel();
 	private DefaultTableModel tmodel;
+	private DefaultTableModel modmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
 	public sql database = new sql();
 	private ArrayList<User> worklist = null;
@@ -92,6 +93,7 @@ public class mainscreen {
 		usermgtcard();
 		newmodulecard();
 		modulbearbeitenCard();
+		modulshowCard();
 
 	}
 
@@ -254,10 +256,17 @@ public class mainscreen {
 
 		// Jemand ne bessere idee für einen Button mit Zeilenumbruch?
 		left.add(btnMHB);
-		btnMHB.setEnabled(false);
+		btnMHB.setEnabled(true);
 		btnMHB.setPreferredSize(btnSz);
 		btnMHB.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnMHB.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showCard("modul show");
+			}
+
+		});
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
@@ -912,5 +921,40 @@ public void modulbearbeitenCard() {
 		
 
 	}
+
+	@SuppressWarnings("serial")
+	private void modulshowCard() {
+		JPanel modshow = new JPanel();
+		cards.add(modshow, "modul show");
+		modshow.add(new JLabel("In Dev"));
+		modshow.setLayout(new BorderLayout(0, 0));
+	
+	
+		final JTable studtable = new JTable();
+		JScrollPane studscp = new JScrollPane(studtable);
+		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
+		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	
+		modshow.add(studscp);
+	
+		modmodel = new DefaultTableModel(new Object[][] {}, new String[] {"Studiengang" }) {
+			@SuppressWarnings("rawtypes")
+			Class[] columnTypes = new Class[] { String.class };
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// all cells false
+				return false;
+			}
+		};
+		studtable.setModel(modmodel);
+	}
+	
 
 }

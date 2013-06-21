@@ -12,6 +12,16 @@ public class start {
 	 */
 	public static void main(String[] args) {
 		
+		/**
+		 * Bugs
+		 */
+		//Wenn man einloggen klickt und dann abbrechen, kann man Account Bearbeiten klicken
+		//wenn man sich ausloggt wird der durchstöbern button wieder auf false gesetzt (ka wo :/)
+		
+		/**
+		 * Aufgaben
+		 */
+		
 		//Userbear passwort bearbeiten
 		//User, der Modul geändert hat, anzeigen/eintragen
 		//User Relationstabelle
