@@ -15,8 +15,8 @@ public class start {
 		/**
 		 * Bugs
 		 */
-		//Wenn man einloggen klickt und dann abbrechen, kann man Account Bearbeiten klicken
-		//wenn man sich ausloggt wird der durchstöbern button wieder auf false gesetzt (ka wo :/)
+		//behoben: Wenn man einloggen klickt und dann abbrechen, kann man Account Bearbeiten klicken
+		//behoben: wenn man sich ausloggt wird der durchstöbern button wieder auf false gesetzt (ka wo :/)
 		
 		/**
 		 * Aufgaben

@@ -194,9 +194,9 @@ public class mainscreen {
 					if (resp == 1) {
 						current = log.getUser();
 						btnLogin.setText("Ausloggen");
-					}
-					if (database.isConnected()) {
-						checkRights();
+						if (database.isConnected()) {
+							checkRights();
+						}
 					}
 				} else {
 					current = new User("", "", "", "", "", false, false, false,
@@ -826,11 +826,6 @@ np.printStackTrace();
 			btnUserVerwaltung.setText("Account bearbeiten");
 			showCard("welcome page");
 		}
-		if (current.getReadModule())
-			btnMHB.setEnabled(true);
-		else
-			btnMHB.setEnabled(false);
-
 	}
 	
 public void modulbearbeitenCard() {
