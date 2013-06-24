@@ -25,7 +25,6 @@ public class sql {
 	private int SUCCES = 1;
 
 	// Hostname
-	// private static String dbHost = "db4free.net";
 	private static String dbHost = "localhost";
 
 	// Port -- Standard: 3306
@@ -35,11 +34,9 @@ public class sql {
 	private String database = "mms4sopra2";
 
 	// Datenbankuser
-	// private String dbUser = "team5526";
 	private String dbUser = "root";
 
 	// Datenbankpasswort
-	// private String dbPassword = "qwert710";
 	private String dbPassword = "";
 
 	public boolean connect() {
