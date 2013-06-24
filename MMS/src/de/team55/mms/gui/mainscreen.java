@@ -930,38 +930,45 @@ public class mainscreen {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void modulshowCard() {
 		JPanel modshow = new JPanel();
 		cards.add(modshow, "modul show");
 		modshow.add(new JLabel("In Dev"));
 		modshow.setLayout(new BorderLayout(0, 0));
 
-		final JTable studtable = new JTable();
-		JScrollPane studscp = new JScrollPane(studtable);
-		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
-		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		final JTable studtable = new JTable();
+//		JScrollPane studscp = new JScrollPane(studtable);
+//		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
+//		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		modshow.add(studscp);
+		
+		final DefaultListModel<Studiengang> testing = new DefaultListModel<Studiengang>();
+		final JList<Studiengang> list_stud = new JList<Studiengang>(testing);
+		list_stud.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list_stud.setLayoutOrientation(JList.VERTICAL_WRAP);
+		
+		
+		
+		modshow.add(list_stud);
 
-		modmodel = new DefaultTableModel(new Object[][] {},
-				new String[] { "Studiengang" }) {
-			@SuppressWarnings("rawtypes")
-			Class[] columnTypes = new Class[] { String.class };
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				// all cells false
-				return false;
-			}
-		};
-		studtable.setModel(modmodel);
+//		modmodel = new DefaultTableModel(new Object[][] {},
+//				new String[] { "Studiengang" }) {
+//			@SuppressWarnings("rawtypes")
+//			Class[] columnTypes = new Class[] { String.class };
+//
+//			@SuppressWarnings({ "unchecked", "rawtypes" })
+//			@Override
+//			public Class getColumnClass(int columnIndex) {
+//				return columnTypes[columnIndex];
+//			}
+//
+//			@Override
+//			public boolean isCellEditable(int row, int column) {
+//				// all cells false
+//				return false;
+//			}
+//		};
+//		studtable.setModel(modmodel);
 	}
 
 }

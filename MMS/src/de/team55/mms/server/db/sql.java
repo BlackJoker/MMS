@@ -102,6 +102,12 @@ public class sql {
 					+ "  PRIMARY KEY (`id`),"
 					+ "  UNIQUE KEY `email` (`email`)" + ")");
 			this.con.commit();
+			
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `user_relation` ("
+					+ "  `main_id` int(11) NOT NULL,"
+					+ "  `sellver_id` int(11) NOT NULL"
+					+ ")");
+			this.con.commit();
 
 			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
 					+ "	(1, 'admin@mms.de', NULL, 'Admin', 'Admin', 'a384b6463fc216a5f8ecb6670f86456a');");
@@ -847,4 +853,66 @@ public class sql {
 		}
 		return status;
 	}
+	// bitte durchschaun ob das wirklich so funktionieren kann xD
+	public int setUserRelation(String email_main, String email_stellv){
+		Statement state = null;
+		Statement state2 = null;
+		Statement state3 = null;
+		ResultSet res2 = null;
+		ResultSet res3 = null;
+		int status = FAILED;
+		int main = 0;
+		int stellv = 0;
+		
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state2 = this.con.createStatement();
+				state3 = this.con.createStatement();
+				res2 = state2.executeQuery("Select id from user where email ='"+email_main+"'");
+				main = res2.getInt("id");
+				res3 = state3.executeQuery("Select id from user where email ='"+email_stellv+"'");
+				stellv = res3.getInt("id");
+				state.executeUpdate("INSERT INTO user_relation (main_id, stellver_id) VALUES ('"
+						+ main + "','"
+						+ stellv + "');");
+				status = SUCCES;
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return status;
+		
+	}
+	
+//	public ArrayList<User> getUserRelation(User main){
+//		ResultSet res = null;
+//		Statement state = null;
+//		ArrayList<User> rellist = new ArrayList<User>();
+//		
+//		if (connect() == true) {
+//			try {
+//				state = this.con.createStatement();
+//				res = state
+//						.executeQuery("SELECT st.email, st.titel, st.vorname, st.namen FROM user as st  id=;");
+//				while (res.next()) {
+//					if(res.getInt("id")==0);
+//						
+//				}
+//				res.close();
+//				state.close();
+//			} catch (SQLException e) {
+//				// TODO fehler fenster aufrufen
+//				e.printStackTrace();
+//			}
+//			disconnect();
+//		}
+//		return rellist;
+//	}
+//	
+	
+	
+	
 }
