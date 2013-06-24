@@ -24,6 +24,8 @@ public class start {
 		//User, der Modul geändert hat, anzeigen/eintragen
 		//User Relationstabelle
 		
+		//beim wechsel der cards auf verbindung zum server prüfen
+		
 		//Studiengang - Jahr - Modulhandbuch - Anwendungsfach/Vertiefungsfach  - Fach
 		
 		//Anwendungsfächer
