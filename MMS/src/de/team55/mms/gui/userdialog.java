@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import de.team55.mms.function.Hash;
-import de.team55.mms.function.User;
+import de.team55.mms.data.User;
 
 public class userdialog extends JDialog {
 	private JFrame owner;
@@ -40,7 +40,7 @@ public class userdialog extends JDialog {
 	private JCheckBox cb_BV;
 
 	private boolean adminedit=true;
-	private User usr = new User("", "","", "", "", false, false, false, false);
+	private User usr = new User("", "","", "", null, false, false, false, false);
 
 	public userdialog(JFrame owner, String title) {
 		super(owner, title, true);
@@ -61,9 +61,8 @@ public class userdialog extends JDialog {
 		usr.setTitel(textTitel.getText());
 		usr.setVorname(textVorname.getText());
 		usr.setNachname(textNachname.getText());
-		if(usr.getPassword()!=null)
-			if(!usr.getPassword().equals(textPass.getText()))
-				usr.setPassword(Hash.getMD5(textPass.getText()));
+		if(!textPass.getText().isEmpty()&&!textPass.getText().equals(usr.getPassword()))
+			usr.setPassword(Hash.getMD5(textPass.getText()));
 		usr.seteMail(textMail.getText());
 		usr.setReadModule(cb_ModLes.isSelected());
 		usr.setCreateModule(cb_ModErst.isSelected());

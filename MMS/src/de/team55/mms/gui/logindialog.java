@@ -18,26 +18,30 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import de.team55.mms.db.sql;
 import de.team55.mms.function.Hash;
-import de.team55.mms.function.User;
+import de.team55.mms.function.ServerConnection;
+import de.team55.mms.data.User;;
 
 public class logindialog extends JDialog {
 	private JFrame owner;
 
 	public static final int OK_OPTION = 1;
 	public static final int CANCEL_OPTION = 0;
+	private static final int NOCONNECTION = 0;
+	private static final int LOGINFALSE = 1;
+	private static final int SUCCES = 2;
 	private int userResponse;
 
 	private JTextField textMail;
 	private JPasswordField textPass;
-	public sql database = new sql();
+	public ServerConnection database;
 
 	private User usr = null;
 
-	public logindialog(JFrame owner, String title) {
+	public logindialog(JFrame owner, String title, ServerConnection database) {
 		super(owner, title, true);
 		this.setResizable(false);
+		this.database = database;
 		createDialog();
 	}
 
@@ -54,7 +58,8 @@ public class logindialog extends JDialog {
 
 	private boolean checkLogin() {
 		try {
-			usr = database.getUser(textMail.getText(), Hash.getMD5(textPass.getText()));
+			usr = database.login(textMail.getText(),
+					Hash.getMD5(textPass.getText()));
 			if (usr != null) {
 				return true;
 			}
@@ -117,11 +122,18 @@ public class logindialog extends JDialog {
 					if (checkLogin()) {
 						userResponse = OK_OPTION;
 						hide();
-					} else if (database.isConnected()) {
-						textPass.setText("");
-						JOptionPane.showMessageDialog(owner,
-								"Login Daten falsch", "Fehler",
-								JOptionPane.ERROR_MESSAGE);
+					} else {
+						if (database.isConnected()==LOGINFALSE) {
+							textPass.setText("");
+							JOptionPane.showMessageDialog(owner,
+									"Login Daten falsch", "Fehler",
+									JOptionPane.ERROR_MESSAGE);
+						} else {
+							textPass.setText("");
+							JOptionPane.showMessageDialog(owner,
+									"Keine Verbindung zum Server!", "Fehler",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 
 				}
@@ -150,5 +162,9 @@ public class logindialog extends JDialog {
 		Pattern pattern = Pattern.compile(pat);
 		Matcher matcher = pattern.matcher(eMail);
 		return matcher.matches();
+	}
+
+	public ServerConnection getServerConnection() {
+		return database;
 	}
 }

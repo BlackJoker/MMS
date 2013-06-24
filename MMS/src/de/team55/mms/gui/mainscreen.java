@@ -39,27 +39,27 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import de.team55.mms.db.sql;
-import de.team55.mms.function.Modul;
-import de.team55.mms.function.Modulhandbuch;
-import de.team55.mms.function.Studiengang;
-import de.team55.mms.function.User;
+import de.team55.mms.data.*;
+import de.team55.mms.function.ServerConnection;
 
 public class mainscreen {
 
 	private static JFrame frame;
 
 	public static void noConnection() {
-		JOptionPane.showMessageDialog(frame, "Keine Verbingung zur Datenbank!",
+		JOptionPane.showMessageDialog(frame, "Keine Verbindung zum Server!",
 				"Connection error", JOptionPane.ERROR_MESSAGE);
 	}
 
+	private static final int NOCONNECTION = 0;
+	private static final int LOGINFALSE = 1;
+	private static final int SUCCES = 2;
 	private JPanel cards = new JPanel();
 	private static JPanel panel = new JPanel();
 	private DefaultTableModel tmodel;
 	private DefaultTableModel modmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
-	public sql database = new sql();
+	public ServerConnection database = new ServerConnection();
 	private ArrayList<User> worklist = null;
 	private User current = new User("", "", "", "", "", false, false, false,
 			false);
@@ -167,13 +167,12 @@ public class mainscreen {
 			}
 
 		});
-		
 
 		left.add(btnModulBearbeiten);
 		btnModulBearbeiten.setEnabled(false);
 		btnModulBearbeiten.setPreferredSize(btnSz);
 		btnModulBearbeiten.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
+
 		btnModulBearbeiten.addActionListener(new ActionListener() {
 
 			@Override
@@ -182,26 +181,24 @@ public class mainscreen {
 			}
 
 		});
-		
 
 		left.add(btnLogin);
 		btnLogin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (current.geteMail().isEmpty()) {
-					logindialog log = new logindialog(frame, "Login");
+					logindialog log = new logindialog(frame, "Login", database);
 					int resp = log.showCustomDialog();
 					if (resp == 1) {
 						current = log.getUser();
+						database = log.getServerConnection();
 						btnLogin.setText("Ausloggen");
-						if (database.isConnected()) {
-							checkRights();
-						}
+						checkRights();
 					}
 				} else {
 					current = new User("", "", "", "", "", false, false, false,
 							false);
-					if (database.isConnected()) {
+					if (database.isConnected() == SUCCES) {
 						checkRights();
 					}
 					btnLogin.setText("Einloggen");
@@ -238,9 +235,14 @@ public class mainscreen {
 					// neuen User abfragen
 					if (response == 1) {
 						User tmp = dlg.getUser();
-						database.userupdate(tmp, current.geteMail());
-						current = tmp;
-						checkRights();
+						if (database.userupdate(tmp, current.geteMail())
+								.getStatus() == 201) {
+							current = tmp;
+							checkRights();
+						} else
+							JOptionPane.showMessageDialog(frame,
+									"Update Fehlgeschlagen!", "Update Error",
+									JOptionPane.ERROR_MESSAGE);
 
 					}
 				}
@@ -373,8 +375,10 @@ public class mainscreen {
 		label_MH.setPreferredSize(preferredSize);
 		pnl_MH.add(label_MH);
 
-		final DefaultComboBoxModel cbmodel_MH = new DefaultComboBoxModel(
-				database.getModulhandbuecher().toArray());
+		// final DefaultComboBoxModel cbmodel_MH = new
+		// DefaultComboBoxModel(database.getModulhandbuecher().toArray());
+		final DefaultComboBoxModel cbmodel_MH = new DefaultComboBoxModel();
+
 		final JComboBox cb_MH = new JComboBox(cbmodel_MH);
 		cb_MH.setMaximumSize(new Dimension(cb_MH.getMaximumSize().width, 20));
 
@@ -388,8 +392,8 @@ public class mainscreen {
 
 					JTextField neu_Name = new JTextField();
 					JTextField neu_Jahrgang = new JTextField();
-					DefaultComboBoxModel cbm= new DefaultComboBoxModel(database
-							.getStudiengaenge().toArray());
+					DefaultComboBoxModel cbm = new DefaultComboBoxModel(
+							database.getStudiengaenge().toArray());
 					JComboBox neu_sgbox = new JComboBox(cbm);
 					Object[] message = { "Name des Modulhandbuches:", neu_Name,
 							"Studiengang:", neu_sgbox, "Jahrgang:",
@@ -399,15 +403,16 @@ public class mainscreen {
 							"Neues Modulhandbuch anlegen",
 							JOptionPane.OK_CANCEL_OPTION);
 					if (option == JOptionPane.OK_OPTION) {
-						
-						while ((neu_Name.getText().isEmpty()||(neu_sgbox.getSelectedItem()==null)
-								||neu_Jahrgang.getText().isEmpty())
+
+						while ((neu_Name.getText().isEmpty()
+								|| (neu_sgbox.getSelectedItem() == null) || neu_Jahrgang
+								.getText().isEmpty())
 								&& (option == JOptionPane.OK_OPTION)) {
 							Object[] messageEmpty = {
 									"Bitte alle Felder ausfüllen!",
 									"Name des Modulhandbuches:", neu_Name,
-									"Studiengang:", neu_sgbox,
-									"Jahrgang:", neu_Jahrgang };
+									"Studiengang:", neu_sgbox, "Jahrgang:",
+									neu_Jahrgang };
 							option = JOptionPane.showConfirmDialog(frame,
 									messageEmpty,
 									"Neues Modulhandbuch anlegen",
@@ -415,8 +420,8 @@ public class mainscreen {
 						}
 						if (option == JOptionPane.OK_OPTION) {
 							Modulhandbuch neu_mh = new Modulhandbuch(neu_Name
-									.getText(), neu_sgbox.getSelectedItem().toString(),
-									neu_Jahrgang.getText());
+									.getText(), neu_sgbox.getSelectedItem()
+									.toString(), neu_Jahrgang.getText());
 							ArrayList<Modulhandbuch> MHs = database
 									.getModulhandbuecher();
 							boolean neu = true;
@@ -442,7 +447,7 @@ public class mainscreen {
 					}
 
 				} catch (NullPointerException np) {
-np.printStackTrace();
+					np.printStackTrace();
 				}
 			}
 
@@ -475,8 +480,10 @@ np.printStackTrace();
 		});
 		pnl_Sg.add(st);
 
-		final DefaultComboBoxModel cbmodel = new DefaultComboBoxModel(database
-				.getStudiengaenge().toArray());
+		// final DefaultComboBoxModel cbmodel = new
+		// DefaultComboBoxModel(database.getStudiengaenge().toArray());
+		final DefaultComboBoxModel cbmodel = new DefaultComboBoxModel();
+
 		final JComboBox sgbox = new JComboBox(cbmodel);
 		sgbox.setMaximumSize(new Dimension(sgbox.getMaximumSize().width, 20));
 
@@ -608,7 +615,7 @@ np.printStackTrace();
 		btnOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Modulhandbuch mb = (Modulhandbuch) ((JComboBox ) ((JPanel) panel
+				Modulhandbuch mb = (Modulhandbuch) ((JComboBox) ((JPanel) panel
 						.getComponent(0)).getComponent(1)).getSelectedItem();
 				String Modulhandbuch = mb.getName();
 				JList<String> l = ((JList<String>) ((JPanel) panel
@@ -757,13 +764,17 @@ np.printStackTrace();
 					// neuen User abfragen
 					if (response == 1) {
 						User tmp = dlg.getUser();
-						removeFromTable(row);
-						addToTable(tmp);
-						database.userupdate(tmp, em);
-						if (em.equals(current.geteMail())) {
-							current = tmp;
-							checkRights();
-						}
+						if (database.userupdate(tmp, em).getStatus() == 201) {
+							removeFromTable(row);
+							addToTable(tmp);
+							if (em.equals(current.geteMail())) {
+								current = tmp;
+								checkRights();
+							}
+						} else
+							JOptionPane.showMessageDialog(frame,
+									"Update Fehlgeschlagen", "Update Fehler",
+									JOptionPane.ERROR_MESSAGE);
 
 					}
 
@@ -780,8 +791,12 @@ np.printStackTrace();
 			public void actionPerformed(ActionEvent e) {
 				int row = usrtbl.getSelectedRow();
 				if (row != -1) {
-					database.deluser((String) usrtbl.getValueAt(row, 3));
-					removeFromTable(row);
+					if(database.deluser((String) usrtbl.getValueAt(row, 3)).getStatus()!=201){
+						removeFromTable(row);
+					} else
+						JOptionPane.showMessageDialog(frame,
+								"Löschen Fehlgeschlagen", "Fehler beim Löschen",
+								JOptionPane.ERROR_MESSAGE);
 
 				}
 			}
@@ -827,31 +842,32 @@ np.printStackTrace();
 			showCard("welcome page");
 		}
 	}
-	
-public void modulbearbeitenCard() {
-	
-		JPanel panel = new JPanel();		
+
+	public void modulbearbeitenCard() {
+
+		JPanel panel = new JPanel();
 		JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
 		panel.add(tabs, BorderLayout.CENTER);
-		
+
 		JPanel nichtakzeptiert = new JPanel();
-		tabs.addTab("Noch nicht akzeptierte Module", null, nichtakzeptiert, null);
+		tabs.addTab("Noch nicht akzeptierte Module", null, nichtakzeptiert,
+				null);
 		nichtakzeptiert.setLayout(new BorderLayout(0, 0));
-		final DefaultListModel<Modul> lm = new DefaultListModel<Modul>();		
+		final DefaultListModel<Modul> lm = new DefaultListModel<Modul>();
 		final JList<Modul> list_notack = new JList<Modul>(lm);
 		list_notack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_notack.setLayoutOrientation(JList.VERTICAL_WRAP);
-		
-		ArrayList<Modul> m1 = database.getModule(false);
-		for(int i = 0; i<m1.size();i++){
-			lm.addElement(m1.get(i));
-		}
-		
+
+		// ArrayList<Modul> m1 = database.getModule(false);
+		// for(int i = 0; i<m1.size();i++){
+		// lm.addElement(m1.get(i));
+		// }
+
 		nichtakzeptiert.add(list_notack);
-		
+
 		JPanel buttonpnl = new JPanel();
 		nichtakzeptiert.add(buttonpnl, BorderLayout.SOUTH);
-		
+
 		JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
 		btnModulBearbeiten.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -859,51 +875,51 @@ public void modulbearbeitenCard() {
 			}
 		});
 		buttonpnl.add(btnModulBearbeiten);
-		
+
 		JButton btnModulAkzeptieren = new JButton("Modul akzeptieren");
 		btnModulAkzeptieren.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		buttonpnl.add(btnModulAkzeptieren);
-		
+
 		JButton btnModulVerwerfen = new JButton("Modul verwerfen");
 		btnModulVerwerfen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		buttonpnl.add(btnModulVerwerfen);
-		
+
 		JButton btnZurck = new JButton("Zur\u00FCck");
 		buttonpnl.add(btnZurck);
-		
+
 		JPanel akzeptiert = new JPanel();
 		tabs.addTab("akzeptierte Module", null, akzeptiert, null);
 		tabs.setEnabledAt(1, true);
 		akzeptiert.setLayout(new BorderLayout(0, 0));
-		
+
 		JList list_ack = new JList();
 		list_ack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_ack.setLayoutOrientation(JList.VERTICAL_WRAP);
 		akzeptiert.add(list_ack);
-		
+
 		JPanel buttonpnl2 = new JPanel();
 		akzeptiert.add(buttonpnl2, BorderLayout.SOUTH);
-		
+
 		JButton btnModulBearbeiten2 = new JButton("Modul bearbeiten");
 		btnModulBearbeiten2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		buttonpnl2.add(btnModulBearbeiten2);
-		
+
 		JButton btnModulAkzeptieren2 = new JButton("Modul akzeptieren");
 		btnModulAkzeptieren2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		buttonpnl2.add(btnModulAkzeptieren2);
-		
+
 		JButton btnZurck2 = new JButton("Zur\u00FCck");
 		btnZurck2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -911,9 +927,6 @@ public void modulbearbeitenCard() {
 		});
 		buttonpnl2.add(btnZurck2);
 		cards.add(panel, "modulbearbeiten");
-		
-		
-		
 
 	}
 
@@ -923,16 +936,16 @@ public void modulbearbeitenCard() {
 		cards.add(modshow, "modul show");
 		modshow.add(new JLabel("In Dev"));
 		modshow.setLayout(new BorderLayout(0, 0));
-	
-	
+
 		final JTable studtable = new JTable();
 		JScrollPane studscp = new JScrollPane(studtable);
 		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	
+
 		modshow.add(studscp);
-	
-		modmodel = new DefaultTableModel(new Object[][] {}, new String[] {"Studiengang" }) {
+
+		modmodel = new DefaultTableModel(new Object[][] {},
+				new String[] { "Studiengang" }) {
 			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] { String.class };
 
@@ -950,6 +963,5 @@ public void modulbearbeitenCard() {
 		};
 		studtable.setModel(modmodel);
 	}
-	
 
 }

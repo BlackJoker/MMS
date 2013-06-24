@@ -1,7 +1,9 @@
-package de.team55.mms.server.function;
+package de.team55.mms.data;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import de.team55.mms.data.*;
+
 
 @XmlRootElement(name = "UserUpdateContainer") 
 public class UserUpdateContainer {
@@ -14,8 +16,8 @@ public class UserUpdateContainer {
 		this.user=new User();
 	}
 	
-	public UserUpdateContainer(User user, String email) {
-		this.user=user;
+	public UserUpdateContainer(User tmp, String email) {
+		this.user=tmp;
 		this.email=email;
 		
 	}

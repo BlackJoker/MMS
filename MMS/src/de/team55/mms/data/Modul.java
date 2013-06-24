@@ -1,4 +1,4 @@
-package de.team55.mms.function;
+package de.team55.mms.data;
 
 import java.util.ArrayList;
 import java.util.Date;

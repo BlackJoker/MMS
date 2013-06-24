@@ -21,8 +21,6 @@ public class start {
 		/**
 		 * Aufgaben
 		 */
-		
-		//Userbear passwort bearbeiten
 		//User, der Modul geändert hat, anzeigen/eintragen
 		//User Relationstabelle
 		

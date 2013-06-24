@@ -1,8 +1,15 @@
-package de.team55.mms.server.function;
+package de.team55.mms.data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "Studiengang")
 public class Studiengang {
 	private int id;
 	private String name;
+	
+	public Studiengang(){
+		
+	}
 
 	public Studiengang(int id, String name) {
 		this.id = id;

@@ -9,10 +9,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
-import de.team55.mms.server.function.Modul;
-import de.team55.mms.server.function.Modulhandbuch;
-import de.team55.mms.server.function.Studiengang;
-import de.team55.mms.server.function.User;
+import de.team55.mms.data.Modul;
+import de.team55.mms.data.Modulhandbuch;
+import de.team55.mms.data.Studiengang;
+import de.team55.mms.data.User;
 import de.team55.mms.gui.mainscreen;
 
 public class sql {
@@ -25,7 +25,8 @@ public class sql {
 	private int SUCCES = 1;
 
 	// Hostname
-	private static String dbHost = "db4free.net";
+	// private static String dbHost = "db4free.net";
+	private static String dbHost = "localhost";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";
@@ -34,10 +35,12 @@ public class sql {
 	private String database = "mms4sopra2";
 
 	// Datenbankuser
-	private String dbUser = "team5526";
+	// private String dbUser = "team5526";
+	private String dbUser = "root";
 
 	// Datenbankpasswort
-	private String dbPassword = "qwert710";
+	// private String dbPassword = "qwert710";
+	private String dbPassword = "";
 
 	public boolean connect() {
 
@@ -494,20 +497,22 @@ public class sql {
 	}
 
 	// Neuen Studiengang anlegen
-	public void setStudiengang(String name) {
+	public int setStudiengang(String name) {
 		Statement state = null;
+		int status = FAILED;
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
 				state.executeUpdate("INSERT INTO studiengang (name) VALUES ('"
 						+ name + "');");
-
+				status = SUCCES;
 			} catch (SQLException e) {
 				// TODO fehler fenster aufrufen
 				e.printStackTrace();
 			}
 			disconnect();
 		}
+		return status;
 
 	}
 
@@ -552,11 +557,12 @@ public class sql {
 			int id = -1;
 			try {
 				state = con
-						.prepareStatement("INSERT INTO user (email,vorname,namen,password) VALUES (?,?,?,?)");
+						.prepareStatement("INSERT INTO user (email,vorname,namen,password, titel) VALUES (?,?,?,?,?)");
 				state.setString(1, user.geteMail());
 				state.setString(2, user.getVorname());
 				state.setString(3, user.getNachname());
 				state.setString(4, user.getPassword());
+				state.setString(5, user.getTitel());
 				state.executeUpdate();
 				con.commit();
 				state.close();
@@ -570,8 +576,8 @@ public class sql {
 				res.close();
 				state.close();
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				ok=FAILED;
+				// e.printStackTrace();
+				ok = FAILED;
 			}
 			if (id != -1) {
 				try {
@@ -591,7 +597,7 @@ public class sql {
 					e.printStackTrace();
 				}
 			} else {
-				ok=FAILED;
+				ok = FAILED;
 			}
 			disconnect();
 		}
@@ -606,77 +612,72 @@ public class sql {
 			int id = -1;
 			boolean userexists = false;
 			try {
-				state = con
-						.prepareStatement("SELECT IFNULL(id,0) AS id FROM user WHERE email=?;");
-				state.setString(1, user.geteMail());
-				res = state.executeQuery();
-				if (res.first()) {
-					if (res.getInt("id")!=0) {
-						userexists = true;
-					}
-				}
-				res.close();
-				state.close();
-				if (userexists == false) {
-					if (user.getPassword() != null) {
-						state = con
-								.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, password = ?, email = ? WHERE email = ? ;");
-						state.setString(1, user.getTitel());
-						state.setString(2, user.getVorname());
-						state.setString(3, user.getNachname());
-						state.setString(4, user.getPassword());
-						state.setString(5, user.geteMail());
-						state.setString(6, email);
-					} else {
-						state = con
-								.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, email = ? WHERE email = ? ;");
-						state.setString(1, user.getTitel());
-						state.setString(2, user.getVorname());
-						state.setString(3, user.getNachname());
-						state.setString(4, user.geteMail());
-						state.setString(5, email);
-					}
-					state.executeUpdate();
-					state.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (userexists == false) {
+				if (!user.geteMail().equals(email)) {
 					state = con
-							.prepareStatement("SELECT id FROM user WHERE email=?;");
+							.prepareStatement("SELECT IFNULL(id,0) AS id FROM user WHERE email=?;");
 					state.setString(1, user.geteMail());
 					res = state.executeQuery();
-					if (res.first())
-						id = res.getInt("id");
+					if (res.first()) {
+						if (res.getInt("id") != 0) {
+							userexists = true;
+							ok=FAILED;
+						}
+					}
 					res.close();
 					state.close();
 				}
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			if (id != -1) {
-				try {
-
+				if (!userexists) {
 					state = con
-							.prepareStatement("UPDATE rights SET userchange = ?, modcreate =?, modacc =?, modread =? WHERE id = ?;");
-					state.setBoolean(1, user.getManageUsers());
-					state.setBoolean(2, user.getCreateModule());
-					state.setBoolean(3, user.getAcceptModule());
-					state.setBoolean(4, user.getReadModule());
-					state.setInt(5, id);
-					state.executeUpdate();
-					con.commit();
+							.prepareStatement("SELECT IFNULL(id,0) AS id FROM user WHERE email=?;");
+					state.setString(1, email);
+					res = state.executeQuery();
+					if (res.first()) {
+						id = res.getInt("id");
+					}
+					res.close();
 					state.close();
-					ok = SUCCES;
-				} catch (SQLException e) {
-					// TODO fehler fenster aufrufen
-					e.printStackTrace();
+					if (id != 0) {
+						if ((user.getPassword() != null)&&!user.getPassword().equals("null")) {
+							state = con
+									.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, password = ?, email = ? WHERE id = ? ;");
+							state.setString(1, user.getTitel());
+							state.setString(2, user.getVorname());
+							state.setString(3, user.getNachname());
+							state.setString(4, user.getPassword());
+							state.setString(5, user.geteMail());
+							state.setInt(6, id);
+							state.executeUpdate();
+							state.close();
+						} else {
+							state = con
+									.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, email = ? WHERE id = ? ;");
+							state.setString(1, user.getTitel());
+							state.setString(2, user.getVorname());
+							state.setString(3, user.getNachname());
+							state.setString(4, user.geteMail());
+							state.setInt(5, id);
+							state.executeUpdate();
+							state.close();
+						}
+
+						state = con
+								.prepareStatement("UPDATE rights SET userchange = ?, modcreate =?, modacc =?, modread =? WHERE id = ?;");
+						state.setBoolean(1, user.getManageUsers());
+						state.setBoolean(2, user.getCreateModule());
+						state.setBoolean(3, user.getAcceptModule());
+						state.setBoolean(4, user.getReadModule());
+						state.setInt(5, id);
+						state.executeUpdate();
+						con.commit();
+						state.close();
+						ok = SUCCES;
+
+					} else {
+						ok = FAILED;
+					}
 				}
-			} else {
-				ok=FAILED;
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 			disconnect();
 		}
@@ -823,5 +824,30 @@ public class sql {
 			disconnect();
 		}
 		return module;
+	}
+
+	public int getUser(String email) {
+		ResultSet res = null;
+		Statement state = null;
+		int status = FAILED;
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT IFNULL(id,0) AS id FROM user WHERE email='"
+								+ email + "';");
+				if (res.first()) {
+					if(res.getInt("id")==0)
+						status = SUCCES;
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return status;
 	}
 }

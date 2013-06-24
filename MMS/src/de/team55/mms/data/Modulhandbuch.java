@@ -1,4 +1,4 @@
-package de.team55.mms.server.function;
+package de.team55.mms.data;
 
 
 public class Modulhandbuch {

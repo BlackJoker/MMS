@@ -1,5 +1,11 @@
-package de.team55.mms.function;
+package de.team55.mms.data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlRootElement(name = "User")
+@XmlType(propOrder = { "eMail", "titel", "vorname", "nachname", "password",
+		"manageUsers", "acceptModule", "createModule", "readModule" })
 public class User {
 	private String Vorname;
 	private String Nachname;
@@ -10,6 +16,18 @@ public class User {
 	private boolean readModule;
 	private boolean createModule;
 	private boolean acceptModule;
+
+	public User() {
+		this.Vorname = "null";
+		this.Nachname = "null";
+		this.Titel = "null";
+		this.eMail = "null";
+		this.Password = "null";
+		this.manageUsers = false;
+		this.readModule = false;
+		this.createModule = false;
+		this.acceptModule = false;
+	}
 
 	public User(String Vorname, String Nachname, String Titel, String eMail,
 			String Password, boolean manageUsers, boolean createModule,
@@ -25,6 +43,14 @@ public class User {
 		this.createModule = createModule;
 		this.acceptModule = acceptModule;
 
+	}
+
+	public String getTitel() {
+		return Titel;
+	}
+
+	public void setTitel(String titel) {
+		Titel = titel;
 	}
 
 	@Override
@@ -92,16 +118,13 @@ public class User {
 		return Nachname;
 	}
 
+	// @XmlTransient
 	public String getPassword() {
 		return Password;
 	}
 
 	public boolean getReadModule() {
 		return readModule;
-	}
-
-	public String getTitel() {
-		return Titel;
 	}
 
 	public String getVorname() {
@@ -152,10 +175,6 @@ public class User {
 
 	public void setReadModule(boolean readModule) {
 		this.readModule = readModule;
-	}
-
-	public void setTitel(String titel) {
-		Titel = titel;
 	}
 
 	public void setVorname(String vorname) {
