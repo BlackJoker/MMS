@@ -3,6 +3,9 @@ package de.team55.mms.data;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "Modul")
 public class Modul {
 
 	
@@ -19,6 +22,65 @@ public class Modul {
 	private ArrayList<String> labels = new ArrayList<String>();
 	private ArrayList<String> values = new ArrayList<String>();
 	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
+	
+	public Modul(){
+		
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void setStudiengang(ArrayList<Studiengang> studiengang) {
+		this.studiengang = studiengang;
+	}
+
+
+	public void setModulhandbuch(String modulhandbuch) {
+		this.modulhandbuch = modulhandbuch;
+	}
+
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+
+	public void setDatum(Date datum) {
+		this.datum = datum;
+	}
+
+
+	public void setAkzeptiert(boolean akzeptiert) {
+		this.akzeptiert = akzeptiert;
+	}
+
+
+	public void setInbearbeitung(boolean inbearbeitung) {
+		this.inbearbeitung = inbearbeitung;
+	}
+
+
+	public void setJahrgang(String jahrgang) {
+		this.jahrgang = jahrgang;
+	}
+
+
+	public void setLabels(ArrayList<String> labels) {
+		this.labels = labels;
+	}
+
+
+	public void setValues(ArrayList<String> values) {
+		this.values = values;
+	}
+
+
+	public void setDezernat(ArrayList<Boolean> dezernat) {
+		this.dezernat = dezernat;
+	}
 
 
 	public Modul(String name, ArrayList<Studiengang> studiengang2, String modulhandbuch, int version,
