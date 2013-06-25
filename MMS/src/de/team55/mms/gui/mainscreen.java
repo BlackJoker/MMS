@@ -10,6 +10,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,7 +63,8 @@ public class mainscreen {
 	private final Dimension btnSz = new Dimension(140, 50);
 	public ServerConnection database = new ServerConnection();
 	private ArrayList<User> worklist = null;
-	private User current = new User("", "", "", "", "", false, false, false,
+	private ArrayList<Studiengang> studienlist = null;
+	private User current = new User("gast", "gast", "", "gast@gast.gast", "d4061b1486fe2da19dd578e8d970f7eb", false, false, false,
 			false);
 	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
 	private JButton btnModulVerwaltung = new JButton("Modul Verwaltung");
@@ -76,7 +79,7 @@ public class mainscreen {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 480);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		current = database.login(current.geteMail(), current.getPassword());
 		centerscr();
 		topscr();
 		leftscr();
@@ -115,6 +118,9 @@ public class mainscreen {
 				usr.getNachname(), usr.geteMail(), usr.getManageUsers(),
 				usr.getCreateModule(), usr.getAcceptModule(),
 				usr.getReadModule() });
+	}
+	private void addToTable(Studiengang stud) {
+		modmodel.addRow(new Object[] { stud.getName()});
 	}
 
 	private JPanel defaultmodulPanel(String name) {
@@ -243,7 +249,7 @@ public class mainscreen {
 							JOptionPane.showMessageDialog(frame,
 									"Update Fehlgeschlagen!", "Update Error",
 									JOptionPane.ERROR_MESSAGE);
-
+				
 					}
 				}
 			}
@@ -931,44 +937,77 @@ public class mainscreen {
 	}
 
 	private void modulshowCard() {
+		
 		JPanel modshow = new JPanel();
 		cards.add(modshow, "modul show");
 		modshow.add(new JLabel("In Dev"));
 		modshow.setLayout(new BorderLayout(0, 0));
 
-//		final JTable studtable = new JTable();
-//		JScrollPane studscp = new JScrollPane(studtable);
-//		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
-//		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		final JTable studtable = new JTable();
+		JScrollPane studscp = new JScrollPane(studtable);
+		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
+		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
+		modshow.add(studscp);
 
-		
-		final DefaultListModel<Studiengang> testing = new DefaultListModel<Studiengang>();
-		final JList<Studiengang> list_stud = new JList<Studiengang>(testing);
-		list_stud.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list_stud.setLayoutOrientation(JList.VERTICAL_WRAP);
-		
-		
-		
-		modshow.add(list_stud);
+		modmodel = new DefaultTableModel(new Object[][] {},
+				new String[] { "Studiengang" }) {
+			@SuppressWarnings("rawtypes")
+			Class[] columnTypes = new Class[] { String.class };
 
-//		modmodel = new DefaultTableModel(new Object[][] {},
-//				new String[] { "Studiengang" }) {
-//			@SuppressWarnings("rawtypes")
-//			Class[] columnTypes = new Class[] { String.class };
-//
-//			@SuppressWarnings({ "unchecked", "rawtypes" })
-//			@Override
-//			public Class getColumnClass(int columnIndex) {
-//				return columnTypes[columnIndex];
-//			}
-//
-//			@Override
-//			public boolean isCellEditable(int row, int column) {
-//				// all cells false
-//				return false;
-//			}
-//		};
-//		studtable.setModel(modmodel);
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// all cells false
+				return false;
+			}
+		};
+		studtable.setModel(modmodel);
+		modmodel.setRowCount(0);
+		studienlist = database.getStudiengaenge();
+		for(int i = 0; i < studienlist.size(); i++){
+			addToTable(studienlist.get(i));
+		}
+		studtable.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				
+			}
+		});
+		
+	
+	
 	}
 
 }

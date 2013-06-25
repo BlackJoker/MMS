@@ -104,8 +104,8 @@ public class sql {
 			this.con.commit();
 			
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `user_relation` ("
-					+ "  `main_id` int(11) NOT NULL,"
-					+ "  `sellver_id` int(11) NOT NULL"
+					+ "  `main_email` varchar(255) NOT NULL,"
+					+ "  `sellver_email` varchar(255) NOT NULL"
 					+ ")");
 			this.con.commit();
 
@@ -854,28 +854,17 @@ public class sql {
 		return status;
 	}
 	// bitte durchschaun ob das wirklich so funktionieren kann xD
-	public int setUserRelation(String email_main, String email_stellv){
+	public int setUserRelation(User main, User stellv){
 		Statement state = null;
-		Statement state2 = null;
-		Statement state3 = null;
-		ResultSet res2 = null;
-		ResultSet res3 = null;
 		int status = FAILED;
-		int main = 0;
-		int stellv = 0;
+
 		
 		if(connect() == true){
 			try{
 				state = this.con.createStatement();
-				state2 = this.con.createStatement();
-				state3 = this.con.createStatement();
-				res2 = state2.executeQuery("Select id from user where email ='"+email_main+"'");
-				main = res2.getInt("id");
-				res3 = state3.executeQuery("Select id from user where email ='"+email_stellv+"'");
-				stellv = res3.getInt("id");
-				state.executeUpdate("INSERT INTO user_relation (main_id, stellver_id) VALUES ('"
-						+ main + "','"
-						+ stellv + "');");
+				state.executeUpdate("INSERT INTO user_relation (main_email, stellver_email) VALUES ('"
+						+ main.geteMail() + "','"
+						+ stellv.geteMail() + "');");
 				status = SUCCES;
 			}catch(SQLException e){
 				// TODO fehler fenster aufrufen
@@ -886,6 +875,9 @@ public class sql {
 		return status;
 		
 	}
+	
+	// überlegung wie man das einbaut 
+	
 	
 //	public ArrayList<User> getUserRelation(User main){
 //		ResultSet res = null;
@@ -911,7 +903,7 @@ public class sql {
 //		}
 //		return rellist;
 //	}
-//	
+	
 	
 	
 	
