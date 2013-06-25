@@ -42,6 +42,8 @@ public class start {
 		
 		//Tests
 		
+		//Review kritischer Prozeduren
+		
 		try {			
 			// Set System L&F
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
