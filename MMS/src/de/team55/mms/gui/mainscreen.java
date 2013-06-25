@@ -63,7 +63,6 @@ public class mainscreen {
 	private final Dimension btnSz = new Dimension(140, 50);
 	public ServerConnection database = new ServerConnection();
 	private ArrayList<User> worklist = null;
-	private ArrayList<Studiengang> studienlist = null;
 	private User current = new User("gast", "gast", "", "gast@gast.gast", "d4061b1486fe2da19dd578e8d970f7eb", false, false, false,
 			false);
 	private JButton btnModulEinreichen = new JButton("Modul Einreichen");
@@ -74,12 +73,19 @@ public class mainscreen {
 	private JButton btnUserVerwaltung = new JButton("User Verwaltung");
 	private JButton btnLogin = new JButton("Einloggen");
 	private HashMap<JButton, Integer> buttonmap = new HashMap<JButton, Integer>();
+	private DefaultComboBoxModel cbmodel = new DefaultComboBoxModel();
+	private DefaultListModel<Modul> lm = new DefaultListModel<Modul>();
+	private DefaultListModel<Modul> lm_ack = new DefaultListModel<Modul>();
+	private JPanel mod = new JPanel();
+	private ArrayList<Studiengang> studienlist = null;
+
 
 	public mainscreen() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 480);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		current = database.login(current.geteMail(), current.getPassword());
+
 		centerscr();
 		topscr();
 		leftscr();
@@ -91,6 +97,7 @@ public class mainscreen {
 
 		frame.getContentPane().add(cards, BorderLayout.CENTER);
 		cards.setLayout(new CardLayout(0, 0));
+		//cards.add(mod);
 
 		homecard();
 		usermgtcard();
@@ -119,11 +126,12 @@ public class mainscreen {
 				usr.getCreateModule(), usr.getAcceptModule(),
 				usr.getReadModule() });
 	}
+	
 	private void addToTable(Studiengang stud) {
 		modmodel.addRow(new Object[] { stud.getName()});
 	}
 
-	private JPanel defaultmodulPanel(String name) {
+	private JPanel defaultmodulPanel(String name, String string) {
 		final Dimension preferredSize = new Dimension(120, 20);
 
 		JPanel pnl = new JPanel();
@@ -134,7 +142,7 @@ public class mainscreen {
 		label.setPreferredSize(preferredSize);
 		pnl.add(label);
 
-		JTextArea txt = new JTextArea();
+		JTextArea txt = new JTextArea(string);
 		txt.setLineWrap(true);
 		pnl.add(txt);
 
@@ -169,6 +177,11 @@ public class mainscreen {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<Studiengang> st =database.getStudiengaenge();
+				cbmodel.removeAllElements();
+				for(int i = 0;i<st.size();i++){
+					cbmodel.addElement(st.get(i));
+				}
 				showCard("newmodule");
 			}
 
@@ -183,6 +196,17 @@ public class mainscreen {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<Modul> module =database.getModule(false);
+				lm.removeAllElements();
+				for(int i = 0;i<module.size();i++){
+					lm.addElement(module.get(i));
+				}
+				
+				module =database.getModule(true);
+				lm_ack.removeAllElements();
+				for(int i = 0;i<module.size();i++){
+					lm_ack.addElement(module.get(i));
+				}
 				showCard("modulbearbeiten");
 			}
 
@@ -249,7 +273,7 @@ public class mainscreen {
 							JOptionPane.showMessageDialog(frame,
 									"Update Fehlgeschlagen!", "Update Error",
 									JOptionPane.ERROR_MESSAGE);
-				
+
 					}
 				}
 			}
@@ -488,8 +512,7 @@ public class mainscreen {
 
 		// final DefaultComboBoxModel cbmodel = new
 		// DefaultComboBoxModel(database.getStudiengaenge().toArray());
-		final DefaultComboBoxModel cbmodel = new DefaultComboBoxModel();
-
+		
 		final JComboBox sgbox = new JComboBox(cbmodel);
 		sgbox.setMaximumSize(new Dimension(sgbox.getMaximumSize().width, 20));
 
@@ -558,63 +581,63 @@ public class mainscreen {
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Jahrgang + Platzhalter
-		panel.add(defaultmodulPanel("Jahrgang"));
+		panel.add(defaultmodulPanel("Jahrgang",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Name + Platzhalter
-		panel.add(defaultmodulPanel("Name"));
+		panel.add(defaultmodulPanel("Name",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Kürzel + Platzhalter
-		panel.add(defaultmodulPanel("Kürzel"));
+		panel.add(defaultmodulPanel("Kürzel",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Titel + Platzhaler
-		panel.add(defaultmodulPanel("Titel"));
+		panel.add(defaultmodulPanel("Titel",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel LP + Platzhalter
-		panel.add(defaultmodulPanel("Leistungspunkte"));
+		panel.add(defaultmodulPanel("Leistungspunkte",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Dauer + Platzhalter
-		panel.add(defaultmodulPanel("Dauer"));
+		panel.add(defaultmodulPanel("Dauer",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Turnus + Platzhalter
-		panel.add(defaultmodulPanel("Turnus"));
+		panel.add(defaultmodulPanel("Turnus",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Modulverantwortlicher + Platzhalter
-		panel.add(defaultmodulPanel("Modulverantwortlicher"));
+		panel.add(defaultmodulPanel("Modulverantwortlicher",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Dozenten + Platzhalter
-		panel.add(defaultmodulPanel("Dozenten"));
+		panel.add(defaultmodulPanel("Dozenten",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Inhalt + Platzhalter
-		panel.add(defaultmodulPanel("Inhalt"));
+		panel.add(defaultmodulPanel("Inhalt",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Ziele + Platzhalter
-		panel.add(defaultmodulPanel("Lernziele"));
+		panel.add(defaultmodulPanel("Lernziele",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Literatur + Platzhalter
-		panel.add(defaultmodulPanel("Literatur"));
+		panel.add(defaultmodulPanel("Literatur",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Sprache + Platzhalter
-		panel.add(defaultmodulPanel("Sprache"));
+		panel.add(defaultmodulPanel("Sprache",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Prüfungsform + Platzhalter
-		panel.add(defaultmodulPanel("Prüfungsform"));
+		panel.add(defaultmodulPanel("Prüfungsform",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		// Panel Notenbildung + Platzhalter
-		panel.add(defaultmodulPanel("Notenbildung"));
+		panel.add(defaultmodulPanel("Notenbildung",""));
 		panel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		JButton btnOk = new JButton("Annehmen");
@@ -859,15 +882,9 @@ public class mainscreen {
 		tabs.addTab("Noch nicht akzeptierte Module", null, nichtakzeptiert,
 				null);
 		nichtakzeptiert.setLayout(new BorderLayout(0, 0));
-		final DefaultListModel<Modul> lm = new DefaultListModel<Modul>();
 		final JList<Modul> list_notack = new JList<Modul>(lm);
 		list_notack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_notack.setLayoutOrientation(JList.VERTICAL_WRAP);
-
-		// ArrayList<Modul> m1 = database.getModule(false);
-		// for(int i = 0; i<m1.size();i++){
-		// lm.addElement(m1.get(i));
-		// }
 
 		nichtakzeptiert.add(list_notack);
 
@@ -877,7 +894,13 @@ public class mainscreen {
 		JButton btnModulBearbeiten = new JButton("Modul bearbeiten");
 		btnModulBearbeiten.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.print(list_notack.getSelectedValue());
+				//System.out.print(list_notack.getSelectedValue());
+				Modul m = list_notack.getSelectedValue();
+				
+				//cards.remove(mod);
+				mod = modeditCard(m);
+				cards.add(mod, "modBearbeiten");
+				showCard("modBearbeiten");
 			}
 		});
 		buttonpnl.add(btnModulBearbeiten);
@@ -904,7 +927,7 @@ public class mainscreen {
 		tabs.setEnabledAt(1, true);
 		akzeptiert.setLayout(new BorderLayout(0, 0));
 
-		JList list_ack = new JList();
+		JList<Modul> list_ack = new JList<Modul>(lm_ack);
 		list_ack.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list_ack.setLayoutOrientation(JList.VERTICAL_WRAP);
 		akzeptiert.add(list_ack);
@@ -935,8 +958,366 @@ public class mainscreen {
 		cards.add(panel, "modulbearbeiten");
 
 	}
+	
+	private JPanel modeditCard(Modul m){
+		final JPanel pnl_newmod = new JPanel();
+		panel.removeAll();
 
-	private void modulshowCard() {
+		final Dimension preferredSize = new Dimension(120, 20);
+		pnl_newmod.setLayout(new BorderLayout(0, 0));
+
+		JPanel pnl_bottom = new JPanel();
+		pnl_newmod.add(pnl_bottom, BorderLayout.SOUTH);
+
+		JButton btnNeuesFeld = new JButton("Neues Feld");
+		btnNeuesFeld.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// Platzhalter
+				JPanel pnl_tmp = new JPanel();
+				panel.add(pnl_tmp);
+				panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+				int numOfPanels = panel.getComponentCount();
+				pnl_tmp.setLayout(new BoxLayout(pnl_tmp, BoxLayout.X_AXIS));
+
+				JCheckBox checkbox = new JCheckBox("Dezernat 2 Feld");
+				String text = "Name des Feldes";
+				Object[] params = { checkbox, text };
+				String name = JOptionPane.showInputDialog(frame, params);
+				boolean dezernat2 = checkbox.isSelected();
+
+				JLabel label_tmp = new JLabel(name);
+				label_tmp.setPreferredSize(preferredSize);
+				pnl_tmp.add(label_tmp);
+
+				JTextArea txt_tmp = new JTextArea();
+				txt_tmp.setLineWrap(true);
+				pnl_tmp.add(txt_tmp);
+
+				JCheckBox dez = new JCheckBox("Dezernat 2", dezernat2);
+				pnl_tmp.add(dez);
+
+				JButton btn_tmp_entf = new JButton("Entfernen");
+				btn_tmp_entf.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						int id = buttonmap.get(e.getSource());
+						// Feld mit ID id von Panel entfernen
+						panel.remove(id);
+						// Platzhalter entfernen
+						panel.remove(id - 1);
+						// Aus ButtonMap entfernen
+						buttonmap.remove(e.getSource());
+
+						// ids der Buttons ändern, damit auch ein Feld aus der
+						// Mitte gelöscht werden kann
+						HashMap<JButton, Integer> tmpmap = new HashMap<JButton, Integer>();
+						Iterator<Entry<JButton, Integer>> entries = buttonmap
+								.entrySet().iterator();
+						while (entries.hasNext()) {
+							Entry<JButton, Integer> thisEntry = entries.next();
+							JButton key = thisEntry.getKey();
+							int value = thisEntry.getValue();
+							if (value > id) {
+								value = value - 2;
+							}
+							tmpmap.put(key, value);
+						}
+						buttonmap = tmpmap;
+						panel.revalidate();
+
+					}
+				});
+
+				// Button btn_tmp_entf mit ID (numOfPanels-2) zu ButtonMap
+				buttonmap.put(btn_tmp_entf, numOfPanels - 2);
+
+				pnl_tmp.add(btn_tmp_entf);
+
+				panel.revalidate();
+			}
+		});
+		pnl_bottom.add(btnNeuesFeld);
+
+		JButton btnHome = new JButton("Zurück");
+		btnHome.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				panel.removeAll();
+				panel.revalidate();
+				newmodulecard();
+				showCard("welcome page");
+			}
+		});
+		pnl_bottom.add(btnHome);
+
+		JScrollPane scrollPane = new JScrollPane(panel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		// Panel Modulhandbuch + Platzhalter
+		JPanel pnl_MH = new JPanel();
+		JLabel label_MH = new JLabel("Modulhandbuch");
+		label_MH.setPreferredSize(preferredSize);
+		pnl_MH.add(label_MH);
+
+		// final DefaultComboBoxModel cbmodel_MH = new
+		// DefaultComboBoxModel(database.getModulhandbuecher().toArray());
+		final DefaultComboBoxModel cbmodel_MH = new DefaultComboBoxModel();
+
+		final JComboBox cb_MH = new JComboBox(cbmodel_MH);
+		cb_MH.setMaximumSize(new Dimension(cb_MH.getMaximumSize().width, 20));
+
+		pnl_MH.add(cb_MH);
+
+		JButton nMH_btn = new JButton("Neues Modulhandbuch");
+		nMH_btn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+
+					JTextField neu_Name = new JTextField();
+					JTextField neu_Jahrgang = new JTextField();
+					DefaultComboBoxModel cbm = new DefaultComboBoxModel(
+							database.getStudiengaenge().toArray());
+					JComboBox neu_sgbox = new JComboBox(cbm);
+					Object[] message = { "Name des Modulhandbuches:", neu_Name,
+							"Studiengang:", neu_sgbox, "Jahrgang:",
+							neu_Jahrgang };
+
+					int option = JOptionPane.showConfirmDialog(frame, message,
+							"Neues Modulhandbuch anlegen",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (option == JOptionPane.OK_OPTION) {
+
+						while ((neu_Name.getText().isEmpty()
+								|| (neu_sgbox.getSelectedItem() == null) || neu_Jahrgang
+								.getText().isEmpty())
+								&& (option == JOptionPane.OK_OPTION)) {
+							Object[] messageEmpty = {
+									"Bitte alle Felder ausfüllen!",
+									"Name des Modulhandbuches:", neu_Name,
+									"Studiengang:", neu_sgbox, "Jahrgang:",
+									neu_Jahrgang };
+							option = JOptionPane.showConfirmDialog(frame,
+									messageEmpty,
+									"Neues Modulhandbuch anlegen",
+									JOptionPane.OK_CANCEL_OPTION);
+						}
+						if (option == JOptionPane.OK_OPTION) {
+							Modulhandbuch neu_mh = new Modulhandbuch(neu_Name
+									.getText(), neu_sgbox.getSelectedItem()
+									.toString(), neu_Jahrgang.getText());
+							ArrayList<Modulhandbuch> MHs = database
+									.getModulhandbuecher();
+							boolean neu = true;
+							for (int i = 0; i < MHs.size(); i++) {
+								Modulhandbuch alt = MHs.get(i);
+								if (alt.equals(neu_mh)) {
+									neu = false;
+									break;
+								}
+							}
+							if (neu) {
+								database.setModulhandbuch(neu_mh);
+								cbmodel_MH.removeAllElements();
+								MHs = database.getModulhandbuecher();
+								for (int i = 0; i < MHs.size(); i++)
+									cbmodel_MH.addElement(MHs.get(i));
+							} else {
+								JOptionPane.showMessageDialog(frame,
+										"Modulhandbuch ist schon vorhanden",
+										"Fehler", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+
+				} catch (NullPointerException np) {
+					np.printStackTrace();
+				}
+			}
+
+		});
+		pnl_MH.add(nMH_btn);
+
+		pnl_MH.setLayout(new BoxLayout(pnl_MH, BoxLayout.X_AXIS));
+		panel.add(pnl_MH);
+		panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// Panel Studiengang + Platzhalter
+		JPanel pnl_Sg = new JPanel();
+		JLabel label = new JLabel("Studiengang");
+		label.setPreferredSize(preferredSize);
+		pnl_Sg.add(label);
+
+		final DefaultListModel<String> lm = new DefaultListModel<String>();
+		JList<String> st = new JList<String>(lm);
+		
+		ArrayList<Studiengang> sgs = m.getStudiengang();
+		for(int i = 0;i<sgs.size();i++)
+			lm.addElement(sgs.get(i).getName());
+		st.setCellRenderer(new DefaultListCellRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList list,
+					Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, false,
+						false);
+
+				return this;
+			}
+		});
+		pnl_Sg.add(st);
+
+		// final DefaultComboBoxModel cbmodel = new
+		// DefaultComboBoxModel(database.getStudiengaenge().toArray());
+		
+		final JComboBox sgbox = new JComboBox(cbmodel);
+		sgbox.setMaximumSize(new Dimension(sgbox.getMaximumSize().width, 20));
+
+		pnl_Sg.add(sgbox);
+
+		JButton sg = new JButton("Studiengang auswählen");
+		sg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!lm.contains(sgbox.getSelectedItem().toString()))
+					lm.addElement(sgbox.getSelectedItem().toString());
+			}
+		});
+		pnl_Sg.add(sg);
+
+		JButton nsg = new JButton("Neuer Studiengang");
+		nsg.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					String name = JOptionPane.showInputDialog(frame,
+							"Name des neuen Studiengangs:",
+							"neuer Studiengang", JOptionPane.PLAIN_MESSAGE);
+
+					while (name.isEmpty()) {
+						name = JOptionPane
+								.showInputDialog(
+										frame,
+										"Bitte gültigen Namen des neuen Studiengangs eingeben:",
+										"neuer Studiengang",
+										JOptionPane.PLAIN_MESSAGE);
+					}
+
+					ArrayList<Studiengang> sgs = database.getStudiengaenge();
+					boolean neu = true;
+					for (int i = 0; i < sgs.size(); i++) {
+						if (sgs.get(i).equals(name)) {
+							neu = false;
+							break;
+						}
+					}
+					if (neu) {
+						database.setStudiengang(name);
+						cbmodel.removeAllElements();
+						sgs = database.getStudiengaenge();
+						for (int i = 0; i < sgs.size(); i++)
+							cbmodel.addElement(sgs.get(i));
+
+						// cbmodel.addElement(name);
+					} else {
+						JOptionPane.showMessageDialog(frame,
+								"Studiengang ist schon vorhanden", "Fehler",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (NullPointerException np) {
+
+				}
+			}
+
+		});
+		pnl_Sg.add(nsg);
+
+		pnl_Sg.setLayout(new BoxLayout(pnl_Sg, BoxLayout.X_AXIS));
+		panel.add(pnl_Sg);
+		panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// Panel Jahrgang + Platzhalter
+		panel.add(defaultmodulPanel("Jahrgang",m.getJahrgang()));
+		panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// Panel Name + Platzhalter
+		panel.add(defaultmodulPanel("Name",m.getName()));
+		panel.add(Box.createRigidArea(new Dimension(0, 5)));
+		
+		ArrayList<String> l = m.getLabels();
+		ArrayList<String> v = m.getValues();
+		ArrayList<Boolean> d = m.getDezernat();
+		
+		for(int i = 0;i<l.size();i++){
+			panel.add(defaultmodulPanel(l.get(i),v.get(i)));
+			panel.add(Box.createRigidArea(new Dimension(0, 5)));
+		}
+		JButton btnOk = new JButton("Annehmen");
+		btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Modulhandbuch mb = (Modulhandbuch) ((JComboBox) ((JPanel) panel
+						.getComponent(0)).getComponent(1)).getSelectedItem();
+				String Modulhandbuch = mb.getName();
+				JList<String> l = ((JList<String>) ((JPanel) panel
+						.getComponent(2)).getComponent(1));
+				String Jahrgang = ((JTextArea) ((JPanel) panel.getComponent(4))
+						.getComponent(1)).getText();
+				String Name = ((JTextArea) ((JPanel) panel.getComponent(6))
+						.getComponent(1)).getText();
+
+				ArrayList<String> labels = new ArrayList<String>();
+				ArrayList<String> values = new ArrayList<String>();
+				ArrayList<Boolean> dez = new ArrayList<Boolean>();
+
+				// Eintraege der Reihe nach auslesen
+				for (int i = 8; i < panel.getComponentCount(); i = i + 2) {
+					JPanel tmp = (JPanel) panel.getComponent(i);
+					JLabel tmplbl = (JLabel) tmp.getComponent(0);
+					JTextArea tmptxt = (JTextArea) tmp.getComponent(1);
+					boolean dezernat2 = false;
+					if (tmp.getComponentCount() > 3) {
+						dezernat2 = ((JCheckBox) tmp.getComponent(2))
+								.isSelected();
+					}
+					String value = tmptxt.getText();
+					String label = tmplbl.getText();
+					labels.add(label);
+					values.add(value);
+					dez.add(dezernat2);
+				}
+				int version = database.getModulVersion(Name) + 1;
+
+				ArrayList<Studiengang> Studiengang = new ArrayList<Studiengang>();
+
+				for (int i = 0; i < l.getModel().getSize(); i++) {
+					String name = l.getModel().getElementAt(i).toString();
+					int id = database.getStudiengangID(name);
+
+					Studiengang.add(new Studiengang(id, name));
+				}
+				Modul neu = new Modul(Name, Studiengang, Modulhandbuch,
+						Jahrgang, labels, values, version, dez);
+				database.setModul(neu);
+				panel.removeAll();
+				panel.revalidate();
+				newmodulecard();
+				showCard("newmodule");
+			}
+		});
+		pnl_bottom.add(btnOk);
+
+		pnl_newmod.add(scrollPane);
+		return pnl_newmod;
+	
+	}
+
+private void modulshowCard() {
 		
 		JPanel modshow = new JPanel();
 		cards.add(modshow, "modul show");
