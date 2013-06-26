@@ -284,16 +284,24 @@ public class sql {
 
 	}
 
-	public void getModulhandbuch(String studiengang) {
+	public ArrayList<Modulhandbuch> getModulhandbuch(String studiengang) {
 		ResultSet res = null;
 		Statement state = null;
+		ArrayList<Modulhandbuch> modbuch = new ArrayList<Modulhandbuch>();
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT name, jahrgang FROM modulhandbuch WHERE studiengang = '"
+						.executeQuery("SELECT name, jahrgang, akzeptiert FROM modulhandbuch WHERE studiengang = '"
 								+ studiengang + "';");
-				// verarbeitung der resultset
+				
+				while (res.next()) {
+					String name = res.getString("name");
+					String jg = res.getString("jahrgang");
+					boolean ack = res.getBoolean("akzeptiert");
+					modbuch.add(new Modulhandbuch(name, studiengang, jg, ack));
+				}
+				
 				res.close();
 				state.close();
 			} catch (SQLException e) {
@@ -302,6 +310,7 @@ public class sql {
 			}
 			disconnect();
 		}
+		return modbuch;
 
 	}
 
@@ -732,6 +741,7 @@ public class sql {
 					boolean ack = res.getBoolean("akzeptiert");
 					MHs.add(new Modulhandbuch(name, sg, jg, ack));
 				}
+
 				res.close();
 				state.close();
 			} catch (SQLException e) {

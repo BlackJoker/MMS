@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import de.team55.mms.data.Modul;
+import de.team55.mms.data.Modulhandbuch;
 import de.team55.mms.data.Studiengang;
 import de.team55.mms.data.User;
 import de.team55.mms.data.UserUpdateContainer;
@@ -135,6 +136,14 @@ public class MessageResource {
 	public int getStudiengangID(@PathParam("name") String name) {
 		return new sql().getStudiengangID(name);
 	}
+	
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("/modulhandbuch/getallat/{studiengang}")
+	public ArrayList<Modulhandbuch> getModulhandbuch(@PathParam("studiengang") String studiengang) {
+		return new sql().getModulhandbuch(studiengang);
+	}
+	
 
 	@GET
 	@Produces(MediaType.TEXT_XML)

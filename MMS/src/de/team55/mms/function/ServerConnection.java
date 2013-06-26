@@ -174,5 +174,14 @@ public class ServerConnection {
 		}
 		return null;
 	}
+	
+	public ArrayList<Modulhandbuch> getModulhandbuch(String studiengang) {
+		if (connect(email, password) == SUCCES) {
+			return webResource.path("modulhandbuch/getallat").path(studiengang)
+					.accept(MediaType.TEXT_XML)
+					.get(new GenericType<ArrayList<Modulhandbuch>>(){});
+		}
+		return null;
+	}
 
 }

@@ -59,7 +59,8 @@ public class mainscreen {
 	private JPanel cards = new JPanel();
 	private static JPanel panel = new JPanel();
 	private DefaultTableModel tmodel;
-	private DefaultTableModel modmodel;
+	private DefaultTableModel studmodel;
+	private DefaultTableModel modbuchmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
 	public ServerConnection database = new ServerConnection();
 	private ArrayList<User> worklist = null;
@@ -78,6 +79,8 @@ public class mainscreen {
 	private DefaultListModel<Modul> lm_ack = new DefaultListModel<Modul>();
 	private JPanel mod = new JPanel();
 	private ArrayList<Studiengang> studienlist = null;
+	private ArrayList<Modulhandbuch> modbuchlist = null;
+	private String uebergabeString = "test";
 
 
 	public mainscreen() {
@@ -103,9 +106,12 @@ public class mainscreen {
 		usermgtcard();
 		newmodulecard();
 		modulbearbeitenCard();
-		modulshowCard();
+		studiengangCard();
+		modulhandbuchshowCard();
 
 	}
+
+	
 
 	private void topscr() {
 		JPanel top = new JPanel();
@@ -128,8 +134,12 @@ public class mainscreen {
 	}
 	
 	private void addToTable(Studiengang stud) {
-		modmodel.addRow(new Object[] { stud.getName()});
+		studmodel.addRow(new Object[] { stud.getName()});
 	}
+	private void addToTable(Modulhandbuch modbuch) {
+		modbuchmodel.addRow(new Object[] { modbuch.getJahrgang()});
+	}
+
 
 	private JPanel defaultmodulPanel(String name, String string) {
 		final Dimension preferredSize = new Dimension(120, 20);
@@ -292,10 +302,10 @@ public class mainscreen {
 		btnMHB.setPreferredSize(btnSz);
 		btnMHB.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnMHB.addActionListener(new ActionListener() {
-
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				showCard("modul show");
+				showCard("studiengang show");
 			}
 
 		});
@@ -1317,20 +1327,20 @@ public class mainscreen {
 	
 	}
 
-private void modulshowCard() {
+	private void studiengangCard() {
 		
-		JPanel modshow = new JPanel();
-		cards.add(modshow, "modul show");
-		modshow.add(new JLabel("In Dev"));
-		modshow.setLayout(new BorderLayout(0, 0));
-
+		JPanel studiengangshow = new JPanel();
+		cards.add(studiengangshow, "studiengang show");
+		studiengangshow.setLayout(new BorderLayout(0, 0));
+		JButton	goforit = new JButton("oeffnen");
 		final JTable studtable = new JTable();
 		JScrollPane studscp = new JScrollPane(studtable);
 		studtable.setBorder(new LineBorder(new Color(0, 0, 0)));
 		studtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
-		modshow.add(studscp);
+		studiengangshow.add(studscp);
+		studiengangshow.add(goforit, BorderLayout.SOUTH);
 
-		modmodel = new DefaultTableModel(new Object[][] {},
+		studmodel = new DefaultTableModel(new Object[][] {},
 				new String[] { "Studiengang" }) {
 			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] { String.class };
@@ -1347,48 +1357,65 @@ private void modulshowCard() {
 				return false;
 			}
 		};
-		studtable.setModel(modmodel);
-		modmodel.setRowCount(0);
+		studtable.setModel(studmodel);
+		studmodel.setRowCount(0);
 		studienlist = database.getStudiengaenge();
 		for(int i = 0; i < studienlist.size(); i++){
 			addToTable(studienlist.get(i));
 		}
-		studtable.addMouseListener(new MouseListener() {
-			
+		goforit.addActionListener(new ActionListener() {
+		
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void actionPerformed(ActionEvent e) {
+				int openrow = studtable.getSelectedRow();
+				String zwsstring = (String) studtable.getValueAt(openrow, 0);
+				showCard("modbuch show");
+				uebergabeString = zwsstring;
 				
 			}
 		});
 		
 	
 	
+	}
+	private void modulhandbuchshowCard() {
+		// TODO Auto-generated method stub
+		JPanel modbuchshow = new JPanel();
+		cards.add(modbuchshow, "modbuch show");
+		modbuchshow.setLayout(new BorderLayout(0, 0));
+		JButton	goforit = new JButton("oeffnen");
+		final JTable modbuchtable = new JTable();
+		JScrollPane modbuchscp = new JScrollPane(modbuchtable);
+		modbuchtable.setBorder(new LineBorder(new Color(0, 0, 0)));
+		modbuchtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
+		modbuchshow.add(modbuchscp);
+		modbuchshow.add(goforit, BorderLayout.SOUTH);
+		
+		modbuchmodel = new DefaultTableModel(new Object[][] {},
+				new String[] { "Modulhandbuch" }) {
+			@SuppressWarnings("rawtypes")
+			Class[] columnTypes = new Class[] { String.class };
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// all cells false
+				return false;
+			}
+		};
+		
+		modbuchtable.setModel(modbuchmodel);
+		modbuchmodel.setRowCount(0);
+		modbuchlist = database.getModulhandbuch(uebergabeString);
+		for(int i = 0; i < modbuchlist.size(); i++){
+			addToTable(modbuchlist.get(i));
+		}
+		
 	}
 
 }

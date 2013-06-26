@@ -18,6 +18,8 @@ public class start {
 		//behoben: Wenn man einloggen klickt und dann abbrechen, kann man Account Bearbeiten klicken
 		//behoben: wenn man sich ausloggt wird der durchstöbern button wieder auf false gesetzt (ka wo :/)
 		
+		//sql abfrage der Modulhandbücher nicht hinbekommen, da ich die Server-Client connection nicht so hinbekommen hab und aktuell kein plan hab wie ich das reparieren kann - ich lass es mal drin damit du den fehler vll schneller findest
+		
 		/**
 		 * Aufgaben
 		 */
