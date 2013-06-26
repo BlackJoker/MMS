@@ -1,12 +1,17 @@
 package de.team55.mms.data;
 
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "Modulhandbuch")
 public class Modulhandbuch {
 
 	private String name;
 	private String studiengang;
 	private String jahrgang;
 	private boolean akzeptiert;
+	
+	public Modulhandbuch() {
+	}
 
 	public Modulhandbuch(String name, String studiengang, String jahrgang) {
 		this.name = name;
