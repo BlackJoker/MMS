@@ -107,7 +107,8 @@ public class mainscreen {
 		newmodulecard();
 		modulbearbeitenCard();
 		studiengangCard();
-		modulhandbuchshowCard();
+		//modulhandbuchshowCard wird erst in der studiengangcard erzeugt, sonst würde ich die aktuelle liste nicht bekommen
+		
 
 	}
 
@@ -1369,8 +1370,9 @@ public class mainscreen {
 			public void actionPerformed(ActionEvent e) {
 				int openrow = studtable.getSelectedRow();
 				String zwsstring = (String) studtable.getValueAt(openrow, 0);
-				showCard("modbuch show");
 				uebergabeString = zwsstring;
+				modulhandbuchshowCard();
+				showCard("modbuch show");
 				
 			}
 		});
@@ -1414,7 +1416,20 @@ public class mainscreen {
 		modbuchlist = database.getModulhandbuch(uebergabeString);
 		for(int i = 0; i < modbuchlist.size(); i++){
 			addToTable(modbuchlist.get(i));
+			
 		}
+		goforit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int openrow = modbuchtable.getSelectedRow();
+				String zwsstring = (String) modbuchtable.getValueAt(openrow, 0);
+				uebergabeString = zwsstring;
+				modulhandbuchshowCard();
+				showCard("modbuch show");
+				
+			}
+		});
 		
 	}
 

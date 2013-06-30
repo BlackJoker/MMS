@@ -19,6 +19,12 @@ public class Modulhandbuch {
 		this.jahrgang = jahrgang;
 		this.akzeptiert = false;
 	}
+	public Modulhandbuch(String studiengang, String jahrgang, boolean akzeptiert) {
+		this.studiengang = studiengang;
+		this.jahrgang = jahrgang;
+		this.akzeptiert = akzeptiert;
+	}
+	
 	
 	@Override
 	public String toString() {

@@ -292,14 +292,13 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT name, jahrgang, akzeptiert FROM modulhandbuch WHERE studiengang = '"
+						.executeQuery("SELECT modulhandbuch.jahrgang as jahrgang, modulhandbuch.akzeptiert as akzeptiert FROM modulhandbuch join studiengang on studiengang.id = modulhandbuch.sid where studiengang.name = '"
 								+ studiengang + "';");
 				
 				while (res.next()) {
-					String name = res.getString("name");
 					String jg = res.getString("jahrgang");
 					boolean ack = res.getBoolean("akzeptiert");
-					modbuch.add(new Modulhandbuch(name, studiengang, jg, ack));
+					modbuch.add(new Modulhandbuch(studiengang, jg, ack));
 				}
 				
 				res.close();
