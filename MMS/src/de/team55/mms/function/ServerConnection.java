@@ -183,5 +183,14 @@ public class ServerConnection {
 		}
 		return null;
 	}
+	
+	public ArrayList<String> getallModultyp() {
+		if (connect(email, password) == SUCCES) {
+			return webResource.path("modultyp/getall")
+					.accept(MediaType.TEXT_XML)
+					.get(new GenericType<ArrayList<String>>(){});
+		}
+		return null;
+	}
 
 }

@@ -40,7 +40,7 @@ public class sql {
 	private String dbPassword = "qwert710";
 
 	public boolean connect() {
-
+		//TODO alle Tabellen am ende sobald da Prog fertig ist anpassen!!!!!
 		connected = false;
 		try {
 			// connect to the server
@@ -913,7 +913,32 @@ public class sql {
 //		return rellist;
 //	}
 	
-	
+	public ArrayList<String> getallModultyp(){
+		ResultSet res = null;
+		Statement state = null;
+		ArrayList<String> retyp = new ArrayList<String>();
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("select name from moduletyp;");
+				
+				while (res.next()) {
+					String typ = res.getString("name");
+					retyp.add(typ);
+				}
+				
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return retyp;
+		
+	}
 	
 	
 }

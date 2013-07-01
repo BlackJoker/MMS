@@ -15,16 +15,14 @@ public class start {
 		/**
 		 * Bugs
 		 */
-		//behoben: Wenn man einloggen klickt und dann abbrechen, kann man Account Bearbeiten klicken
-		//behoben: wenn man sich ausloggt wird der durchstöbern button wieder auf false gesetzt (ka wo :/)
 		
-		//sql abfrage der Modulhandbücher nicht hinbekommen, da ich die Server-Client connection nicht so hinbekommen hab und aktuell kein plan hab wie ich das reparieren kann - ich lass es mal drin damit du den fehler vll schneller findest
+		
 		
 		/**
 		 * Aufgaben
 		 */
 		//User, der Modul geändert hat, anzeigen/eintragen
-		//User Relationstabelle
+		//done: User Relationstabelle
 		
 		//beim wechsel der cards auf verbindung zum server prüfen
 		
@@ -33,6 +31,8 @@ public class start {
 		//Anwendungsfächer
 
 		//registrierung?
+		
+		//statistiken
 		
 		//User kann seine stellvertreter auswählen
 		//Autoren durfen nur ihre zugeordneten Module bearbeiten/löschen/erstellen
