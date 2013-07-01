@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.team55.mms.data.Zuordnung;
+
 @XmlRootElement(name = "Modul")
 public class Modul {
 
@@ -12,7 +14,7 @@ public class Modul {
 
 	private String name;
 	private ArrayList<Studiengang> studiengang;
-	private String modulhandbuch;
+//	private String modulhandbuch;
 	private int version;
 	private Date datum;
 	private boolean akzeptiert;
@@ -22,9 +24,12 @@ public class Modul {
 	private ArrayList<String> labels = new ArrayList<String>();
 	private ArrayList<String> values = new ArrayList<String>();
 	private ArrayList<Boolean> dezernat = new ArrayList<Boolean>();
+	private ArrayList<Zuordnung> zuordnungen = new ArrayList<Zuordnung>();
+	private ArrayList<Modulhandbuch> modulhandbuch = new ArrayList<Modulhandbuch>();
 	
-	public Modul(){
-		
+	public Modul(String name, ArrayList<Zuordnung> zlist, ArrayList<Modulhandbuch> mblist, ArrayList<String> labels, ArrayList<String> values, int version, ArrayList<Boolean> dezernat){
+		this.name=name;
+
 	}
 
 
@@ -38,9 +43,6 @@ public class Modul {
 	}
 
 
-	public void setModulhandbuch(String modulhandbuch) {
-		this.modulhandbuch = modulhandbuch;
-	}
 
 
 	public void setVersion(int version) {
@@ -87,7 +89,6 @@ public class Modul {
 			Date datum, ArrayList<String> labels, ArrayList<String> values, ArrayList<Boolean> dez, boolean akzeptiert, boolean inbearbeitung) {
 		this.name = name;
 		this.studiengang = studiengang2;
-		this.modulhandbuch=modulhandbuch;
 		this.version=version;
 		this.datum=datum;
 		this.labels = labels;
@@ -109,7 +110,6 @@ public class Modul {
 			String jahrgang, ArrayList<String> labels, ArrayList<String> values, int version, ArrayList<Boolean> dez) {
 		this.name = name;
 		this.studiengang = studiengang;
-		this.modulhandbuch = modulhandbuch;
 		this.jahrgang = jahrgang;
 		this.labels = labels;
 		this.values = values;
@@ -136,9 +136,7 @@ public class Modul {
 		return labels;
 	}
 
-	public String getModulhandbuch() {
-		return modulhandbuch;
-	}
+	
 
 	public String getName() {
 		return name;
