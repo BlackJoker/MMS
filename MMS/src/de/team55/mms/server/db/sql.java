@@ -319,15 +319,11 @@ public class sql {
 		ResultSet res = null;
 		Statement state = null;
 		int version = 0;
-		System.out.println("connecte jetzt");
 		if (connect() == true) {
-			System.out.println("connected?");
 			try {
-				System.out.println("try");
 				state = this.con.createStatement();
 				String q = "SELECT IFNULL(MAX(Version),0) AS Version FROM module WHERE name = '"
 						+ name + "';";
-				System.out.println(q);
 				res = state.executeQuery(q);
 				if (res.first()) {
 					version = res.getInt("Version");
@@ -417,7 +413,7 @@ public class sql {
 			try {
 				for (int i = 0; i < typen.size(); i++) {
 					state = con
-							.prepareStatement("INSERT INTO module (name, jahrgang, version, datum, tid) VALUES(?,?,?,?,?)");
+							.prepareStatement("INSERT INTO module (name, jahrgang, version, datum, typid) VALUES(?,?,?,?,?)");
 					state.setString(1, name);
 					state.setInt(2, neu.getJahrgang());
 					state.setInt(3, version);
