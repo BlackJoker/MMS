@@ -10,9 +10,18 @@ public class Zuordnung {
 	private String studiengang;
 	private String abschluss;
 	private int sid;
+	private int id;
 	
 	public Zuordnung(){
 		
+	}
+
+	public Zuordnung(int id, String name, String studiengang, int sid, String abschluss) {
+		this.id=id;
+		this.name=name;
+		this.studiengang=studiengang;
+		this.abschluss=abschluss;		
+		this.sid=sid;
 	}
 
 	public Zuordnung(String name, String studiengang, int sid, String abschluss) {
@@ -20,6 +29,14 @@ public class Zuordnung {
 		this.studiengang=studiengang;
 		this.abschluss=abschluss;		
 		this.sid=sid;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getSid() {

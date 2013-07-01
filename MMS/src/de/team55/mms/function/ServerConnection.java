@@ -109,7 +109,7 @@ public class ServerConnection {
 		if (connect(email, password) == SUCCES) {
 			return webResource.path("studiengang/post")
 					.type(MediaType.APPLICATION_XML)
-					.post(ClientResponse.class, String.class);
+					.post(ClientResponse.class, name);
 		}
 		return null;
 
@@ -117,18 +117,20 @@ public class ServerConnection {
 
 	public int getModulVersion(String name) {
 		if (connect(email, password) == SUCCES) {
-			return webResource.path("modul/getVersion").path(name)
+			String id = webResource.path("modul/getVersion").path(name)
 					.accept(MediaType.TEXT_XML)
-					.get(Integer.class);
+					.get(String.class);
+			return Integer.parseInt(id);
 		}
 		return 0;
 	}
 
 	public int getStudiengangID(String name) {
 		if (connect(email, password) == SUCCES) {
-			return webResource.path("studiengang/getID").path(name)
+			String id = webResource.path("studiengang/getID").path(name)
 					.accept(MediaType.TEXT_XML)
-					.get(Integer.class);
+					.get(String.class);
+			return Integer.parseInt(id);
 		}
 		return 0;
 	}
@@ -183,12 +185,20 @@ public class ServerConnection {
 		}
 		return null;
 	}
-	
-	public ArrayList<String> getallModultyp() {
+
+	public ArrayList<Zuordnung> getZuordnungen() {
 		if (connect(email, password) == SUCCES) {
-			return webResource.path("modultyp/getall")
-					.accept(MediaType.TEXT_XML)
-					.get(new GenericType<ArrayList<String>>(){});
+			return webResource.path("zuordnung/getList").accept(MediaType.APPLICATION_XML)
+					.get(new GenericType<ArrayList<Zuordnung>>(){});
+		}
+		return null;
+	}
+	
+	public ClientResponse setZuordnung(Zuordnung z) {
+		if (connect(email, password) == SUCCES) {
+			return webResource.path("zuordnung/post")
+					.type(MediaType.APPLICATION_XML)
+					.post(ClientResponse.class, z);
 		}
 		return null;
 	}

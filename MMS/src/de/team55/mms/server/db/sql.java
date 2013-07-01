@@ -13,6 +13,7 @@ import de.team55.mms.data.Modul;
 import de.team55.mms.data.Modulhandbuch;
 import de.team55.mms.data.Studiengang;
 import de.team55.mms.data.User;
+import de.team55.mms.data.Zuordnung;
 import de.team55.mms.gui.mainscreen;
 
 public class sql {
@@ -292,13 +293,14 @@ public class sql {
 			try {
 				state = this.con.createStatement();
 				res = state
-						.executeQuery("SELECT modulhandbuch.jahrgang as jahrgang, modulhandbuch.akzeptiert as akzeptiert FROM modulhandbuch join studiengang on studiengang.id = modulhandbuch.sid where studiengang.name = '"
+						.executeQuery("SELECT m.jahrgang, m.sid FROM modulhandbuch AS m JOIN studiengang AS s on s.id = m.sid where studiengang.name = '"
 								+ studiengang + "';");
 				
 				while (res.next()) {
 					String jg = res.getString("jahrgang");
+					int sid = res.getInt("sid");
 					boolean ack = res.getBoolean("akzeptiert");
-					modbuch.add(new Modulhandbuch(studiengang, jg, ack));
+					modbuch.add(new Modulhandbuch(jg, sid));
 				}
 				
 				res.close();
@@ -405,21 +407,22 @@ public class sql {
 		int ok = FAILED;
 		PreparedStatement state = null;
 		if (connect() == true) {
-			ArrayList<Studiengang> studiengang = neu.getStudiengang();
+			ArrayList<Zuordnung> typen = neu.getZuordnungen();
+			ArrayList<Modulhandbuch> mb = neu.getModulhandbuch();
 			String name = neu.getName();
 			int version = neu.getVersion();
 			ArrayList<String> labels = neu.getLabels();
 			ArrayList<String> values = neu.getValues();
 			ArrayList<Boolean> dezernat = neu.getDezernat();
 			try {
-				for (int i = 0; i < studiengang.size(); i++) {
+				for (int i = 0; i < typen.size(); i++) {
 					state = con
-							.prepareStatement("INSERT INTO module (name, modulhandbuchname, version, datum, sid) VALUES(?,?,?,?,?)");
+							.prepareStatement("INSERT INTO module (name, jahrgang, version, datum, tid) VALUES(?,?,?,?,?)");
 					state.setString(1, name);
-					state.setString(2, neu.getModulhandbuch());
+					state.setInt(2, neu.getJahrgang());
 					state.setInt(3, version);
 					state.setDate(4, convertToSQLDate(neu.getDatum()));
-					state.setInt(5, studiengang.get(i).getId());
+					state.setInt(5, typen.get(i).getId());
 					state.executeUpdate();
 				}
 				/*
@@ -482,30 +485,30 @@ public class sql {
 
 	}
 
-	public void setModulhandbuch(Modulhandbuch mh) {
-		String name = mh.getName();
-		String studiengang = mh.getStudiengang();
-		String jahrgang = mh.getJahrgang();
-		Statement state = null;
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ('"
-						+ name
-						+ "', '"
-						+ studiengang
-						+ "', '"
-						+ jahrgang
-						+ "');");
-
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-
-	}
+//	public void setModulhandbuch(Modulhandbuch mh) {
+//		String name = mh.getName();
+//		String studiengang = mh.getStudiengang();
+//		String jahrgang = mh.getJahrgang();
+//		Statement state = null;
+//		if (connect() == true) {
+//			try {
+//				state = this.con.createStatement();
+//				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ('"
+//						+ name
+//						+ "', '"
+//						+ studiengang
+//						+ "', '"
+//						+ jahrgang
+//						+ "');");
+//
+//			} catch (SQLException e) {
+//				// TODO fehler fenster aufrufen
+//				e.printStackTrace();
+//			}
+//			disconnect();
+//		}
+//
+//	}
 
 	// Neuen Studiengang anlegen
 	public int setStudiengang(String name) {
@@ -724,33 +727,33 @@ public class sql {
 		return id;
 	}
 
-	public ArrayList<Modulhandbuch> getModulhandbuecher() {
-		ResultSet res = null;
-		Statement state = null;
-		ArrayList<Modulhandbuch> MHs = new ArrayList<Modulhandbuch>();
-		if (connect() == true) {
-			try {
-				state = this.con.createStatement();
-				res = state.executeQuery("SELECT * FROM modulhandbuch;");
-				// verarbeitung der resultset
-				while (res.next()) {
-					String name = res.getString("name");
-					String sg = res.getString("studiengang");
-					String jg = res.getString("jahrgang");
-					boolean ack = res.getBoolean("akzeptiert");
-					MHs.add(new Modulhandbuch(name, sg, jg, ack));
-				}
-
-				res.close();
-				state.close();
-			} catch (SQLException e) {
-				// TODO fehler fenster aufrufen
-				e.printStackTrace();
-			}
-			disconnect();
-		}
-		return MHs;
-	}
+//	public ArrayList<Modulhandbuch> getModulhandbuecher() {
+//		ResultSet res = null;
+//		Statement state = null;
+//		ArrayList<Modulhandbuch> MHs = new ArrayList<Modulhandbuch>();
+//		if (connect() == true) {
+//			try {
+//				state = this.con.createStatement();
+//				res = state.executeQuery("SELECT * FROM modulhandbuch;");
+//				// verarbeitung der resultset
+//				while (res.next()) {
+//					String name = res.getString("name");
+//					String sg = res.getString("studiengang");
+//					String jg = res.getString("jahrgang");
+//					boolean ack = res.getBoolean("akzeptiert");
+//					MHs.add(new Modulhandbuch(name, sg, jg, ack));
+//				}
+//
+//				res.close();
+//				state.close();
+//			} catch (SQLException e) {
+//				// TODO fehler fenster aufrufen
+//				e.printStackTrace();
+//			}
+//			disconnect();
+//		}
+//		return MHs;
+//	}
 
 	public ArrayList<Modul> getModule(boolean b) {
 		ArrayList<Modul> module = new ArrayList<Modul>();
@@ -938,6 +941,49 @@ public class sql {
 		}
 		return retyp;
 		
+	}
+	
+	public ArrayList<Zuordnung> getZuordnungen() {
+		ResultSet res = null;
+		Statement state = null;
+		ArrayList<Zuordnung> zlist = new ArrayList<Zuordnung>();
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT t.tid, t.tname, t.abschluss, t.sid, s.name FROM typ AS t JOIN studiengang AS s ON t.sid=s.id ORDER BY t.tName ASC, s.name ASC, t.abschluss ASC;");
+				while(res.next()){
+					zlist.add(new Zuordnung(res.getInt("tid"),res.getString("tname"),res.getString("name"),res.getInt("sid"),res.getString("abschluss")));
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return zlist;
+	}
+
+	public int setZuordnung(Zuordnung z) {
+		Statement state = null;
+		int status = FAILED;
+		if(connect() == true){
+			try{
+				state = this.con.createStatement();
+				state.executeUpdate("INSERT INTO typ (tname, sid, abschluss) VALUES ('"
+						+ z.getName()+ "','"
+						+ z.getSid() + "','"
+						+ z.getAbschluss()+"');");
+				status = SUCCES;
+			}catch(SQLException e){
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return status;
 	}
 	
 	

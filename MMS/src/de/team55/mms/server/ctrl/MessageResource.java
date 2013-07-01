@@ -17,6 +17,7 @@ import de.team55.mms.data.Modulhandbuch;
 import de.team55.mms.data.Studiengang;
 import de.team55.mms.data.User;
 import de.team55.mms.data.UserUpdateContainer;
+import de.team55.mms.data.Zuordnung;
 import de.team55.mms.server.db.sql;
 
 @Path("")
@@ -98,8 +99,8 @@ public class MessageResource {
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	@Path("/modul/getVersion/{name}")
-	public int getModulVersion(@PathParam("name") String name) {
-		return new sql().getModulVersion(name);
+	public String getModulVersion(@PathParam("name") String name) {
+		return Integer.toString(new sql().getModulVersion(name));
 	}
 
 	@GET
@@ -131,10 +132,28 @@ public class MessageResource {
 	}
 	
 	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/zuordnung/getList/")
+	public ArrayList<Zuordnung> getZurdnungen() {
+		return new sql().getZuordnungen();
+	}
+	
+	@POST
+	@Path("/zuordnung/post/")
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response zuordnungPost(Zuordnung z) {
+		int status = new sql().setZuordnung(z);
+		if (status == 1)
+			return Response.status(201).build();
+		else
+			return Response.status(500).build();
+	}
+	
+	@GET
 	@Produces(MediaType.TEXT_XML)
 	@Path("/studiengang/getID/{name}")
-	public int getStudiengangID(@PathParam("name") String name) {
-		return new sql().getStudiengangID(name);
+	public String getStudiengangID(@PathParam("name") String name) {
+		return Integer.toString(new sql().getStudiengangID(name));
 	}
 	
 	@GET
@@ -142,12 +161,6 @@ public class MessageResource {
 	@Path("/modulhandbuch/getallat/{studiengang}")
 	public ArrayList<Modulhandbuch> getModulhandbuch(@PathParam("studiengang") String studiengang) {
 		return new sql().getModulhandbuch(studiengang);
-	}
-	@GET
-	@Produces(MediaType.TEXT_XML)
-	@Path("/modultyp/getall")
-	public ArrayList<String> getallModultyp() {
-		return new sql().getallModultyp();
 	}
 	
 

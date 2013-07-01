@@ -6,30 +6,39 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Modulhandbuch {
 
 	private String name;
-	private String studiengang;
+	//private String studiengang;
 	private String jahrgang;
+	private int studiengang;
 	private boolean akzeptiert;
 	
-	public Modulhandbuch() {
-	}
-
-	public Modulhandbuch(String name, String studiengang, String jahrgang) {
-		this.name = name;
-		this.studiengang = studiengang;
-		this.jahrgang = jahrgang;
-		this.akzeptiert = false;
-	}
-	public Modulhandbuch(String studiengang, String jahrgang, boolean akzeptiert) {
-		this.studiengang = studiengang;
-		this.jahrgang = jahrgang;
-		this.akzeptiert = akzeptiert;
+	public Modulhandbuch(String jahrgang, int studiengang) {
+		this.jahrgang=jahrgang;
+		this.studiengang=studiengang;
 	}
 	
+	public Modulhandbuch(){
+		
+	}
+
+//	public Modulhandbuch(String name, String studiengang, String jahrgang) {
+//		this.name = name;
+//		this.studiengang = studiengang;
+//		this.jahrgang = jahrgang;
+//		this.akzeptiert = false;
+//	}
 	
 	@Override
 	public String toString() {
 		return name + ", " + studiengang
 				+ ", " + jahrgang;
+	}
+
+	public int getStudiengang() {
+		return studiengang;
+	}
+
+	public void setStudiengang(int studiengang) {
+		this.studiengang = studiengang;
 	}
 
 	@Override
@@ -40,8 +49,7 @@ public class Modulhandbuch {
 		result = prime * result
 				+ ((jahrgang == null) ? 0 : jahrgang.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((studiengang == null) ? 0 : studiengang.hashCode());
+		result = prime * result + studiengang;
 		return result;
 	}
 
@@ -66,10 +74,7 @@ public class Modulhandbuch {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (studiengang == null) {
-			if (other.studiengang != null)
-				return false;
-		} else if (!studiengang.equals(other.studiengang))
+		if (studiengang != other.studiengang)
 			return false;
 		return true;
 	}
@@ -82,21 +87,21 @@ public class Modulhandbuch {
 		this.akzeptiert = akzeptiert;
 	}
 
-	public Modulhandbuch(String name, String studiengang, String jahrgang, boolean akzeptiert) {
-		this.name = name;
-		this.studiengang = studiengang;
-		this.jahrgang = jahrgang;
-		this.akzeptiert=akzeptiert;
-	}
+//	public Modulhandbuch(String name, String studiengang, String jahrgang, boolean akzeptiert) {
+//		this.name = name;
+//		this.studiengang = studiengang;
+//		this.jahrgang = jahrgang;
+//		this.akzeptiert=akzeptiert;
+//	}
 
 
 	public String getName() {
 		return name;
 	}
 
-	public String getStudiengang() {
-		return studiengang;
-	}
+//	public String getStudiengang() {
+//		return studiengang;
+//	}
 
 	public String getJahrgang() {
 		return jahrgang;
@@ -106,9 +111,9 @@ public class Modulhandbuch {
 		this.name = name;
 	}
 
-	public void setStudiengang(String studiengang) {
-		this.studiengang = studiengang;
-	}
+//	public void setStudiengang(String studiengang) {
+//		this.studiengang = studiengang;
+//	}
 
 	public void setJahrgang(String jahrgang) {
 		this.jahrgang = jahrgang;
