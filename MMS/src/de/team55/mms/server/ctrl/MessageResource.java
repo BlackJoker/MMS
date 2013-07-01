@@ -143,6 +143,12 @@ public class MessageResource {
 	public ArrayList<Modulhandbuch> getModulhandbuch(@PathParam("studiengang") String studiengang) {
 		return new sql().getModulhandbuch(studiengang);
 	}
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	@Path("/modultyp/getall")
+	public ArrayList<String> getallModultyp() {
+		return new sql().getallModultyp();
+	}
 	
 
 	@GET

@@ -61,6 +61,7 @@ public class mainscreen {
 	private DefaultTableModel tmodel;
 	private DefaultTableModel studmodel;
 	private DefaultTableModel modbuchmodel;
+	private DefaultTableModel modtypmodel;
 	private final Dimension btnSz = new Dimension(140, 50);
 	public ServerConnection database = new ServerConnection();
 	private ArrayList<User> worklist = null;
@@ -80,6 +81,7 @@ public class mainscreen {
 	private JPanel mod = new JPanel();
 	private ArrayList<Studiengang> studienlist = null;
 	private ArrayList<Modulhandbuch> modbuchlist = null;
+	private ArrayList<String> modtyplist = null;
 	private String uebergabeString = "test";
 
 
@@ -141,6 +143,9 @@ public class mainscreen {
 		modbuchmodel.addRow(new Object[] { modbuch.getJahrgang()});
 	}
 
+	private void addToTable(String modtyp) {
+		modbuchmodel.addRow(new Object[] { modtyp});
+	}
 
 	private JPanel defaultmodulPanel(String name, String string) {
 		final Dimension preferredSize = new Dimension(120, 20);
@@ -1425,12 +1430,69 @@ public class mainscreen {
 				int openrow = modbuchtable.getSelectedRow();
 				String zwsstring = (String) modbuchtable.getValueAt(openrow, 0);
 				uebergabeString = zwsstring;
-				modulhandbuchshowCard();
-				showCard("modbuch show");
+				modtypshowCard();
+				showCard("modtyp show");
 				
 			}
 		});
 		
 	}
+	
+	private void modtypshowCard(){
+		JPanel modtypshow = new JPanel();
+		cards.add(modtypshow, "modtyp show");
+		modtypshow.setLayout(new BorderLayout(0, 0));
+		JButton	goforit = new JButton("oeffnen");
+		final JTable modtyptable = new JTable();
+		JScrollPane modtypscp = new JScrollPane(modtyptable);
+		modtyptable.setBorder(new LineBorder(new Color(0, 0, 0)));
+		modtyptable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
+		modtypshow.add(modtypscp);
+		modtypshow.add(goforit, BorderLayout.SOUTH);
+		
+		modtypmodel = new DefaultTableModel(new Object[][] {},
+				new String[] { "Modul Typ" }) {
+			@SuppressWarnings("rawtypes")
+			Class[] columnTypes = new Class[] { String.class };
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// all cells false
+				return false;
+			}
+		};
+		
+		modtyptable.setModel(modtypmodel);
+		modtypmodel.setRowCount(0);
+		modtyplist = database.getallModultyp();
+		System.out.println(modtyplist.size());
+		for(int i = 0; i < modtyplist.size(); i++){
+			addToTable(modtyplist.get(i));
+			
+		}
+		goforit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int openrow = modtyptable.getSelectedRow();
+				String zwsstring = (String) modtyptable.getValueAt(openrow, 0);
+				uebergabeString = zwsstring;
+				modshowCard();
+				showCard("mod show");
+			}
+		});
+	}
+
+	private void modshowCard(){
+		JPanel modshow = new JPanel();
+		cards.add(modshow, "mod show");
+		
+		//TODO rest der modelshowcard
+	}
 }
