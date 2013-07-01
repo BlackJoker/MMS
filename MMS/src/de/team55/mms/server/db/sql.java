@@ -1012,4 +1012,32 @@ public class sql {
 		return status;
 	}
 
+	public ArrayList<User> getStellv(String mail) {
+		ResultSet res = null;
+		Statement state = null;
+		ArrayList<User> stellv = new ArrayList<User>();
+		if (connect() == true) {
+			try {
+				state = this.con.createStatement();
+				res = state
+						.executeQuery("SELECT * FROM user_relation as ur JOIN user AS u ON ur.stellver_email=u.email JOIN rights AS r ON u.id=r.id WHERE main_email='"+mail+"';");
+				while (res.next()) {
+					stellv.add(new User(res.getString("vorname"),
+							res.getString("namen"), res.getString("titel"),
+							res.getString("email"), res.getString("password"),
+							res.getBoolean("userchange"),
+							res.getBoolean("modcreate"),
+							res.getBoolean("modacc"), res.getBoolean("modread")));
+				}
+				res.close();
+				state.close();
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return stellv;
+	}
+
 }
