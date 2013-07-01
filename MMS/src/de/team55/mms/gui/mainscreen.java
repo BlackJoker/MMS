@@ -286,7 +286,7 @@ public class mainscreen {
 					showCard("user managment");
 				} else {
 					userdialog dlg = new userdialog(frame, "User bearbeiten",
-							current, false);
+							current, false, database);
 					int response = dlg.showCustomDialog();
 					// Wenn ok gedückt wird
 					// neuen User abfragen
@@ -757,11 +757,7 @@ public class mainscreen {
 				int jahrgang = Integer.parseInt(jg);
 
 				for (int i = 0; i < lm.getSize(); i++) {
-					Zuordnung z = lm.getElementAt(i);
-//					Modulhandbuch m = new Modulhandbuch(Jahrgang, z.getSid());
-//					if (!mblist.contains(m))
-//						mblist.add(m);
-					zlist.add(z);
+					zlist.add(lm.getElementAt(i));
 				}
 
 				String Name = ((JTextArea) ((JPanel) panel.getComponent(4))
@@ -788,8 +784,6 @@ public class mainscreen {
 					dez.add(dezernat2);
 				}
 				int version = database.getModulVersion(Name) + 1;
-
-				ArrayList<Studiengang> Studiengang = new ArrayList<Studiengang>();
 
 				Modul neu = new Modul(Name, zlist, jahrgang, labels, values,
 						version, dez);
@@ -861,7 +855,7 @@ public class mainscreen {
 		btnUserAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				userdialog dlg = new userdialog(frame, "User hinzufügen");
+				userdialog dlg = new userdialog(frame, "User hinzufügen",database);
 				int response = dlg.showCustomDialog();
 				// Wenn ok gedückt wird
 				// neuen User abfragen
@@ -894,7 +888,7 @@ public class mainscreen {
 					User alt = new User(vn, nn, t, em, null, r1, r2, r3, r4);
 
 					userdialog dlg = new userdialog(frame, "User bearbeiten",
-							alt, true);
+							alt, true, database);
 					int response = dlg.showCustomDialog();
 					// Wenn ok gedückt wird
 					// neuen User abfragen

@@ -11,6 +11,7 @@ import java.util.Date;
 
 import de.team55.mms.data.Modul;
 import de.team55.mms.data.Modulhandbuch;
+import de.team55.mms.data.StellvertreterList;
 import de.team55.mms.data.Studiengang;
 import de.team55.mms.data.User;
 import de.team55.mms.data.Zuordnung;
@@ -26,7 +27,7 @@ public class sql {
 	private int SUCCES = 1;
 
 	// Hostname
-	private static String dbHost = "db4free.net"; 
+	private static String dbHost = "db4free.net";
 
 	// Port -- Standard: 3306
 	private String dbPort = "3306";
@@ -35,13 +36,13 @@ public class sql {
 	private String database = "mms4sopra2";
 
 	// Datenbankuser
-	private String dbUser = "team5526"; 
+	private String dbUser = "team5526";
 
 	// Datenbankpasswort
 	private String dbPassword = "qwert710";
 
 	public boolean connect() {
-		//TODO alle Tabellen am ende sobald da Prog fertig ist anpassen!!!!!
+		// TODO alle Tabellen am ende sobald da Prog fertig ist anpassen!!!!!
 		connected = false;
 		try {
 			// connect to the server
@@ -103,11 +104,10 @@ public class sql {
 					+ "  PRIMARY KEY (`id`),"
 					+ "  UNIQUE KEY `email` (`email`)" + ")");
 			this.con.commit();
-			
+
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `user_relation` ("
 					+ "  `main_email` varchar(255) NOT NULL,"
-					+ "  `sellver_email` varchar(255) NOT NULL"
-					+ ")");
+					+ "  `sellver_email` varchar(255) NOT NULL" + ")");
 			this.con.commit();
 
 			stmt.executeUpdate("INSERT IGNORE INTO `user` (`id`, `email`, `titel`, `vorname`, `namen`, `password`) VALUES"
@@ -295,14 +295,14 @@ public class sql {
 				res = state
 						.executeQuery("SELECT m.jahrgang, m.sid FROM modulhandbuch AS m JOIN studiengang AS s on s.id = m.sid where studiengang.name = '"
 								+ studiengang + "';");
-				
+
 				while (res.next()) {
 					String jg = res.getString("jahrgang");
 					int sid = res.getInt("sid");
 					boolean ack = res.getBoolean("akzeptiert");
 					modbuch.add(new Modulhandbuch(jg, sid));
 				}
-				
+
 				res.close();
 				state.close();
 			} catch (SQLException e) {
@@ -481,30 +481,30 @@ public class sql {
 
 	}
 
-//	public void setModulhandbuch(Modulhandbuch mh) {
-//		String name = mh.getName();
-//		String studiengang = mh.getStudiengang();
-//		String jahrgang = mh.getJahrgang();
-//		Statement state = null;
-//		if (connect() == true) {
-//			try {
-//				state = this.con.createStatement();
-//				state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ('"
-//						+ name
-//						+ "', '"
-//						+ studiengang
-//						+ "', '"
-//						+ jahrgang
-//						+ "');");
-//
-//			} catch (SQLException e) {
-//				// TODO fehler fenster aufrufen
-//				e.printStackTrace();
-//			}
-//			disconnect();
-//		}
-//
-//	}
+	// public void setModulhandbuch(Modulhandbuch mh) {
+	// String name = mh.getName();
+	// String studiengang = mh.getStudiengang();
+	// String jahrgang = mh.getJahrgang();
+	// Statement state = null;
+	// if (connect() == true) {
+	// try {
+	// state = this.con.createStatement();
+	// state.executeUpdate("INSERT INTO modulhandbuch (name, studiengang, jahrgang) VALUES ('"
+	// + name
+	// + "', '"
+	// + studiengang
+	// + "', '"
+	// + jahrgang
+	// + "');");
+	//
+	// } catch (SQLException e) {
+	// // TODO fehler fenster aufrufen
+	// e.printStackTrace();
+	// }
+	// disconnect();
+	// }
+	//
+	// }
 
 	// Neuen Studiengang anlegen
 	public int setStudiengang(String name) {
@@ -630,7 +630,7 @@ public class sql {
 					if (res.first()) {
 						if (res.getInt("id") != 0) {
 							userexists = true;
-							ok=FAILED;
+							ok = FAILED;
 						}
 					}
 					res.close();
@@ -647,7 +647,8 @@ public class sql {
 					res.close();
 					state.close();
 					if (id != 0) {
-						if ((user.getPassword() != null)&&!user.getPassword().equals("null")) {
+						if ((user.getPassword() != null)
+								&& !user.getPassword().equals("null")) {
 							state = con
 									.prepareStatement("UPDATE user SET titel = ?, vorname = ?, namen = ?, password = ?, email = ? WHERE id = ? ;");
 							state.setString(1, user.getTitel());
@@ -723,33 +724,33 @@ public class sql {
 		return id;
 	}
 
-//	public ArrayList<Modulhandbuch> getModulhandbuecher() {
-//		ResultSet res = null;
-//		Statement state = null;
-//		ArrayList<Modulhandbuch> MHs = new ArrayList<Modulhandbuch>();
-//		if (connect() == true) {
-//			try {
-//				state = this.con.createStatement();
-//				res = state.executeQuery("SELECT * FROM modulhandbuch;");
-//				// verarbeitung der resultset
-//				while (res.next()) {
-//					String name = res.getString("name");
-//					String sg = res.getString("studiengang");
-//					String jg = res.getString("jahrgang");
-//					boolean ack = res.getBoolean("akzeptiert");
-//					MHs.add(new Modulhandbuch(name, sg, jg, ack));
-//				}
-//
-//				res.close();
-//				state.close();
-//			} catch (SQLException e) {
-//				// TODO fehler fenster aufrufen
-//				e.printStackTrace();
-//			}
-//			disconnect();
-//		}
-//		return MHs;
-//	}
+	// public ArrayList<Modulhandbuch> getModulhandbuecher() {
+	// ResultSet res = null;
+	// Statement state = null;
+	// ArrayList<Modulhandbuch> MHs = new ArrayList<Modulhandbuch>();
+	// if (connect() == true) {
+	// try {
+	// state = this.con.createStatement();
+	// res = state.executeQuery("SELECT * FROM modulhandbuch;");
+	// // verarbeitung der resultset
+	// while (res.next()) {
+	// String name = res.getString("name");
+	// String sg = res.getString("studiengang");
+	// String jg = res.getString("jahrgang");
+	// boolean ack = res.getBoolean("akzeptiert");
+	// MHs.add(new Modulhandbuch(name, sg, jg, ack));
+	// }
+	//
+	// res.close();
+	// state.close();
+	// } catch (SQLException e) {
+	// // TODO fehler fenster aufrufen
+	// e.printStackTrace();
+	// }
+	// disconnect();
+	// }
+	// return MHs;
+	// }
 
 	public ArrayList<Modul> getModule(boolean b) {
 		ArrayList<Modul> module = new ArrayList<Modul>();
@@ -848,7 +849,7 @@ public class sql {
 						.executeQuery("SELECT IFNULL(id,0) AS id FROM user WHERE email='"
 								+ email + "';");
 				if (res.first()) {
-					if(res.getInt("id")==0)
+					if (res.getInt("id") == 0)
 						status = SUCCES;
 				}
 				res.close();
@@ -861,72 +862,69 @@ public class sql {
 		}
 		return status;
 	}
+
 	// bitte durchschaun ob das wirklich so funktionieren kann xD
-	public int setUserRelation(User main, User stellv){
+	public int setUserRelation(User main, User stellv) {
 		Statement state = null;
 		int status = FAILED;
 
-		
-		if(connect() == true){
-			try{
+		if (connect() == true) {
+			try {
 				state = this.con.createStatement();
 				state.executeUpdate("INSERT INTO user_relation (main_email, stellver_email) VALUES ('"
-						+ main.geteMail() + "','"
-						+ stellv.geteMail() + "');");
+						+ main.geteMail() + "','" + stellv.geteMail() + "');");
 				status = SUCCES;
-			}catch(SQLException e){
+			} catch (SQLException e) {
 				// TODO fehler fenster aufrufen
 				e.printStackTrace();
 			}
 			disconnect();
 		}
 		return status;
-		
+
 	}
-	
-	// überlegung wie man das einbaut 
-	
-	
-//	public ArrayList<User> getUserRelation(User main){
-//		ResultSet res = null;
-//		Statement state = null;
-//		ArrayList<User> rellist = new ArrayList<User>();
-//		
-//		if (connect() == true) {
-//			try {
-//				state = this.con.createStatement();
-//				res = state
-//						.executeQuery("SELECT st.email, st.titel, st.vorname, st.namen FROM user as st  id=;");
-//				while (res.next()) {
-//					if(res.getInt("id")==0);
-//						
-//				}
-//				res.close();
-//				state.close();
-//			} catch (SQLException e) {
-//				// TODO fehler fenster aufrufen
-//				e.printStackTrace();
-//			}
-//			disconnect();
-//		}
-//		return rellist;
-//	}
-	
-	public ArrayList<String> getallModultyp(){
+
+	// überlegung wie man das einbaut
+
+	// public ArrayList<User> getUserRelation(User main){
+	// ResultSet res = null;
+	// Statement state = null;
+	// ArrayList<User> rellist = new ArrayList<User>();
+	//
+	// if (connect() == true) {
+	// try {
+	// state = this.con.createStatement();
+	// res = state
+	// .executeQuery("SELECT st.email, st.titel, st.vorname, st.namen FROM user as st  id=;");
+	// while (res.next()) {
+	// if(res.getInt("id")==0);
+	//
+	// }
+	// res.close();
+	// state.close();
+	// } catch (SQLException e) {
+	// // TODO fehler fenster aufrufen
+	// e.printStackTrace();
+	// }
+	// disconnect();
+	// }
+	// return rellist;
+	// }
+
+	public ArrayList<String> getallModultyp() {
 		ResultSet res = null;
 		Statement state = null;
 		ArrayList<String> retyp = new ArrayList<String>();
 		if (connect() == true) {
 			try {
 				state = this.con.createStatement();
-				res = state
-						.executeQuery("select name from moduletyp;");
-				
+				res = state.executeQuery("select name from moduletyp;");
+
 				while (res.next()) {
 					String typ = res.getString("name");
 					retyp.add(typ);
 				}
-				
+
 				res.close();
 				state.close();
 			} catch (SQLException e) {
@@ -936,9 +934,9 @@ public class sql {
 			disconnect();
 		}
 		return retyp;
-		
+
 	}
-	
+
 	public ArrayList<Zuordnung> getZuordnungen() {
 		ResultSet res = null;
 		Statement state = null;
@@ -948,8 +946,10 @@ public class sql {
 				state = this.con.createStatement();
 				res = state
 						.executeQuery("SELECT t.tid, t.tname, t.abschluss, t.sid, s.name FROM typ AS t JOIN studiengang AS s ON t.sid=s.id ORDER BY t.tName ASC, s.name ASC, t.abschluss ASC;");
-				while(res.next()){
-					zlist.add(new Zuordnung(res.getInt("tid"),res.getString("tname"),res.getString("name"),res.getInt("sid"),res.getString("abschluss")));
+				while (res.next()) {
+					zlist.add(new Zuordnung(res.getInt("tid"), res
+							.getString("tname"), res.getString("name"), res
+							.getInt("sid"), res.getString("abschluss")));
 				}
 				res.close();
 				state.close();
@@ -965,15 +965,17 @@ public class sql {
 	public int setZuordnung(Zuordnung z) {
 		Statement state = null;
 		int status = FAILED;
-		if(connect() == true){
-			try{
+		if (connect() == true) {
+			try {
 				state = this.con.createStatement();
 				state.executeUpdate("INSERT INTO typ (tname, sid, abschluss) VALUES ('"
-						+ z.getName()+ "','"
-						+ z.getSid() + "','"
-						+ z.getAbschluss()+"');");
+						+ z.getName()
+						+ "','"
+						+ z.getSid()
+						+ "','"
+						+ z.getAbschluss() + "');");
 				status = SUCCES;
-			}catch(SQLException e){
+			} catch (SQLException e) {
 				// TODO fehler fenster aufrufen
 				e.printStackTrace();
 			}
@@ -981,6 +983,33 @@ public class sql {
 		}
 		return status;
 	}
-	
-	
+
+	public int setStellvertreter(StellvertreterList sl) {
+		PreparedStatement state = null;
+		int status = FAILED;
+		if (connect() == true) {
+			try {
+				String eMail = sl.geteMail();
+				ArrayList<String> l = sl.getUsr();
+				state = con
+						.prepareStatement("DELETE FROM user_relation WHERE main_email=?");
+				state.setString(1, eMail);
+				state.executeUpdate();
+				for (int i = 0; i < l.size(); i++) {
+					state = con
+							.prepareStatement("INSERT INTO user_relation (main_email, stellver_email) VALUES(?,?)");
+					state.setString(1, eMail);
+					state.setString(2, l.get(i));
+					state.executeUpdate();
+				}
+				status = SUCCES;
+			} catch (SQLException e) {
+				// TODO fehler fenster aufrufen
+				e.printStackTrace();
+			}
+			disconnect();
+		}
+		return status;
+	}
+
 }
