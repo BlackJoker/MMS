@@ -327,6 +327,9 @@ public class mainscreen {
 				for (int i = 0; i < studienlist.size(); i++) {
 					addToTable(studienlist.get(i));
 				}
+				
+				typen = database.getZuordnungen();
+				
 				showCard("studiengang show");
 			}
 
@@ -1500,6 +1503,7 @@ ArrayList<Zuordnung> zlist = new ArrayList<Zuordnung>();
 		modtypmodel.setRowCount(0);
 		System.out.println(typen.size());
 		for (int i = 0; i < typen.size(); i++) {
+			System.out.println(typen.get(i).getName());
 			addToTable(typen.get(i).getName());
 
 		}
