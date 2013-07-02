@@ -859,6 +859,7 @@ public class mainscreen {
 				int response = dlg.showCustomDialog();
 				// Wenn ok gedückt wird
 				// neuen User abfragen
+				//save!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if (response == 1) {
 					User tmp = dlg.getUser();
 					database.usersave(tmp);
